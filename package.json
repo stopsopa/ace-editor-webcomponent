@@ -1,0 +1,25 @@
+{
+  "name": "ace-editor-webcomponent",
+  "version": "1.0.0",
+  "description": "Comprehensive learning path for Web Components, culminating in an Ace Editor web component",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env server.js"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "ace-editor",
+    "learning",
+    "tutorial"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cookie-parser": "^1.4.6",
+    "serve-index": "^1.9.1"
+  }
+}
