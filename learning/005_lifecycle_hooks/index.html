@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>005 - Lifecycle Hooks</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+        #log { background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px; max-height: 300px; overflow-y: auto; }
+        .log-entry { margin: 2px 0; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 005: Lifecycle Hooks</h1>
+
+    <p><a href="../004_slots_and_content_projection/">← Previous: Slots & Content Projection</a> | <a href="../006_event_handling/">Next: Event Handling →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>All four lifecycle callbacks</li>
+        <li>When each callback is triggered</li>
+        <li>Cleanup patterns in <code>disconnectedCallback</code></li>
+        <li>Proper resource management</li>
+    </ul>
+
+    <h2>The Four Lifecycle Callbacks</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 2px solid #333;">
+            <th style="text-align: left; padding: 10px;">Callback</th>
+            <th style="text-align: left; padding: 10px;">When It Fires</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;"><code>connectedCallback()</code></td>
+            <td style="padding: 10px;">Element inserted into DOM</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;"><code>disconnectedCallback()</code></td>
+            <td style="padding: 10px;">Element removed from DOM</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;"><code>adoptedCallback()</code></td>
+            <td style="padding: 10px;">Element moved to new document</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;"><code>attributeChangedCallback()</code></td>
+            <td style="padding: 10px;">Observed attribute changes</td>
+        </tr>
+    </table>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <div>
+            <button onclick="addElement()">Add Element</button>
+            <button onclick="removeElement()">Remove Element</button>
+            <button onclick="changeAttribute()">Change Attribute</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <div id="container" style="margin: 20px 0; min-height: 50px; border: 2px dashed #999; padding: 10px; border-radius: 5px;">
+            <!-- Element will be added here -->
+        </div>
+
+        <h4>Lifecycle Log:</h4>
+        <div id="log"></div>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>class LifecycleDemo extends HTMLElement {
+    static get observedAttributes() {
+        return ['status'];
+    }
+
+    constructor() {
+        super();
+        this.log('constructor() called');
+        this.intervalId = null;
+    }
+
+    connectedCallback() {
+        this.log('connectedCallback() - Element added to DOM');
+
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .box { padding: 15px; background: #4caf50; color: white; border-radius: 5px; }
+            &lt;/style&gt;
+            &lt;div class="box"&gt;
+                &lt;p&gt;I'm alive! Status: ${this.getAttribute('status') || 'none'}&lt;/p&gt;
+                &lt;p&gt;Time: &lt;span id="time"&gt;0&lt;/span&gt;s&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        // Start a timer
+        let seconds = 0;
+        this.intervalId = setInterval(() => {
+            seconds++;
+            const timeEl = this.shadowRoot.querySelector('#time');
+            if (timeEl) timeEl.textContent = seconds;
+        }, 1000);
+    }
+
+    disconnectedCallback() {
+        this.log('disconnectedCallback() - Element removed, cleaning up');
+
+        // IMPORTANT: Clean up the interval!
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+
+    adoptedCallback() {
+        this.log('adoptedCallback() - Element moved to new document');
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.log(`attributeChangedCallback() - ${name}: "${oldValue}" → "${newValue}"`);
+    }
+
+    log(message) {
+        console.log(`[lifecycle-demo] ${message}`);
+        // Also log to page
+        window.logToPage && window.logToPage(message);
+    }
+}
+
+customElements.define('lifecycle-demo', LifecycleDemo);</code></pre>
+
+    <h2>Cleanup Pattern</h2>
+    <p><strong>Always clean up in <code>disconnectedCallback()</code>:</strong></p>
+    <ul>
+        <li>Clear intervals and timeouts</li>
+        <li>Remove event listeners</li>
+        <li>Cancel network requests</li>
+        <li>Release resources</li>
+        <li>Prevent memory leaks!</li>
+    </ul>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li><code>connectedCallback</code> is for setup and initialization</li>
+        <li><code>disconnectedCallback</code> is CRITICAL for cleanup</li>
+        <li><code>adoptedCallback</code> is rare (only for iframe scenarios)</li>
+        <li>Always pair resource creation with cleanup</li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks" target="_blank">MDN: Custom element lifecycle callbacks</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/connectedCallback" target="_blank">MDN: connectedCallback</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/disconnectedCallback" target="_blank">MDN: disconnectedCallback</a></li>
+    </ul>
+
+    <p><a href="../004_slots_and_content_projection/">← Previous: Slots & Content Projection</a> | <a href="../006_event_handling/">Next: Event Handling →</a></p>
+
+    <script>
+        const logContainer = document.getElementById('log');
+        const container = document.getElementById('container');
+        let elementCounter = 0;
+
+        window.logToPage = function(message) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        };
+
+        class LifecycleDemo extends HTMLElement {
+            static get observedAttributes() {
+                return ['status'];
+            }
+
+            constructor() {
+                super();
+                this.log('constructor() called');
+                this.intervalId = null;
+            }
+
+            connectedCallback() {
+                this.log('connectedCallback() - Element added to DOM');
+
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .box {
+                            padding: 15px;
+                            background: #4caf50;
+                            color: white;
+                            border-radius: 5px;
+                            text-align: center;
+                        }
+                    </style>
+                    <div class="box">
+                        <p>I'm alive! Status: ${this.getAttribute('status') || 'active'}</p>
+                        <p>Time alive: <span id="time">0</span>s</p>
+                    </div>
+                `;
+
+                // Start a timer
+                let seconds = 0;
+                this.intervalId = setInterval(() => {
+                    seconds++;
+                    const timeEl = this.shadowRoot.querySelector('#time');
+                    if (timeEl) timeEl.textContent = seconds;
+                }, 1000);
+            }
+
+            disconnectedCallback() {
+                this.log('disconnectedCallback() - Element removed, cleaning up timer');
+
+                // IMPORTANT: Clean up the interval!
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+
+            adoptedCallback() {
+                this.log('adoptedCallback() - Element moved to new document');
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+                this.log(`attributeChangedCallback() - ${name}: "${oldValue}" → "${newValue}"`);
+                if (this.shadowRoot) {
+                    const box = this.shadowRoot.querySelector('.box p');
+                    if (box) {
+                        box.innerHTML = `I'm alive! Status: ${newValue}`;
+                    }
+                }
+            }
+
+            log(message) {
+                console.log(`[lifecycle-demo] ${message}`);
+                window.logToPage(message);
+            }
+        }
+
+        customElements.define('lifecycle-demo', LifecycleDemo);
+
+        function addElement() {
+            elementCounter++;
+            const elem = document.createElement('lifecycle-demo');
+            elem.setAttribute('status', `instance-${elementCounter}`);
+            container.appendChild(elem);
+        }
+
+        function removeElement() {
+            container.innerHTML = '';
+        }
+
+        function changeAttribute() {
+            const elem = container.querySelector('lifecycle-demo');
+            if (elem) {
+                const statuses = ['active', 'busy', 'idle', 'working'];
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                elem.setAttribute('status', randomStatus);
+            } else {
+                window.logToPage('No element to change! Add one first.');
+            }
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        // Add one by default
+        window.logToPage('Page loaded. Click "Add Element" to start!');
+    </script>
+</body>
+</html>
