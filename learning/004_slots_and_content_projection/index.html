@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>004 - Slots and Content Projection</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 004: Slots and Content Projection</h1>
+
+    <p><a href="../003_attributes_and_properties/">← Previous: Attributes & Properties</a> | <a href="../005_lifecycle_hooks/">Next: Lifecycle Hooks →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>What are slots</li>
+        <li>Named vs unnamed slots</li>
+        <li>Content projection pattern</li>
+        <li>Slot fallback content</li>
+    </ul>
+
+    <h2>What Are Slots?</h2>
+    <p>Slots allow you to pass content INTO your web component from the outside. Think of them as placeholders for user-provided content.</p>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <h3>Example 1: Default (unnamed) Slot</h3>
+        <fancy-card>
+            <p>This content is <strong>projected</strong> into the card!</p>
+            <p>You can add any HTML here.</p>
+        </fancy-card>
+
+        <h3>Example 2: Named Slots</h3>
+        <profile-card>
+            <span slot="name">Jane Developer</span>
+            <!-- <span slot="title">Senior Engineer</span>
+            <p slot="bio">Jane loves building web components and has 10 years of experience.</p> -->
+        </profile-card>
+
+        <h3>Example 3: Fallback Content</h3>
+        <fancy-card>
+            <!-- Empty - will show fallback -->
+        </fancy-card>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>// Default slot example
+class FancyCard extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .card { padding: 20px; border: 3px solid #9c27b0; border-radius: 10px; background: #f3e5f5; }
+            &lt;/style&gt;
+            &lt;div class="card"&gt;
+                &lt;slot&gt;Default fallback content&lt;/slot&gt;
+            &lt;/div&gt;
+        `;
+    }
+}
+
+// Named slots example
+class ProfileCard extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .profile { padding: 20px; border: 2px solid #2196f3; border-radius: 8px; }
+                .name { font-size: 24px; font-weight: bold; color: #1976d2; }
+                .title { font-style: italic; color: #666; }
+                .bio { margin-top: 10px; }
+            &lt;/style&gt;
+            &lt;div class="profile"&gt;
+                &lt;div class="name"&gt;&lt;slot name="name"&gt;Unknown&lt;/slot&gt;&lt;/div&gt;
+                &lt;div class="title"&gt;&lt;slot name="title"&gt;No title&lt;/slot&gt;&lt;/div&gt;
+                &lt;div class="bio"&gt;&lt;slot name="bio"&gt;No bio provided&lt;/slot&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        `;
+    }
+}</code></pre>
+
+    <h2>Usage Patterns</h2>
+    <pre><code>&lt;!-- Default slot --&gt;
+&lt;fancy-card&gt;
+    Any content here
+&lt;/fancy-card&gt;
+
+&lt;!-- Named slots --&gt;
+&lt;profile-card&gt;
+    &lt;span slot="name"&gt;Content for name slot&lt;/span&gt;
+    &lt;span slot="title"&gt;Content for title slot&lt;/span&gt;
+&lt;/profile-card&gt;</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li><code>&lt;slot&gt;</code> in Shadow DOM creates a projection point</li>
+        <li>Content from Light DOM is projected into matching slots</li>
+        <li>Named slots match via <code>slot="name"</code> attribute</li>
+        <li>Fallback content shows when no content is projected</li>
+    </ol>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Slots enable composable components</li>
+        <li>Content stays in Light DOM, styles from Shadow DOM apply</li>
+        <li>Named slots provide multiple projection points</li>
+        <li>Fallback content provides sensible defaults</li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots" target="_blank">MDN: Using templates and slots</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot" target="_blank">MDN: &lt;slot&gt; element</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement" target="_blank">MDN: HTMLSlotElement</a></li>
+    </ul>
+
+    <p><a href="../003_attributes_and_properties/">← Previous: Attributes & Properties</a> | <a href="../005_lifecycle_hooks/">Next: Lifecycle Hooks →</a></p>
+
+    <script>
+        class FancyCard extends HTMLElement {
+            connectedCallback() {
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .card {
+                            padding: 20px;
+                            border: 3px solid #9c27b0;
+                            border-radius: 10px;
+                            background: #f3e5f5;
+                            margin: 10px 0;
+                        }
+                    </style>
+                    <div class="card">
+                        <slot>⚠️ No content provided - this is fallback content</slot>
+                    </div>
+                `;
+            }
+        }
+
+        class ProfileCard extends HTMLElement {
+            connectedCallback() {
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .profile {
+                            padding: 20px;
+                            border: 2px solid #2196f3;
+                            border-radius: 8px;
+                            background: #e3f2fd;
+                            margin: 10px 0;
+                        }
+                        .name {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #1976d2;
+                        }
+                        .title {
+                            font-style: italic;
+                            color: #666;
+                            margin: 5px 0;
+                        }
+                        .bio {
+                            margin-top: 10px;
+                            line-height: 1.5;
+                        }
+                    </style>
+                    <div class="profile">
+                        <div class="name"><slot name="name">Unknown User</slot></div>
+                        <div class="title"><slot name="title">No title specified</slot></div>
+                        <div class="bio"><slot name="bio">No bio provided.</slot></div>
+                    </div>
+                `;
+            }
+        }
+
+        customElements.define('fancy-card', FancyCard);
+        customElements.define('profile-card', ProfileCard);
+    </script>
+</body>
+</html>
