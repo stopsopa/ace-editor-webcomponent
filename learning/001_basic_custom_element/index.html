@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>001 - Basic Custom Element</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .example {
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background: #fff;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lesson 001: Basic Custom Element</h1>
+
+    <p><a href="../../">← Back to Index</a> | <a href="../002_shadow_dom_basics/">Next: Shadow DOM Basics →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>How to define a custom element</li>
+        <li>Basic lifecycle: <code>connectedCallback()</code></li>
+        <li>Custom element naming requirements</li>
+        <li>Extending HTMLElement</li>
+    </ul>
+
+    <h2>Key Concepts</h2>
+    <p>A custom element must:</p>
+    <ol>
+        <li>Have a hyphen in its name (e.g., <code>my-element</code>)</li>
+        <li>Extend <code>HTMLElement</code></li>
+        <li>Be registered with <code>customElements.define()</code></li>
+    </ol>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <h3>Output:</h3>
+        <hello-world></hello-world>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>&lt;hello-world&gt;&lt;/hello-world&gt;
+
+&lt;script&gt;
+class HelloWorld extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            &lt;div&gt;
+                &lt;h3&gt;Hello from a Web Component!&lt;/h3&gt;
+                &lt;p&gt;This is a basic custom element.&lt;/p&gt;
+                &lt;p&gt;Created at: ${new Date().toLocaleTimeString()}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+    }
+}
+
+customElements.define('hello-world', HelloWorld);
+&lt;/script&gt;</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li><strong>Class Definition:</strong> We create a class that extends <code>HTMLElement</code></li>
+        <li><strong>connectedCallback():</strong> This lifecycle method runs when the element is added to the DOM</li>
+        <li><strong>Registration:</strong> <code>customElements.define()</code> registers our element</li>
+        <li><strong>Usage:</strong> We can now use <code>&lt;hello-world&gt;</code> like any HTML element</li>
+    </ol>
+
+    <h2>Try It Yourself</h2>
+    <p>Open the browser console and type:</p>
+    <pre><code>const elem = document.createElement('hello-world');
+document.body.appendChild(elem);</code></pre>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Custom elements let you create reusable components</li>
+        <li><code>connectedCallback()</code> is called when the element enters the DOM</li>
+        <li>The element name must contain a hyphen</li>
+        <li>No Shadow DOM or templates yet - just basic functionality</li>
+    </ul>
+
+    <p><a href="../../">← Back to Index</a> | <a href="../002_shadow_dom_basics/">Next: Shadow DOM Basics →</a></p>
+
+    <script>
+        class HelloWorld extends HTMLElement {
+            connectedCallback() {
+                this.innerHTML = `
+                    <div style="border: 1px solid #42b625; padding: 10px; border-radius: 5px; background: #cce8ce;">
+                        <h3>Hello from a Web Component!</h3>
+                        <p>This is a basic custom element.</p>
+                        <p>Created at: ${new Date().toLocaleTimeString()}</p>
+                    </div>
+                `;
+            }
+        }
+
+        customElements.define('hello-world', HelloWorld);
+    </script>
+</body>
+</html>
