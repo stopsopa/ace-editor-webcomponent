@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>006 - Event Handling</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        #event-log { background: #1e1e1e; color: #ffeb3b; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 006: Event Handling</h1>
+
+    <p><a href="../005_lifecycle_hooks/">← Previous: Lifecycle Hooks</a> | <a href="../007_templates_and_fragments/">Next: Templates & Fragments →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>Listening to events inside Shadow DOM</li>
+        <li>Dispatching custom events</li>
+        <li><code>CustomEvent</code> with detail data</li>
+        <li>Event bubbling across shadow boundary</li>
+        <li>Event composition and composed events</li>
+    </ul>
+
+    <h2>Event Patterns</h2>
+    <ol>
+        <li><strong>Internal Events:</strong> Listen to DOM events inside your component</li>
+        <li><strong>Custom Events:</strong> Dispatch custom events to communicate with parent</li>
+        <li><strong>Composed Events:</strong> Control whether events bubble out of Shadow DOM</li>
+    </ol>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <h3>Counter Component</h3>
+        <counter-component id="main-counter" initial="5"></counter-component>
+
+        <div id="event-log"></div>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>class CounterComponent extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+
+        this.count = parseInt(this.getAttribute('initial')) || 0;
+
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .counter { padding: 20px; background: #2196f3; color: white; border-radius: 8px; text-align: center; }
+                button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; }
+                .count { font-size: 48px; font-weight: bold; margin: 20px 0; }
+            &lt;/style&gt;
+            &lt;div class="counter"&gt;
+                &lt;div class="count"&gt;${this.count}&lt;/div&gt;
+                &lt;button id="dec"&gt;-&lt;/button&gt;
+                &lt;button id="reset"&gt;Reset&lt;/button&gt;
+                &lt;button id="inc"&gt;+&lt;/button&gt;
+            &lt;/div&gt;
+        `;
+
+        // Internal event listeners
+        shadow.getElementById('inc').addEventListener('click', () => this.increment());
+        shadow.getElementById('dec').addEventListener('click', () => this.decrement());
+        shadow.getElementById('reset').addEventListener('click', () => this.reset());
+    }
+
+    increment() {
+        this.count++;
+        this.update();
+        // Dispatch custom event
+        this.dispatchEvent(new CustomEvent('countchange', {
+            detail: { count: this.count, action: 'increment' },
+            bubbles: true,
+            composed: true  // Cross shadow boundary
+        }));
+    }
+
+    decrement() {
+        this.count--;
+        this.update();
+        this.dispatchEvent(new CustomEvent('countchange', {
+            detail: { count: this.count, action: 'decrement' },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    reset() {
+        this.count = 0;
+        this.update();
+        this.dispatchEvent(new CustomEvent('countreset', {
+            detail: { count: this.count },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    update() {
+        const countEl = this.shadowRoot.querySelector('.count');
+        countEl.textContent = this.count;
+    }
+}
+
+customElements.define('counter-component', CounterComponent);</code></pre>
+
+    <h2>Listening to Custom Events</h2>
+    <pre><code>// Option 1: Listen on specific element
+const counter = document.querySelector('counter-component');
+counter.addEventListener('countchange', (e) => {
+    console.log('Count changed:', e.detail.count);
+});
+
+// Option 2: Listen globally (Event Delegation) ✅ Recommended
+document.addEventListener('countchange', (e) => {
+    if (e.target.tagName === 'COUNTER-COMPONENT') {
+        // Access the component instance
+        const component = e.target;
+        const id = component.getAttribute('id') || 'unnamed';
+
+        console.log(`Counter [${id}] changed to:`, e.detail.count);
+        console.log('Component instance:', component);
+    }
+});</code></pre>
+
+    <h2>Event Options</h2>
+    <ul>
+        <li><code>bubbles: true</code> - Event bubbles up the DOM tree</li>
+        <li><code>composed: true</code> - Event crosses shadow DOM boundary</li>
+        <li><code>detail: {}</code> - Custom data payload</li>
+        <li><code>cancelable: true</code> - Event can be cancelled</li>
+    </ul>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Use standard DOM events for internal component logic</li>
+        <li>Dispatch custom events for component API</li>
+        <li>Set <code>composed: true</code> to cross shadow boundary</li>
+        <li>Use <code>detail</code> to pass data with events</li>
+        <li><strong>Listen on <code>document</code> for event delegation</strong> - works with dynamic components</li>
+        <li>Access component instance via <code>e.target</code> in event handler</li>
+        <li>Custom events make components reusable and testable</li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" target="_blank">MDN: CustomEvent</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent" target="_blank">MDN: dispatchEvent()</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/composed" target="_blank">MDN: Event.composed</a></li>
+    </ul>
+
+    <p><a href="../005_lifecycle_hooks/">← Previous: Lifecycle Hooks</a> | <a href="../007_templates_and_fragments/">Next: Templates & Fragments →</a></p>
+
+    <script>
+        const eventLog = document.getElementById('event-log');
+
+        function logEvent(message) {
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            eventLog.appendChild(entry);
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
+        class CounterComponent extends HTMLElement {
+            connectedCallback() {
+                const shadow = this.attachShadow({ mode: 'open' });
+
+                this.count = parseInt(this.getAttribute('initial')) || 0;
+
+                shadow.innerHTML = `
+                    <style>
+                        .counter {
+                            padding: 20px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border-radius: 12px;
+                            text-align: center;
+                            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        }
+                        button {
+                            padding: 12px 24px;
+                            margin: 5px;
+                            font-size: 18px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            border: none;
+                            border-radius: 8px;
+                            background: white;
+                            color: #667eea;
+                            transition: transform 0.1s;
+                        }
+                        button:hover {
+                            transform: scale(1.05);
+                        }
+                        button:active {
+                            transform: scale(0.95);
+                        }
+                        .count {
+                            font-size: 64px;
+                            font-weight: bold;
+                            margin: 20px 0;
+                            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                        }
+                    </style>
+                    <div class="counter">
+                        <div class="count">${this.count}</div>
+                        <div>
+                            <button id="dec">−</button>
+                            <button id="reset">Reset</button>
+                            <button id="inc">+</button>
+                        </div>
+                    </div>
+                `;
+
+                shadow.getElementById('inc').addEventListener('click', () => this.increment());
+                shadow.getElementById('dec').addEventListener('click', () => this.decrement());
+                shadow.getElementById('reset').addEventListener('click', () => this.reset());
+            }
+
+            increment() {
+                this.count++;
+                this.update();
+                this.dispatchEvent(new CustomEvent('countchange', {
+                    detail: { count: this.count, action: 'increment' },
+                    bubbles: true,
+                    composed: true
+                }));
+            }
+
+            decrement() {
+                this.count--;
+                this.update();
+                this.dispatchEvent(new CustomEvent('countchange', {
+                    detail: { count: this.count, action: 'decrement' },
+                    bubbles: true,
+                    composed: true
+                }));
+            }
+
+            reset() {
+                this.count = 0;
+                this.update();
+                this.dispatchEvent(new CustomEvent('countreset', {
+                    detail: { count: this.count },
+                    bubbles: true,
+                    composed: true
+                }));
+            }
+
+            update() {
+                const countEl = this.shadowRoot.querySelector('.count');
+                if (countEl) {
+                    countEl.textContent = this.count;
+                }
+            }
+        }
+
+        customElements.define('counter-component', CounterComponent);
+
+        // Listen to custom events globally (Event Delegation Pattern)
+        document.addEventListener('countchange', (e) => {
+            if (e.target.tagName === 'COUNTER-COMPONENT') {
+                // Access the component instance
+                const component = e.target;
+                const id = component.getAttribute('id') || 'unnamed';
+
+                logEvent(`[${id}] Count changed to ${e.detail.count} (${e.detail.action})`);
+            }
+        });
+
+        document.addEventListener('countreset', (e) => {
+            if (e.target.tagName === 'COUNTER-COMPONENT') {
+                const component = e.target;
+                const id = component.getAttribute('id') || 'unnamed';
+
+                logEvent(`[${id}] Counter reset to ${e.detail.count}`);
+            }
+        });
+
+        logEvent('Component loaded. Try clicking the buttons!');
+    </script>
+</body>
+</html>
