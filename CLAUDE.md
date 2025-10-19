@@ -108,6 +108,7 @@ Phased build of production-ready component:
 - **Minimal UI**: Raw HTML elements, no fancy styling
 - **Practical**: Real-world patterns used in production
 - **Self-contained**: Each lesson is complete and runnable
+- **MDN Documentation**: Each lesson includes relevant MDN (Mozilla Developer Network) links for deeper learning
 
 ## Key Technical Patterns
 
@@ -245,8 +246,29 @@ The repository is configured to serve via GitHub Pages from the root directory:
 1. Create directory: `/learning/0XX_lesson_name/`
 2. Create `index.html` with minimal HTML structure
 3. Implement web component inline in `<script>` tag
-4. Add navigation link in root `index.html`
-5. Keep it minimal - raw HTML elements only
+4. Add relevant MDN documentation links (see MDN Links section below)
+5. Add navigation link in root `index.html`
+6. Keep it minimal - raw HTML elements only
+
+### MDN Documentation Links
+Each lesson should include relevant MDN links in a "Further Reading" section. Common MDN resources:
+
+**Web Components:**
+- Using custom elements: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements
+- Using shadow DOM: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM
+- Using templates and slots: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots
+
+**APIs:**
+- customElements.define(): https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define
+- attachShadow(): https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+- observedAttributes: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes
+- attributeChangedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
+- slot element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot
+
+**Lifecycle Callbacks:**
+- connectedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
+- disconnectedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
+- adoptedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
 
 ### Updating Ace Editor Version
 1. Download new version from https://github.com/ajaxorg/ace-builds/releases
