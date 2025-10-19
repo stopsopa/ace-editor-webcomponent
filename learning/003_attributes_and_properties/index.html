@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>003 - Attributes and Properties</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 003: Attributes and Properties</h1>
+
+    <p><a href="../002_shadow_dom_basics/">← Previous: Shadow DOM Basics</a> | <a href="../004_slots_and_content_projection/">Next: Slots & Content Projection →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>Difference between attributes and properties</li>
+        <li><code>static get observedAttributes()</code></li>
+        <li><code>attributeChangedCallback()</code></li>
+        <li>Reflecting properties to attributes</li>
+    </ul>
+
+    <h2>Attributes vs Properties</h2>
+    <ul>
+        <li><strong>Attributes:</strong> Set in HTML markup (strings only)</li>
+        <li><strong>Properties:</strong> Set via JavaScript (any type)</li>
+        <li>Use attributes for initial/declarative values</li>
+        <li>Use properties for runtime JavaScript access</li>
+    </ul>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <user-card name="John Doe" email="john@example.com" age="30"></user-card>
+
+        <div style="margin-top: 20px;">
+            <h4>Try changing attributes:</h4>
+            <button onclick="changeAttribute()">Change Name</button>
+            <button onclick="changeProperty()">Change Email (Property)</button>
+            <button onclick="showValues()">Show Current Values</button>
+        </div>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>class UserCard extends HTMLElement {
+    static get observedAttributes() {
+        return ['name', 'email', 'age'];
+    }
+
+    connectedCallback() {
+        this.render();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        console.log(`Attribute "${name}" changed from "${oldValue}" to "${newValue}"`);
+        this.render();
+    }
+
+    // Property getters and setters
+    get name() {
+        return this.getAttribute('name');
+    }
+
+    set name(value) {
+        this.setAttribute('name', value);
+    }
+
+    get email() {
+        return this.getAttribute('email');
+    }
+
+    set email(value) {
+        this.setAttribute('email', value);
+    }
+
+    render() {
+        const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .card { padding: 15px; border: 2px solid #333; border-radius: 8px; }
+                .label { font-weight: bold; color: #555; }
+            &lt;/style&gt;
+            &lt;div class="card"&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Name:&lt;/span&gt; ${this.getAttribute('name') || 'N/A'}&lt;/div&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Email:&lt;/span&gt; ${this.getAttribute('email') || 'N/A'}&lt;/div&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Age:&lt;/span&gt; ${this.getAttribute('age') || 'N/A'}&lt;/div&gt;
+            &lt;/div&gt;
+        `;
+    }
+}
+
+customElements.define('user-card', UserCard);</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li><code>observedAttributes</code> tells the browser which attributes to watch</li>
+        <li><code>attributeChangedCallback</code> is called when watched attributes change</li>
+        <li>Properties (getters/setters) provide a JavaScript API</li>
+        <li>Setting a property updates the attribute, triggering re-render</li>
+    </ol>
+
+    <h2>Try It Yourself</h2>
+    <p>Open the browser console and try:</p>
+    <pre><code>const card = document.querySelector('user-card');
+card.name = 'Jane Smith';  // Uses property setter
+card.setAttribute('email', 'jane@example.com');  // Direct attribute</code></pre>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Only attributes in <code>observedAttributes</code> trigger callbacks</li>
+        <li>Properties provide a clean JavaScript API</li>
+        <li><code>attributeChangedCallback</code> is your reactivity hook</li>
+        <li>Always sync properties and attributes for consistency</li>
+    </ul>
+
+    <p><a href="../002_shadow_dom_basics/">← Previous: Shadow DOM Basics</a> | <a href="../004_slots_and_content_projection/">Next: Slots & Content Projection →</a></p>
+
+    <script>
+        class UserCard extends HTMLElement {
+            static get observedAttributes() {
+                return ['name', 'email', 'age'];
+            }
+
+            connectedCallback() {
+                this.render();
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+                console.log(`Attribute "${name}" changed from "${oldValue}" to "${newValue}"`);
+                if (this.shadowRoot) {
+                    this.render();
+                }
+            }
+
+            get name() {
+                return this.getAttribute('name');
+            }
+
+            set name(value) {
+                this.setAttribute('name', value);
+            }
+
+            get email() {
+                return this.getAttribute('email');
+            }
+
+            set email(value) {
+                this.setAttribute('email', value);
+            }
+
+            render() {
+                const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .card {
+                            padding: 15px;
+                            border: 2px solid #0066cc;
+                            border-radius: 8px;
+                            background: #f0f8ff;
+                        }
+                        .label {
+                            font-weight: bold;
+                            color: #0066cc;
+                            display: inline-block;
+                            width: 60px;
+                        }
+                        div { margin: 5px 0; }
+                    </style>
+                    <div class="card">
+                        <div><span class="label">Name:</span> ${this.getAttribute('name') || 'N/A'}</div>
+                        <div><span class="label">Email:</span> ${this.getAttribute('email') || 'N/A'}</div>
+                        <div><span class="label">Age:</span> ${this.getAttribute('age') || 'N/A'}</div>
+                    </div>
+                `;
+            }
+        }
+
+        customElements.define('user-card', UserCard);
+
+        // Helper functions for buttons
+        function changeAttribute() {
+            const card = document.querySelector('user-card');
+            const names = ['Alice Cooper', 'Bob Dylan', 'Carol King', 'David Bowie'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            card.setAttribute('name', randomName);
+        }
+
+        function changeProperty() {
+            const card = document.querySelector('user-card');
+            const emails = ['alice@example.com', 'bob@example.com', 'carol@example.com'];
+            const randomEmail = emails[Math.floor(Math.random() * emails.length)];
+            card.email = randomEmail;  // Using property setter
+        }
+
+        function showValues() {
+            const card = document.querySelector('user-card');
+            alert(`Name: ${card.name}\nEmail: ${card.email}\nAge: ${card.getAttribute('age')}`);
+        }
+    </script>
+</body>
+</html>

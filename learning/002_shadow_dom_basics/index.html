@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>002 - Shadow DOM Basics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* This style will NOT affect content inside Shadow DOM */
+        .styled-text { color: red; font-size: 24px; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 002: Shadow DOM Basics</h1>
+
+    <p><a href="../001_basic_custom_element/">← Previous: Basic Custom Element</a> | <a href="../003_attributes_and_properties/">Next: Attributes & Properties →</a></p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>What is Shadow DOM</li>
+        <li>Style encapsulation</li>
+        <li><code>attachShadow()</code> method</li>
+        <li>Open vs closed shadow roots</li>
+    </ul>
+
+    <h2>Shadow DOM Benefits</h2>
+    <ul>
+        <li><strong>Style Encapsulation:</strong> Styles inside Shadow DOM don't leak out</li>
+        <li><strong>Markup Isolation:</strong> Internal structure is hidden</li>
+        <li><strong>No CSS Conflicts:</strong> External styles don't affect Shadow DOM content</li>
+    </ul>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <h3>Without Shadow DOM:</h3>
+        <no-shadow-element></no-shadow-element>
+
+        <h3>With Shadow DOM:</h3>
+        <shadow-element></shadow-element>
+
+        <p style="margin-top: 20px; padding: 10px; background: #ffffcc; border-radius: 5px;">
+            <strong>Note:</strong> The red style defined in the page CSS (<code>.styled-text</code>)
+            affects the first element but NOT the second one because it uses Shadow DOM!
+        </p>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>// WITHOUT Shadow DOM (styles leak in)
+class NoShadowElement extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            &lt;p class="styled-text"&gt;I am affected by page styles&lt;/p&gt;
+        `;
+    }
+}
+
+// WITH Shadow DOM (styles are encapsulated)
+class ShadowElement extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+            &lt;style&gt;
+                .styled-text {
+                    color: blue;
+                    font-size: 18px;
+                    font-weight: bold;
+                }
+            &lt;/style&gt;
+            &lt;p class="styled-text"&gt;I have my own isolated styles&lt;/p&gt;
+        `;
+    }
+}
+
+customElements.define('no-shadow-element', NoShadowElement);
+customElements.define('shadow-element', ShadowElement);</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li><code>this.attachShadow({ mode: 'open' })</code> creates a shadow root</li>
+        <li><code>mode: 'open'</code> means the shadow root is accessible via <code>element.shadowRoot</code></li>
+        <li>Styles defined inside shadow root only apply to shadow content</li>
+        <li>Page styles don't penetrate the shadow boundary</li>
+    </ol>
+
+    <h2>Open vs Closed Mode</h2>
+    <ul>
+        <li><strong>open:</strong> Shadow root accessible via <code>element.shadowRoot</code> (recommended)</li>
+        <li><strong>closed:</strong> Shadow root not accessible from outside (rarely used)</li>
+    </ul>
+
+    <h2>Try It Yourself</h2>
+    <p>Open the browser console and inspect the elements:</p>
+    <pre><code>const elem = document.querySelector('shadow-element');
+console.log(elem.shadowRoot);  // Access the shadow root
+console.log(elem.shadowRoot.innerHTML);  // See the shadow content</code></pre>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Shadow DOM provides true encapsulation</li>
+        <li>Styles don't leak in or out</li>
+        <li>Use <code>attachShadow({ mode: 'open' })</code> to enable Shadow DOM</li>
+        <li>Perfect for creating self-contained, reusable components</li>
+    </ul>
+
+    <p><a href="../001_basic_custom_element/">← Previous: Basic Custom Element</a> | <a href="../003_attributes_and_properties/">Next: Attributes & Properties →</a></p>
+
+    <script>
+        // WITHOUT Shadow DOM (styles leak in)
+        class NoShadowElement extends HTMLElement {
+            connectedCallback() {
+                this.innerHTML = `
+                    <p class="styled-text">I am affected by page styles (should be red and 24px)</p>
+                `;
+            }
+        }
+
+        // WITH Shadow DOM (styles are encapsulated)
+        class ShadowElement extends HTMLElement {
+            connectedCallback() {
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .styled-text {
+                            color: blue;
+                            font-size: 18px;
+                            font-weight: bold;
+                            padding: 10px;
+                            border: 2px solid blue;
+                            border-radius: 5px;
+                            background: #e6f2ff;
+                        }
+                    </style>
+                    <p class="styled-text">I have my own isolated styles (blue, 18px, with border)</p>
+                `;
+            }
+        }
+
+        customElements.define('no-shadow-element', NoShadowElement);
+        customElements.define('shadow-element', ShadowElement);
+    </script>
+</body>
+</html>
