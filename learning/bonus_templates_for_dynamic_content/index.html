@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonus - Templates and Fragments for Dynamic Content</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .example { border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 5px; background: #fff; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+        .caveat {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .caveat h2 {
+            color: #856404;
+            margin-top: 0;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 10px;
+        }
+        .caveat ul {
+            margin: 10px 0;
+        }
+        .caveat li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bonus: Templates and Fragments for Dynamic Content</h1>
+
+    <p><a href="../006_event_handling/">← Back: Event Handling</a> | <a href="../007_async_script_loading/">Continue: Async Script Loading →</a> | <a href="../../">Home</a></p>
+
+    <div class="caveat">
+        <h2>⚠️ CAVEAT: This Pattern is Rarely Used for Web Components</h2>
+        <p><strong>External <code>&lt;template&gt;</code> elements are NOT commonly used for web components in practice.</strong> Here's why:</p>
+        <ul>
+            <li>❌ <strong>Couples component to page HTML</strong> - Component expects template to exist in the document</li>
+            <li>❌ <strong>Component not self-contained</strong> - Can't distribute as standalone module</li>
+            <li>❌ <strong>Can't distribute independently</strong> - Template must be copied with component</li>
+            <li>❌ <strong>Template must exist before component loads</strong> - Creates initialization dependencies</li>
+        </ul>
+        <p><strong>What's actually used:</strong> Most web components use inline template strings (<code>innerHTML = `...`</code>) for self-contained, distributable components.</p>
+        <p><strong>When templates ARE useful:</strong> Dynamically creating repeated DOM elements (lists, tables, cards) - not for component structure itself.</p>
+    </div>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+        <li>Using <code>&lt;template&gt;</code> element</li>
+        <li><code>DocumentFragment</code> for efficient DOM operations</li>
+        <li>Cloning template content</li>
+        <li>Performance benefits</li>
+    </ul>
+
+    <h2>Why Templates?</h2>
+    <ul>
+        <li><strong>Performance:</strong> Parse once, clone many times</li>
+        <li><strong>Clean:</strong> Keep HTML structure separate from JavaScript</li>
+        <li><strong>Reusable:</strong> Same template for multiple instances</li>
+        <li><strong>Inert:</strong> Content doesn't execute until cloned</li>
+    </ul>
+
+    <h2>Live Example</h2>
+    <div class="example">
+        <button onclick="addCard()">Add Card</button>
+        <button onclick="clearCards()">Clear All</button>
+
+        <div id="card-container" style="margin-top: 20px;"></div>
+    </div>
+
+    <h2>The Code</h2>
+    <pre><code>&lt;!-- Define template once --&gt;
+&lt;template id="card-template"&gt;
+    &lt;style&gt;
+        .card {
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ff5722;
+            border-radius: 8px;
+            background: #fff3e0;
+        }
+        .title { font-size: 20px; font-weight: bold; color: #ff5722; }
+        .content { margin-top: 10px; color: #666; }
+    &lt;/style&gt;
+    &lt;div class="card"&gt;
+        &lt;div class="title"&gt;&lt;slot name="title"&gt;Card Title&lt;/slot&gt;&lt;/div&gt;
+        &lt;div class="content"&gt;&lt;slot&gt;Card content goes here&lt;/slot&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+class CardComponent extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+
+        // Get template
+        const template = document.getElementById('card-template');
+
+        // Clone it (efficient!)
+        const clone = template.content.cloneNode(true);
+
+        // Append to shadow DOM
+        shadow.appendChild(clone);
+    }
+}
+
+customElements.define('card-component', CardComponent);
+&lt;/script&gt;</code></pre>
+
+    <h2>Without Template (String Concatenation)</h2>
+    <pre><code>// ❌ Not recommended - parsed every time
+shadow.innerHTML = `
+    &lt;style&gt;...&lt;/style&gt;
+    &lt;div class="card"&gt;...&lt;/div&gt;
+`;</code></pre>
+
+    <h2>With Template (Efficient)</h2>
+    <pre><code>// ✅ Recommended - parsed once, cloned many times
+const template = document.getElementById('my-template');
+const clone = template.content.cloneNode(true);
+shadow.appendChild(clone);</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li>Define <code>&lt;template&gt;</code> once in HTML (or create in JS)</li>
+        <li>Template content is inert (images don't load, scripts don't run)</li>
+        <li>Clone <code>template.content</code> when needed</li>
+        <li>Each clone is an independent DOM tree</li>
+        <li>Much faster than parsing HTML strings repeatedly</li>
+    </ol>
+
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Templates improve performance for repeated structures</li>
+        <li>Use <code>cloneNode(true)</code> for deep cloning</li>
+        <li>Template content is a <code>DocumentFragment</code></li>
+        <li>Combine templates with slots for maximum flexibility</li>
+        <li>Great for lists, cards, and repeated UI elements</li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" target="_blank">MDN: &lt;template&gt; element</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment" target="_blank">MDN: DocumentFragment</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode" target="_blank">MDN: cloneNode()</a></li>
+    </ul>
+
+    <p><a href="../006_event_handling/">← Back: Event Handling</a> | <a href="../007_async_script_loading/">Continue: Async Script Loading →</a> | <a href="../../">Home</a></p>
+
+    <!-- Template definition -->
+    <template id="card-template">
+        <style>
+            .card {
+                padding: 15px;
+                margin: 10px 0;
+                border: 2px solid #ff5722;
+                border-radius: 8px;
+                background: #fff3e0;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .title {
+                font-size: 20px;
+                font-weight: bold;
+                color: #ff5722;
+            }
+            .content {
+                margin-top: 10px;
+                color: #666;
+                line-height: 1.5;
+            }
+        </style>
+        <div class="card">
+            <div class="title"><slot name="title">Card Title</slot></div>
+            <div class="content"><slot>Card content goes here</slot></div>
+        </div>
+    </template>
+
+    <script>
+        const cardContainer = document.getElementById('card-container');
+        let cardCounter = 0;
+
+        class CardComponent extends HTMLElement {
+            connectedCallback() {
+                const shadow = this.attachShadow({ mode: 'open' });
+
+                // Get template
+                const template = document.getElementById('card-template');
+
+                // Clone it efficiently!
+                const clone = template.content.cloneNode(true);
+
+                // Append to shadow DOM
+                shadow.appendChild(clone);
+            }
+        }
+
+        customElements.define('card-component', CardComponent);
+
+        function addCard() {
+            cardCounter++;
+            const card = document.createElement('card-component');
+
+            // Add content via slots
+            const title = document.createElement('span');
+            title.slot = 'title';
+            title.textContent = `Card #${cardCounter}`;
+
+            const content = document.createElement('div');
+            content.textContent = `This is card number ${cardCounter}. Templates are cloned efficiently, so adding many cards is fast!`;
+
+            card.appendChild(title);
+            card.appendChild(content);
+
+            cardContainer.appendChild(card);
+        }
+
+        function clearCards() {
+            cardContainer.innerHTML = '';
+            cardCounter = 0;
+        }
+
+        // Add one card by default
+        addCard();
+    </script>
+</body>
+</html>

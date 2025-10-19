@@ -131,6 +131,8 @@ async function loadScript(src) {
 }
 ```
 
+When presenting prototypes of web component wrapping ace editor always present (render) at least two components at the same time to inspect if ace editor is loaded twice or not. Should be loaded once (Loaded - I mean loading main ace editor script ace.js once per page loaded. I don't want to have ace.js loaded twice because we are rendering web component more than one).
+
 ### 2. Editor Update Management
 Based on `existing_examples/Ace.jsx:129-142`:
 
