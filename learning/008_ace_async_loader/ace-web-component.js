@@ -1,6 +1,6 @@
-// ace-loader.js - Singleton loader for Ace Editor using window global pattern
+// ace-web-component.js - Singleton loader for Ace Editor using window global pattern
 // This file loads the Ace Editor library only once, no matter how many components use it
-// use: <script src="./ace-loader.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"></script>
+// use: <script src="./ace-web-component.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"></script>
 
 (function () {
   // Get configuration from the script tag that loaded this file
@@ -409,6 +409,6 @@
   customElements.define("ace-editor", AceEditorComponent);
 
   console.log(
-    "📦 ace-loader.js loaded! <ace-editor> components are now registered."
+    "📦 ace-web-component.js loaded! <ace-editor> components are now registered."
   );
 })();
