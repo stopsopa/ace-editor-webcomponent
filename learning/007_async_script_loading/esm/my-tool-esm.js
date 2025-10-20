@@ -10,7 +10,7 @@ async function loadinternalToolESM() {
   // Return cached promise if already loading/loaded
   if (internalToolESMPromise) {
     console.log(
-      " internalToolESM loading already initialized, returning cached module promise"
+      " internalToolESM loading already initialized, returning cached module promise"
     );
     return internalToolESMPromise;
   }
@@ -18,7 +18,7 @@ async function loadinternalToolESM() {
   await delay(1000); // testing delay
 
   // Start loading
-  console.log("= Loading internalToolESM.js for the first time...");
+  console.log("= Loading internalToolESM.js for the first time...");
 
   internalToolESMPromise = import("./internalToolESM.js");
 
@@ -58,7 +58,7 @@ class internalToolESMComponent extends HTMLElement {
 
     const componentId = this.id || "unnamed";
 
-    console.log(`= Component connected: ${componentId}`);
+    console.log(`= Component connected: ${componentId}`);
 
     // Load module and initialize
     (async () => {
@@ -73,22 +73,22 @@ class internalToolESMComponent extends HTMLElement {
     const container = shadow.querySelector(".tool-container");
     const label = shadow.querySelector("p");
 
-    label.textContent = " internalToolESM.js Loaded!";
+    label.textContent = "internalToolESM.js Loaded!";
 
     // Use the loaded module
     internalToolESMModule.internalToolESM(container);
 
     console.log(
-      `   Component initialized with internalToolESM: ${this.id || "unnamed"}`
+      `  Component initialized with internalToolESM: ${this.id || "unnamed"}`
     );
   }
 
   disconnectedCallback() {
-    console.log(`= Component disconnected: ${this.id || "unnamed"}`);
+    console.log(`= Component disconnected: ${this.id || "unnamed"}`);
   }
 }
 
 // Register the custom element
 customElements.define("my-tool", internalToolESMComponent);
 
-console.log("=� my-tool-esm.js loaded! <my-tool> components are now registered.");
+console.log("= my-tool-esm.js loaded! <my-tool> components are now registered.");
