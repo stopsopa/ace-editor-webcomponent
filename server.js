@@ -27,6 +27,20 @@ app.get('/ping', (req, res) => {
     res.status(200).send('pong');
 });
 
+// Delay middleware - delays response if ?delay=X query parameter is present
+app.use((req, res, next) => {
+    const delayParam = req.query.delay;
+    if (delayParam) {
+        const delayMs = parseInt(delayParam, 10);
+        if (!isNaN(delayMs) && delayMs > 0) {
+            log(`⏱️  Delaying response for ${delayMs}ms: ${req.path}`);
+            setTimeout(next, delayMs);
+            return;
+        }
+    }
+    next();
+});
+
 app.use(express.static(web, {
     index: false, // stop automatically serve index.html if present
     maxAge: '1 day', // cache for development
