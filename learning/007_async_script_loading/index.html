@@ -131,7 +131,7 @@
 
     <div class="info-box">
       <strong>📺 Open DevTools Network Tab:</strong> Watch how
-      <code>myToolESM.js</code> loads only ONCE, no matter how many
+      <code>internalToolESM.js</code> loads only ONCE, no matter how many
       <code>&lt;my-tool&gt;</code> components you have!
     </div>
 
@@ -192,7 +192,7 @@
         <code>&lt;my-tool&gt;</code> custom element
       </li>
       <li>
-        <strong>Lazy Loading:</strong> External dependency (myToolESM.js) loads
+        <strong>Lazy Loading:</strong> External dependency (internalToolESM.js) loads
         only when first component connects
       </li>
       <li>
@@ -366,7 +366,7 @@
       console.log("1. Open DevTools Network tab");
       console.log("2. Click 'Load my-tool-esm.js' button");
       console.log("3. Watch my-tool-esm.js load");
-      console.log("4. Watch myToolESM.js (dependency) load only ONCE");
+      console.log("4. Watch internalToolESM.js (dependency) load only ONCE");
       console.log("5. All 3 static <my-tool> components spring to life!");
       console.log("6. Click 'Add New Component' - components work instantly!");
     </script>
