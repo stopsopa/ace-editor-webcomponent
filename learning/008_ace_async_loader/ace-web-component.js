@@ -77,7 +77,14 @@
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
     static get observedAttributes() {
-      return ['value', 'lang', 'theme', 'readonly', 'min-height-px', 'min-height-lines'];
+      return [
+        "value",
+        "lang",
+        "theme",
+        "readonly",
+        "min-height-px",
+        "min-height-lines",
+      ];
     }
 
     connectedCallback() {
@@ -159,6 +166,10 @@
       // Initialize Ace Editor
       const editor = ace.edit(container);
 
+      // Flag to track if we're in a programmatic update (to suppress 'input' event)
+      // Initialize early so we can use it during initial content setting
+      this._isProgrammaticChange = false;
+
       // CRITICAL: Adopt document stylesheets into shadow DOM
       // Ace injects its styles into document.styleSheets dynamically
       // We need to copy those styles into the shadow DOM
@@ -220,9 +231,13 @@
       };
 
       // Get configuration from attributes
-      const lang = this.getAttribute("lang") || "javascript";
+      let lang = this.getAttribute("lang") || "javascript";
       const theme = this.getAttribute("theme") || "idle_fingers";
       const readonly = this.hasAttribute("readonly");
+
+      // Map short language names to full Ace mode names
+      if (lang === "js") lang = "javascript";
+      if (lang === "ts") lang = "typescript";
 
       // Configure editor
       const session = editor.getSession();
@@ -239,11 +254,63 @@
 
       // Set initial content from value attribute, textContent, or content attribute
       // Priority: value > textContent > content
-      const initialContent =
-        this.getAttribute("value") || this.textContent.trim() || this.getAttribute("content") || "";
+      let initialContent =
+        this.getAttribute("value") ||
+        this.textContent ||
+        this.getAttribute("content") ||
+        "";
+
+      // Apply dedent logic unless data-notrim is present
+      // Removes common leading whitespace from all lines
+      if (initialContent && !this.hasAttribute("data-notrim")) {
+        (function (v) {
+          let diff = 1111;
+
+          let tmp = v.split("\n");
+
+          tmp.forEach((line) => {
+            if (!/^\s*$/.test(line)) {
+              // if line isn't just white characters
+              const length_before = line.length;
+
+              const length_after = line.replace(/^\s+/, "").length;
+
+              const d = length_before - length_after;
+
+              if (d < diff) {
+                diff = d;
+              }
+            }
+          });
+
+          if (diff !== 1111 && diff > 0) {
+            tmp = tmp.map((line) => line.substring(diff));
+
+            initialContent = tmp.join("\n");
+
+            if (tmp[tmp.length - 2] && tmp[tmp.length - 2].trim() !== "") {
+              initialContent += "\n";
+            }
+          }
+        })(initialContent);
+      }
+
+      // Set initial content (suppress 'input' event for initialization)
       if (initialContent) {
+        this._isProgrammaticChange = true;
         editor.setValue(initialContent, -1); // -1 moves cursor to start
         editor.clearSelection();
+        this._isProgrammaticChange = false;
+      }
+
+      // Store data-eval info for later execution (after full initialization)
+      const shouldEval = this.hasAttribute("data-eval");
+      const dataEvalValue = this.getAttribute("data-eval");
+      const codeToEval = initialContent;
+
+      // Remove data-eval attribute to prevent re-execution
+      if (shouldEval) {
+        this.removeAttribute("data-eval");
       }
 
       // Auto-resize to fit content
@@ -253,15 +320,16 @@
           editor.renderer.scrollBar.getWidth();
 
         // Check for min-height constraints
-        const minHeightPx = this.getAttribute('min-height-px');
-        const minHeightLines = this.getAttribute('min-height-lines');
+        const minHeightPx = this.getAttribute("min-height-px");
+        const minHeightLines = this.getAttribute("min-height-lines");
 
         let minHeight = 0;
         if (minHeightPx) {
           minHeight = parseInt(minHeightPx, 10);
         } else if (minHeightLines) {
-          minHeight = parseInt(minHeightLines, 10) * editor.renderer.lineHeight +
-                      editor.renderer.scrollBar.getWidth();
+          minHeight =
+            parseInt(minHeightLines, 10) * editor.renderer.lineHeight +
+            editor.renderer.scrollBar.getWidth();
         }
 
         const finalHeight = Math.max(contentHeight, minHeight);
@@ -269,8 +337,16 @@
         editor.resize();
       };
 
-      // Update size on content change
-      session.on("change", heightUpdateFunction);
+      // Update size on content change and dispatch input event
+      session.on("change", () => {
+        heightUpdateFunction();
+
+        // Only dispatch input event for user interactions, not programmatic changes
+        // This matches native textarea/input behavior where element.value = "..." does NOT fire 'input'
+        if (!this._isProgrammaticChange) {
+          this.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
 
       // Store reference for attribute changes
       this._heightUpdateFunction = heightUpdateFunction;
@@ -311,6 +387,37 @@
       this._pendingValue = null;
 
       console.log(`✅ Ace Editor initialized: ${this.id || "unnamed"}`);
+
+      // Execute data-eval code AFTER everything is fully initialized
+      // This ensures this.editor is set and getValue() works correctly
+      if (shouldEval && codeToEval) {
+        // Wait for next tick to ensure all initialization is complete
+        setTimeout(() => {
+          // Determine script type:
+          // - data-eval="module" -> type="module"
+          // - data-eval or data-eval="" -> regular script (no type attribute)
+          const scriptType = dataEvalValue === "module" ? "module" : null;
+
+          console.log(
+            `🔥 Executing data-eval code for: ${this.id || "unnamed"}${
+              scriptType ? ` (type: ${scriptType})` : ""
+            }`
+          );
+
+          const script = document.createElement("script");
+
+          // Set script type if it's a module
+          if (scriptType) {
+            script.type = scriptType;
+          }
+
+          script.textContent = codeToEval;
+          document.body.appendChild(script);
+
+          // Mark that initial eval was done
+          this._initialEvalDone = true;
+        }, 0);
+      }
     }
 
     // Handle attribute changes (React compatibility)
@@ -318,7 +425,7 @@
       if (!this.editor || oldValue === newValue) return;
 
       switch (name) {
-        case 'value':
+        case "value":
           // If editor is readonly, store the pending value
           if (this.editor.getReadOnly()) {
             this._pendingValue = newValue;
@@ -329,7 +436,7 @@
           // Only update if value actually changed to avoid cursor jumps
           if (this.editor.getValue() !== newValue) {
             const cursorPosition = this.editor.getCursorPosition();
-            this.editor.setValue(newValue || '', -1);
+            this.editor.setValue(newValue || "", -1);
             // Try to restore cursor position
             try {
               this.editor.moveCursorToPosition(cursorPosition);
@@ -339,13 +446,13 @@
             this.editor.clearSelection();
           }
           break;
-        case 'lang':
+        case "lang":
           this.editor.getSession().setMode(`ace/mode/${newValue}`);
           break;
-        case 'theme':
+        case "theme":
           this.editor.setTheme(`ace/theme/${newValue}`);
           break;
-        case 'readonly':
+        case "readonly":
           const isReadonly = newValue !== null;
           this.editor.setReadOnly(isReadonly);
 
@@ -362,8 +469,8 @@
             this._pendingValue = null;
           }
           break;
-        case 'min-height-px':
-        case 'min-height-lines':
+        case "min-height-px":
+        case "min-height-lines":
           // Trigger height recalculation
           if (this._heightUpdateFunction) {
             this._heightUpdateFunction();
@@ -394,14 +501,35 @@
     // Public API: Set editor value
     // Note: This method bypasses readonly for programmatic updates
     // Ace Editor's internal readonly mode still prevents user typing
+    // Does NOT fire 'input' event (matches native textarea behavior)
     setValue(value) {
       if (this.editor) {
+        // Set flag to suppress 'input' event during programmatic change
+        this._isProgrammaticChange = true;
+
         // For programmatic updates via setValue(), bypass readonly check
         // This allows readonly editors to display content via API
         this.editor.setValue(value, -1);
         this.editor.clearSelection();
         this._pendingValue = null;
+
+        // Reset flag after a tick to allow normal user input events
+        setTimeout(() => {
+          this._isProgrammaticChange = false;
+        }, 0);
       }
+    }
+
+    // Property getter for .value (read current content)
+    get value() {
+      return this.getValue();
+    }
+
+    // Property setter for .value (write content, does NOT fire 'input' event)
+    // Usage: acecomp.value = 'new code';
+    // This matches native textarea behavior where textarea.value = "..." does NOT fire 'input'
+    set value(newValue) {
+      this.setValue(newValue);
     }
   }
 
