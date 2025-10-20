@@ -237,9 +237,13 @@
       };
     </script>
 
-    <ace-editor id="editor-for-logs" lang="javascript">
+    <ace-editor
+      id="editor-for-logs"
+      lang="javascript"
+      data-eval="module"
+      readonly
+    >
       <script type="ace">
-
         // Listen for ace-onload events from ALL ace-editor components
         document.addEventListener('ace-onload', (event) => {
             const log = document.getElementById('event-log');
