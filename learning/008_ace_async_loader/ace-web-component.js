@@ -15,6 +15,47 @@
   // Singleton loader for Ace Editor
   let aceEditorPromise = null;
 
+  // Track all ace-editor IDs to detect duplicates and generate unique IDs
+  const registeredIds = new Set();
+  let autoIdCounter = 0;
+
+  /**
+   * Generates a unique ID for an ace-editor component
+   * @returns {string} Unique ID in format "ace-editor-N"
+   */
+  function generateUniqueId() {
+    let id;
+    do {
+      autoIdCounter++;
+      id = `ace-editor-${autoIdCounter}`;
+    } while (registeredIds.has(id) || document.getElementById(id));
+    return id;
+  }
+
+  /**
+   * Registers an ID and throws if it's a duplicate
+   * @param {string} id - The ID to register
+   * @throws {Error} If ID is already registered
+   */
+  function registerEditorId(id) {
+    if (registeredIds.has(id)) {
+      throw new Error(
+        `❌ Duplicate ace-editor ID detected: "${id}". ` +
+        `Each ace-editor must have a unique ID. ` +
+        `Either remove the duplicate ID or let the component auto-generate unique IDs.`
+      );
+    }
+    registeredIds.add(id);
+  }
+
+  /**
+   * Unregisters an ID when component is removed
+   * @param {string} id - The ID to unregister
+   */
+  function unregisterEditorId(id) {
+    registeredIds.delete(id);
+  }
+
   /**
    * Loads Ace Editor scripts only once using singleton pattern
    * @returns {Promise<Object>} Promise that resolves with window.ace object
@@ -88,6 +129,58 @@
     }
 
     connectedCallback() {
+      // Handle ID: auto-generate if missing, or validate if provided
+      if (this.id) {
+        // Validate that manually provided ID is not a duplicate
+        try {
+          registerEditorId(this.id);
+        } catch (error) {
+          // Show error in console and UI
+          console.error(error.message);
+
+          // Create error display in shadow DOM
+          const shadow = this.attachShadow({ mode: "open" });
+          shadow.innerHTML = `
+            <style>
+              :host {
+                display: block;
+                width: 100%;
+              }
+              .error-wrapper {
+                border: 2px solid #dc3545;
+                border-radius: 8px;
+                background: #f8d7da;
+                padding: 20px;
+                color: #721c24;
+              }
+              .error-title {
+                font-weight: bold;
+                font-size: 18px;
+                margin-bottom: 10px;
+              }
+              .error-message {
+                font-family: monospace;
+                font-size: 14px;
+              }
+            </style>
+            <div class="error-wrapper">
+              <div class="error-title">❌ Duplicate ID Error</div>
+              <div class="error-message">${error.message}</div>
+            </div>
+          `;
+
+          // Throw error to prevent further initialization
+          throw error;
+        }
+      } else {
+        // Generate unique ID automatically
+        this.id = generateUniqueId();
+        console.log(`🆔 Auto-generated unique ID: ${this.id}`);
+
+        // Register auto-generated IDs (they won't be duplicates by design)
+        registerEditorId(this.id);
+      }
+
       const shadow = this.attachShadow({ mode: "open" });
 
       // Create structure immediately with loading state
@@ -128,7 +221,7 @@
         </div>
       `;
 
-      const componentId = this.id || "unnamed";
+      const componentId = this.id;
       console.log(`🔗 Ace Editor component connected: ${componentId}`);
 
       // Load Ace and initialize
@@ -418,6 +511,17 @@
           this._initialEvalDone = true;
         }, 0);
       }
+
+      // Dispatch custom 'ace-onload' event when editor is fully ready
+      // This allows external code to hook into the initialization lifecycle
+      this.dispatchEvent(new CustomEvent('ace-onload', {
+        bubbles: true,
+        detail: {
+          component: this,
+          editor: this.editor,
+          id: this.id || 'unnamed'
+        }
+      }));
     }
 
     // Handle attribute changes (React compatibility)
@@ -488,6 +592,12 @@
         this._styleObserver.disconnect();
         this._styleObserver = null;
       }
+
+      // Unregister ID when component is removed
+      if (this.id) {
+        unregisterEditorId(this.id);
+      }
+
       console.log(
         `🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`
       );
@@ -518,6 +628,13 @@
           this._isProgrammaticChange = false;
         }, 0);
       }
+    }
+
+    // Public API: Get native Ace Editor instance
+    // This allows access to advanced Ace Editor features not exposed by our component API
+    // Example: editor.getEditor().find('search term', { backwards: false })
+    getEditor() {
+      return this.editor;
     }
 
     // Property getter for .value (read current content)
