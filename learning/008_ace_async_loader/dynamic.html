@@ -419,12 +419,23 @@ func main() {
           aceEditor.setAttribute('theme', themeSelect.value);
         });
 
-        // Snippet loader
-        snippetSelect.addEventListener('change', () => {
+        // Snippet loader - function to load snippet
+        const loadSnippet = () => {
           if (snippetSelect.value) {
             const snippet = CODE_SNIPPETS[snippetSelect.value];
             textarea.value = snippet;
             aceEditor.setAttribute('value', snippet);
+          }
+        };
+
+        // Load on change (clicking an option)
+        snippetSelect.addEventListener('change', loadSnippet);
+
+        // Load on keydown (arrow keys)
+        snippetSelect.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            // Wait for the select value to update, then load
+            setTimeout(loadSnippet, 0);
           }
         });
 
