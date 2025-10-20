@@ -291,6 +291,9 @@
       // Store editor reference
       this.editor = editor;
 
+      // Store pending value that was blocked by readonly
+      this._pendingValue = null;
+
       console.log(`✅ Ace Editor initialized: ${this.id || "unnamed"}`);
     }
 
@@ -300,6 +303,13 @@
 
       switch (name) {
         case 'value':
+          // If editor is readonly, store the pending value
+          if (this.editor.getReadOnly()) {
+            this._pendingValue = newValue;
+            return;
+          }
+          // Clear any pending value since we're applying this one
+          this._pendingValue = null;
           // Only update if value actually changed to avoid cursor jumps
           if (this.editor.getValue() !== newValue) {
             const cursorPosition = this.editor.getCursorPosition();
@@ -320,7 +330,21 @@
           this.editor.setTheme(`ace/theme/${newValue}`);
           break;
         case 'readonly':
-          this.editor.setReadOnly(newValue !== null);
+          const isReadonly = newValue !== null;
+          this.editor.setReadOnly(isReadonly);
+
+          // If readonly is being removed and there's a pending value, apply it
+          if (!isReadonly && this._pendingValue !== null) {
+            const cursorPosition = this.editor.getCursorPosition();
+            this.editor.setValue(this._pendingValue, -1);
+            try {
+              this.editor.moveCursorToPosition(cursorPosition);
+            } catch (e) {
+              // Cursor position might be invalid
+            }
+            this.editor.clearSelection();
+            this._pendingValue = null;
+          }
           break;
       }
     }
@@ -347,8 +371,14 @@
     // Public API: Set editor value
     setValue(value) {
       if (this.editor) {
-        this.editor.setValue(value, -1);
-        this.editor.clearSelection();
+        if (this.editor.getReadOnly()) {
+          // Store pending value if readonly
+          this._pendingValue = value;
+        } else {
+          this.editor.setValue(value, -1);
+          this.editor.clearSelection();
+          this._pendingValue = null;
+        }
       }
     }
   }
