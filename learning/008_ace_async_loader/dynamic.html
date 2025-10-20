@@ -234,17 +234,46 @@ func main() {
 }`
       };
 
-      // Available themes
+      // Available themes (all Ace Editor themes)
       const THEMES = [
-        'idle_fingers',
-        'monokai',
+        'ambiance',
+        'chaos',
+        'chrome',
+        'clouds',
+        'clouds_midnight',
+        'cobalt',
+        'crimson_editor',
+        'dawn',
+        'dracula',
+        'dreamweaver',
+        'eclipse',
         'github',
-        'tomorrow',
-        'twilight',
+        'gob',
+        'gruvbox',
+        'idle_fingers',
+        'iplastic',
+        'katzenmilch',
+        'kr_theme',
+        'kuroir',
+        'merbivore',
+        'merbivore_soft',
+        'mono_industrial',
+        'monokai',
+        'nord_dark',
+        'pastel_on_dark',
         'solarized_dark',
         'solarized_light',
+        'sqlserver',
         'terminal',
-        'chrome'
+        'textmate',
+        'tomorrow',
+        'tomorrow_night',
+        'tomorrow_night_blue',
+        'tomorrow_night_bright',
+        'tomorrow_night_eighties',
+        'twilight',
+        'vibrant_ink',
+        'xcode'
       ];
 
       const LANGUAGES = ['javascript', 'python', 'typescript', 'go'];
@@ -396,9 +425,6 @@ func main() {
             const snippet = CODE_SNIPPETS[snippetSelect.value];
             textarea.value = snippet;
             aceEditor.setAttribute('value', snippet);
-            aceEditor.setAttribute('lang', snippetSelect.value);
-            langSelect.value = snippetSelect.value;
-            snippetSelect.value = ''; // Reset selector
           }
         });
 
