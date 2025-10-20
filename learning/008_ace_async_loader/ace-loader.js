@@ -68,9 +68,18 @@
 
   /**
    * Web Component for Ace Editor
-   * Usage: <ace-editor id="editor1" lang="javascript"></ace-editor>
+   * Usage: <ace-editor id="editor1" lang="javascript" value="code here"></ace-editor>
+   *
+   * Supports both:
+   * 1. textContent for static HTML (initial value only)
+   * 2. value attribute for React/dynamic updates (controlled component)
    */
   class AceEditorComponent extends HTMLElement {
+    // Define observed attributes for React compatibility
+    static get observedAttributes() {
+      return ['value', 'lang', 'theme', 'readonly'];
+    }
+
     connectedCallback() {
       const shadow = this.attachShadow({ mode: "open" });
 
@@ -228,9 +237,10 @@
         editor.setReadOnly(true);
       }
 
-      // Set initial content from textContent or attribute
+      // Set initial content from value attribute, textContent, or content attribute
+      // Priority: value > textContent > content
       const initialContent =
-        this.textContent.trim() || this.getAttribute("content") || "";
+        this.getAttribute("value") || this.textContent.trim() || this.getAttribute("content") || "";
       if (initialContent) {
         editor.setValue(initialContent, -1); // -1 moves cursor to start
         editor.clearSelection();
@@ -282,6 +292,37 @@
       this.editor = editor;
 
       console.log(`✅ Ace Editor initialized: ${this.id || "unnamed"}`);
+    }
+
+    // Handle attribute changes (React compatibility)
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (!this.editor || oldValue === newValue) return;
+
+      switch (name) {
+        case 'value':
+          // Only update if value actually changed to avoid cursor jumps
+          if (this.editor.getValue() !== newValue) {
+            const cursorPosition = this.editor.getCursorPosition();
+            this.editor.setValue(newValue || '', -1);
+            // Try to restore cursor position
+            try {
+              this.editor.moveCursorToPosition(cursorPosition);
+            } catch (e) {
+              // Cursor position might be invalid if content changed significantly
+            }
+            this.editor.clearSelection();
+          }
+          break;
+        case 'lang':
+          this.editor.getSession().setMode(`ace/mode/${newValue}`);
+          break;
+        case 'theme':
+          this.editor.setTheme(`ace/theme/${newValue}`);
+          break;
+        case 'readonly':
+          this.editor.setReadOnly(newValue !== null);
+          break;
+      }
     }
 
     disconnectedCallback() {

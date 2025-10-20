@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>008 - Ace Editor Dynamic Demo</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 0 20px;
+        line-height: 1.6;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #667eea;
+        margin-top: 30px;
+      }
+      .controls {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .add-button {
+        padding: 12px 24px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .add-button:hover {
+        background: #764ba2;
+      }
+      .editor-wrapper {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+      }
+      .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+      .editor-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #667eea;
+      }
+      .remove-button {
+        padding: 8px 16px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .remove-button:hover {
+        background: #c82333;
+      }
+      .editor-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 5px;
+      }
+      .control-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .control-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+        font-size: 14px;
+      }
+      .control-group select,
+      .control-group input[type="checkbox"] {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .control-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+      .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .editor-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+      }
+      .column h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 16px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 300px;
+        padding: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      ace-editor {
+        min-height: 300px;
+      }
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .info-box strong {
+        color: #1976d2;
+      }
+      #editors-list {
+        min-height: 100px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        font-style: italic;
+      }
+    </style>
+
+    <!-- Load the ace-loader script with configuration -->
+    <script src="./ace-loader.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"></script>
+  </head>
+  <body>
+    <h1>Lesson 008: Ace Editor - Dynamic Demo</h1>
+
+    <p>
+      <a href="./index.html">← Back to Main Lesson</a>
+    </p>
+
+    <div class="info-box">
+      <strong>🎮 Interactive Demo:</strong> This page demonstrates real-time attribute
+      updates to the <code>&lt;ace-editor&gt;</code> web component. Change any control
+      and see the editor update instantly!
+    </div>
+
+    <h2>Dynamic Editor Controls</h2>
+
+    <div class="controls">
+      <button class="add-button" onclick="addEditor()">➕ Add New Editor</button>
+    </div>
+
+    <div id="editors-list">
+      <div class="empty-state">Click "Add New Editor" to get started!</div>
+    </div>
+
+    <script>
+      // Code snippets for different languages
+      const CODE_SNIPPETS = {
+        javascript: `// JavaScript Example
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10));`,
+
+        python: `# Python Example
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print(fibonacci(10))`,
+
+        typescript: `// TypeScript Example
+function fibonacci(n: number): number {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10));`,
+
+        go: `// Go Example
+package main
+
+import "fmt"
+
+func fibonacci(n int) int {
+    if n <= 1 {
+        return n
+    }
+    return fibonacci(n-1) + fibonacci(n-2)
+}
+
+func main() {
+    fmt.Println(fibonacci(10))
+}`
+      };
+
+      // Available themes
+      const THEMES = [
+        'idle_fingers',
+        'monokai',
+        'github',
+        'tomorrow',
+        'twilight',
+        'solarized_dark',
+        'solarized_light',
+        'terminal',
+        'chrome'
+      ];
+
+      const LANGUAGES = ['javascript', 'python', 'typescript', 'go'];
+
+      let editorCounter = 0;
+
+      function addEditor() {
+        editorCounter++;
+        const editorId = `editor-${editorCounter}`;
+        const wrapperId = `wrapper-${editorCounter}`;
+
+        // Remove empty state if it exists
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+          emptyState.remove();
+        }
+
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'editor-wrapper';
+        wrapper.id = wrapperId;
+
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'editor-header';
+
+        const title = document.createElement('div');
+        title.className = 'editor-title';
+        title.textContent = `Editor #${editorCounter}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-button';
+        removeBtn.textContent = '🗑️ Remove';
+        removeBtn.onclick = () => removeEditor(wrapperId);
+
+        header.appendChild(title);
+        header.appendChild(removeBtn);
+
+        // Create controls
+        const controls = document.createElement('div');
+        controls.className = 'editor-controls';
+
+        // Language selector
+        const langGroup = document.createElement('div');
+        langGroup.className = 'control-group';
+        langGroup.innerHTML = `
+          <label for="${editorId}-lang">Language:</label>
+          <select id="${editorId}-lang">
+            ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)}</option>`).join('')}
+          </select>
+        `;
+
+        // Theme selector
+        const themeGroup = document.createElement('div');
+        themeGroup.className = 'control-group';
+        themeGroup.innerHTML = `
+          <label for="${editorId}-theme">Theme:</label>
+          <select id="${editorId}-theme">
+            ${THEMES.map(theme => `<option value="${theme}">${theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`).join('')}
+          </select>
+        `;
+
+        // Snippet selector
+        const snippetGroup = document.createElement('div');
+        snippetGroup.className = 'control-group';
+        snippetGroup.innerHTML = `
+          <label for="${editorId}-snippet">Load Snippet:</label>
+          <select id="${editorId}-snippet">
+            <option value="">-- Select Snippet --</option>
+            ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)} Example</option>`).join('')}
+          </select>
+        `;
+
+        // Readonly checkbox
+        const readonlyGroup = document.createElement('div');
+        readonlyGroup.className = 'control-group';
+        readonlyGroup.innerHTML = `
+          <label for="${editorId}-readonly">Readonly:</label>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="${editorId}-readonly">
+            <span>Lock editor</span>
+          </div>
+        `;
+
+        controls.appendChild(langGroup);
+        controls.appendChild(themeGroup);
+        controls.appendChild(snippetGroup);
+        controls.appendChild(readonlyGroup);
+
+        // Create content area
+        const content = document.createElement('div');
+        content.className = 'editor-content';
+
+        // Left column - Textarea
+        const leftCol = document.createElement('div');
+        leftCol.className = 'column';
+        leftCol.innerHTML = `
+          <h3>✏️ Edit Code (Textarea)</h3>
+          <textarea id="${editorId}-textarea">${CODE_SNIPPETS.javascript}</textarea>
+        `;
+
+        // Right column - Ace Editor
+        const rightCol = document.createElement('div');
+        rightCol.className = 'column';
+        rightCol.innerHTML = `
+          <h3>=A Live Preview (Ace Editor)</h3>
+          <ace-editor id="${editorId}" lang="javascript" value="${CODE_SNIPPETS.javascript}"></ace-editor>
+        `;
+
+        content.appendChild(leftCol);
+        content.appendChild(rightCol);
+
+        // Assemble wrapper
+        wrapper.appendChild(header);
+        wrapper.appendChild(controls);
+        wrapper.appendChild(content);
+
+        // Add to DOM
+        document.getElementById('editors-list').appendChild(wrapper);
+
+        // Get references
+        const aceEditor = document.getElementById(editorId);
+        const textarea = document.getElementById(`${editorId}-textarea`);
+        const langSelect = document.getElementById(`${editorId}-lang`);
+        const themeSelect = document.getElementById(`${editorId}-theme`);
+        const snippetSelect = document.getElementById(`${editorId}-snippet`);
+        const readonlyCheckbox = document.getElementById(`${editorId}-readonly`);
+
+        // Setup event listeners
+
+        // Textarea updates ace-editor value attribute
+        textarea.addEventListener('input', () => {
+          aceEditor.setAttribute('value', textarea.value);
+        });
+
+        // Language change
+        langSelect.addEventListener('change', () => {
+          aceEditor.setAttribute('lang', langSelect.value);
+        });
+
+        // Theme change
+        themeSelect.addEventListener('change', () => {
+          aceEditor.setAttribute('theme', themeSelect.value);
+        });
+
+        // Snippet loader
+        snippetSelect.addEventListener('change', () => {
+          if (snippetSelect.value) {
+            const snippet = CODE_SNIPPETS[snippetSelect.value];
+            textarea.value = snippet;
+            aceEditor.setAttribute('value', snippet);
+            aceEditor.setAttribute('lang', snippetSelect.value);
+            langSelect.value = snippetSelect.value;
+            snippetSelect.value = ''; // Reset selector
+          }
+        });
+
+        // Readonly toggle
+        readonlyCheckbox.addEventListener('change', () => {
+          if (readonlyCheckbox.checked) {
+            aceEditor.setAttribute('readonly', '');
+          } else {
+            aceEditor.removeAttribute('readonly');
+          }
+        });
+
+        console.log(`✅ Added editor #${editorCounter}`);
+      }
+
+      function removeEditor(wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (wrapper) {
+          wrapper.remove();
+          console.log(`🗑️ Removed ${wrapperId}`);
+
+          // Show empty state if no editors left
+          const editorsList = document.getElementById('editors-list');
+          if (editorsList.children.length === 0) {
+            const emptyState = document.createElement('div');
+            emptyState.className = 'empty-state';
+            emptyState.textContent = 'Click "Add New Editor" to get started!';
+            editorsList.appendChild(emptyState);
+          }
+        }
+      }
+
+      // Add one editor by default
+      window.addEventListener('load', () => {
+        console.log('✅ Dynamic demo loaded!');
+        console.log('💡 Try changing the controls to see live updates!');
+        addEditor();
+      });
+    </script>
+  </body>
+</html>
