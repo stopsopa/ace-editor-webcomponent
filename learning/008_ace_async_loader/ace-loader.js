@@ -77,7 +77,7 @@
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
     static get observedAttributes() {
-      return ['value', 'lang', 'theme', 'readonly'];
+      return ['value', 'lang', 'theme', 'readonly', 'min-height-px', 'min-height-lines'];
     }
 
     connectedCallback() {
@@ -248,16 +248,32 @@
 
       // Auto-resize to fit content
       const heightUpdateFunction = () => {
-        const newHeight =
+        const contentHeight =
           session.getScreenLength() * editor.renderer.lineHeight +
           editor.renderer.scrollBar.getWidth();
 
-        container.style.height = newHeight + "px";
+        // Check for min-height constraints
+        const minHeightPx = this.getAttribute('min-height-px');
+        const minHeightLines = this.getAttribute('min-height-lines');
+
+        let minHeight = 0;
+        if (minHeightPx) {
+          minHeight = parseInt(minHeightPx, 10);
+        } else if (minHeightLines) {
+          minHeight = parseInt(minHeightLines, 10) * editor.renderer.lineHeight +
+                      editor.renderer.scrollBar.getWidth();
+        }
+
+        const finalHeight = Math.max(contentHeight, minHeight);
+        container.style.height = finalHeight + "px";
         editor.resize();
       };
 
       // Update size on content change
       session.on("change", heightUpdateFunction);
+
+      // Store reference for attribute changes
+      this._heightUpdateFunction = heightUpdateFunction;
 
       // Wait for Ace to inject its styles, then adopt them
       setTimeout(() => {
@@ -344,6 +360,13 @@
             }
             this.editor.clearSelection();
             this._pendingValue = null;
+          }
+          break;
+        case 'min-height-px':
+        case 'min-height-lines':
+          // Trigger height recalculation
+          if (this._heightUpdateFunction) {
+            this._heightUpdateFunction();
           }
           break;
       }
