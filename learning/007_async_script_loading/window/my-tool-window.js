@@ -1,8 +1,14 @@
 // my-tool-window.js - Web Component with singleton pattern using window global and script load events
-// use: <script src="./my-tool-window.js"></script>
+// use: <script src="./my-tool-window.js" data-internal-tool-url="./internalToolWindow.js"></script>
 
 (function () {
   const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  // Get configuration from the script tag that loaded this file
+  const currentScript = document.currentScript;
+  const internalToolUrl = currentScript?.getAttribute('data-internal-tool-url') || './internalToolWindow.js';
+
+  console.log(`📋 Configuration: internalToolUrl = "${internalToolUrl}"`);
 
   // Singleton loader for external script (internalToolWindow.js)
   let internalToolWindowPromise = null; // Loading promise
@@ -21,7 +27,7 @@
     await delay(1000); // testing delay
 
     // Start loading
-    console.log("🔄 Loading internalToolWindow.js for the first time...");
+    console.log(`🔄 Loading ${internalToolUrl} for the first time...`);
 
     internalToolWindowPromise = new Promise((resolve, reject) => {
       scriptLoadResolve = resolve;
@@ -29,7 +35,7 @@
 
       // Create script element
       const script = document.createElement("script");
-      script.src = "./internalToolWindow.js";
+      script.src = internalToolUrl;
 
       // Handle load success
       script.onload = () => {
