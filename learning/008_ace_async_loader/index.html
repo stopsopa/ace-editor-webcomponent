@@ -132,7 +132,7 @@
       </p>
       <div>
         <button onclick="loadAceEditorScript()" id="load-script-btn">
-          Load ace-loader.js
+          Load ace-web-component.js
         </button>
         <button onclick="addNewEditor()">Add New Editor</button>
       </div>
@@ -342,20 +342,20 @@ print("Hello!")
     <script>
       let editorCounter = 3; // We already have 3 static editors
 
-      // Function to dynamically load the ace-loader script
+      // Function to dynamically load the ace-web-component script
       window.loadAceEditorScript = async function () {
         const statusEl = document.getElementById("script-status");
         const btnEl = document.getElementById("load-script-btn");
 
         try {
-          statusEl.textContent = "Status: Loading ace-loader.js...";
+          statusEl.textContent = "Status: Loading ace-web-component.js...";
           statusEl.style.background = "#fff3cd";
 
-          console.log("📦 Dynamically creating <script> tag for ace-loader.js...");
+          console.log("📦 Dynamically creating <script> tag for ace-web-component.js...");
 
           // Create script tag dynamically (regular script, not module)
           const script = document.createElement("script");
-          script.setAttribute('src', "./ace-loader.js");
+          script.setAttribute('src', "./ace-web-component.js");
           // NOTE: Use "data-main-ace" - Ace reads data-ace-* but "aceUrl" is not a valid config key
           // Avoid "data-ace-editor-url" which would become "editorUrl" and conflict
           script.setAttribute("data-main-ace", "/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js");
@@ -368,14 +368,14 @@ print("Hello!")
           });
 
           statusEl.textContent =
-            "Status: ✅ ace-loader.js loaded! Editors are now alive!";
+            "Status: ✅ ace-web-component.js loaded! Editors are now alive!";
           statusEl.style.background = "#d4edda";
 
           // Replace button with success message
           btnEl.outerHTML =
             '<div style="padding: 10px 20px; background: #d4edda; color: #155724; border-radius: 5px; font-weight: bold; text-align: center;">✅ Ace Loader Loaded Successfully</div>';
 
-          console.log("✅ ace-loader.js loaded successfully!");
+          console.log("✅ ace-web-component.js loaded successfully!");
           console.log("✅ All <ace-editor> components in the DOM are now initializing!");
         } catch (error) {
           console.error("❌ Failed to load script:", error);
@@ -440,8 +440,8 @@ print("Hello!")
 
       console.log("💡 Instructions:");
       console.log("1. Open DevTools Network tab");
-      console.log("2. Click 'Load ace-loader.js' button");
-      console.log("3. Watch ace-loader.js load");
+      console.log("2. Click 'Load ace-web-component.js' button");
+      console.log("3. Watch ace-web-component.js load");
       console.log("4. Watch ace.js (Ace Editor library) load only ONCE");
       console.log("5. All 3 static <ace-editor> components spring to life!");
       console.log("6. Click 'Add New Editor' - editors work instantly!");
