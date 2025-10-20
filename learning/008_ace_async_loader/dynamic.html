@@ -102,6 +102,36 @@
         border-radius: 4px;
         font-size: 14px;
       }
+      .select-with-buttons {
+        display: flex;
+        gap: 5px;
+        align-items: stretch;
+      }
+      .select-with-buttons select {
+        flex: 1;
+      }
+      .select-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .select-btn {
+        padding: 4px 8px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: bold;
+      }
+      .select-btn:hover {
+        background: #764ba2;
+      }
+      .select-btn:active {
+        background: #5568d3;
+      }
       .control-group input[type="checkbox"] {
         width: 20px;
         height: 20px;
@@ -114,7 +144,7 @@
       }
       .editor-content {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 20px;
       }
       .column {
@@ -321,9 +351,15 @@ func main() {
         langGroup.className = 'control-group';
         langGroup.innerHTML = `
           <label for="${editorId}-lang">Language:</label>
-          <select id="${editorId}-lang">
-            ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)}</option>`).join('')}
-          </select>
+          <div class="select-with-buttons">
+            <select id="${editorId}-lang">
+              ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)}</option>`).join('')}
+            </select>
+            <div class="select-buttons">
+              <button class="select-btn" data-select="${editorId}-lang" data-dir="up">▲</button>
+              <button class="select-btn" data-select="${editorId}-lang" data-dir="down">▼</button>
+            </div>
+          </div>
         `;
 
         // Theme selector
@@ -331,9 +367,15 @@ func main() {
         themeGroup.className = 'control-group';
         themeGroup.innerHTML = `
           <label for="${editorId}-theme">Theme:</label>
-          <select id="${editorId}-theme">
-            ${THEMES.map(theme => `<option value="${theme}">${theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`).join('')}
-          </select>
+          <div class="select-with-buttons">
+            <select id="${editorId}-theme">
+              ${THEMES.map(theme => `<option value="${theme}">${theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`).join('')}
+            </select>
+            <div class="select-buttons">
+              <button class="select-btn" data-select="${editorId}-theme" data-dir="up">▲</button>
+              <button class="select-btn" data-select="${editorId}-theme" data-dir="down">▼</button>
+            </div>
+          </div>
         `;
 
         // Snippet selector
@@ -341,10 +383,16 @@ func main() {
         snippetGroup.className = 'control-group';
         snippetGroup.innerHTML = `
           <label for="${editorId}-snippet">Load Snippet:</label>
-          <select id="${editorId}-snippet">
-            <option value="">-- Select Snippet --</option>
-            ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)} Example</option>`).join('')}
-          </select>
+          <div class="select-with-buttons">
+            <select id="${editorId}-snippet">
+              <option value="">-- Select Snippet --</option>
+              ${LANGUAGES.map(lang => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)} Example</option>`).join('')}
+            </select>
+            <div class="select-buttons">
+              <button class="select-btn" data-select="${editorId}-snippet" data-dir="up">▲</button>
+              <button class="select-btn" data-select="${editorId}-snippet" data-dir="down">▼</button>
+            </div>
+          </div>
         `;
 
         // Readonly checkbox
@@ -375,15 +423,24 @@ func main() {
           <textarea id="${editorId}-textarea">${CODE_SNIPPETS.javascript}</textarea>
         `;
 
-        // Right column - Ace Editor
-        const rightCol = document.createElement('div');
-        rightCol.className = 'column';
-        rightCol.innerHTML = `
-          <h3>=A Live Preview (Ace Editor)</h3>
+        // Middle column - Live Ace Editor
+        const middleCol = document.createElement('div');
+        middleCol.className = 'column';
+        middleCol.innerHTML = `
+          <h3>🔥 Live Preview (Ace Editor)</h3>
           <ace-editor id="${editorId}" lang="javascript" value="${CODE_SNIPPETS.javascript}"></ace-editor>
         `;
 
+        // Right column - HTML Usage Example
+        const rightCol = document.createElement('div');
+        rightCol.className = 'column';
+        rightCol.innerHTML = `
+          <h3>📝 HTML Usage Example</h3>
+          <ace-editor id="${editorId}-html-view" lang="html" readonly></ace-editor>
+        `;
+
         content.appendChild(leftCol);
+        content.appendChild(middleCol);
         content.appendChild(rightCol);
 
         // Assemble wrapper
@@ -396,27 +453,71 @@ func main() {
 
         // Get references
         const aceEditor = document.getElementById(editorId);
+        const htmlViewEditor = document.getElementById(`${editorId}-html-view`);
         const textarea = document.getElementById(`${editorId}-textarea`);
         const langSelect = document.getElementById(`${editorId}-lang`);
         const themeSelect = document.getElementById(`${editorId}-theme`);
         const snippetSelect = document.getElementById(`${editorId}-snippet`);
         const readonlyCheckbox = document.getElementById(`${editorId}-readonly`);
 
+        // Function to generate HTML code representation
+        function generateHtmlCode() {
+          const currentLang = langSelect.value;
+          const currentTheme = themeSelect.value;
+          const currentValue = textarea.value;
+          const isReadonly = readonlyCheckbox.checked;
+
+          const escapedValue = currentValue
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+          let htmlCode = `<ace-editor\n  id="${editorId}"\n  lang="${currentLang}"`;
+
+          if (currentTheme !== 'ambiance') {
+            htmlCode += `\n  theme="${currentTheme}"`;
+          }
+
+          if (isReadonly) {
+            htmlCode += `\n  readonly`;
+          }
+
+          htmlCode += `\n>\n${escapedValue}\n</ace-editor>`;
+
+          return htmlCode;
+        }
+
+        // Update HTML view
+        function updateHtmlView() {
+          if (htmlViewEditor && htmlViewEditor.setValue) {
+            htmlViewEditor.setValue(generateHtmlCode());
+          } else {
+            // Editor not ready yet, try again after a delay
+            setTimeout(updateHtmlView, 200);
+          }
+        }
+
+        // Initial HTML view update (wait longer for ace-editor to initialize)
+        setTimeout(updateHtmlView, 1500);
+
         // Setup event listeners
 
         // Textarea updates ace-editor value attribute
         textarea.addEventListener('input', () => {
           aceEditor.setAttribute('value', textarea.value);
+          updateHtmlView();
         });
 
         // Language change
         langSelect.addEventListener('change', () => {
           aceEditor.setAttribute('lang', langSelect.value);
+          updateHtmlView();
         });
 
         // Theme change
         themeSelect.addEventListener('change', () => {
           aceEditor.setAttribute('theme', themeSelect.value);
+          updateHtmlView();
         });
 
         // Snippet loader - function to load snippet
@@ -425,6 +526,7 @@ func main() {
             const snippet = CODE_SNIPPETS[snippetSelect.value];
             textarea.value = snippet;
             aceEditor.setAttribute('value', snippet);
+            updateHtmlView();
           }
         };
 
@@ -445,6 +547,34 @@ func main() {
             aceEditor.setAttribute('readonly', '');
           } else {
             aceEditor.removeAttribute('readonly');
+          }
+          updateHtmlView();
+        });
+
+        // Handle up/down buttons for all selects
+        wrapper.addEventListener('click', (e) => {
+          if (e.target.classList.contains('select-btn')) {
+            const selectId = e.target.getAttribute('data-select');
+            const direction = e.target.getAttribute('data-dir');
+            const selectElement = document.getElementById(selectId);
+
+            if (selectElement) {
+              const currentIndex = selectElement.selectedIndex;
+              let newIndex = currentIndex;
+
+              if (direction === 'up' && currentIndex > 0) {
+                newIndex = currentIndex - 1;
+              } else if (direction === 'down' && currentIndex < selectElement.options.length - 1) {
+                newIndex = currentIndex + 1;
+              }
+
+              if (newIndex !== currentIndex) {
+                selectElement.selectedIndex = newIndex;
+                // Trigger change event
+                const changeEvent = new Event('change', { bubbles: true });
+                selectElement.dispatchEvent(changeEvent);
+              }
+            }
           }
         });
 
@@ -475,5 +605,8 @@ func main() {
         addEditor();
       });
     </script>
+
+    <hr>
+    
   </body>
 </html>
