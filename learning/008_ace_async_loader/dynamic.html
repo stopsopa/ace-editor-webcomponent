@@ -219,55 +219,50 @@
       This event fires once per editor and provides access to the component and native editor instance.
     </p>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h3 style="margin-top: 0;">Event Log</h3>
-      <pre id="event-log" style="background: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 13px; line-height: 1.5;">Waiting for ace-onload events...</pre>
-
-      <h3>Test Editors</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div>
-          <h4 style="margin: 0 0 10px 0;">Editor A</h4>
-          <ace-editor id="test-editor-a" lang="javascript">
-console.log("Editor A");
-          </ace-editor>
-        </div>
-        <div>
-          <h4 style="margin: 0 0 10px 0;">Editor B</h4>
-          <ace-editor id="test-editor-b" lang="python">
-print("Editor B")
-          </ace-editor>
-        </div>
-      </div>
-    </div>
-
     <script>
       // Listen for ace-onload events from ALL ace-editor components
       document.addEventListener('ace-onload', (event) => {
-        const { component, editor, id } = event.detail;
         const log = document.getElementById('event-log');
-
-        // Create log entry
         const timestamp = new Date().toLocaleTimeString();
-        const logEntry = `[${timestamp}] ✅ ace-onload fired for #${id}\n` +
-                        `   - Component: <ace-editor id="${id}">\n` +
-                        `   - Native Editor: ${editor ? 'Available' : 'Not available'}\n` +
-                        `   - Can call methods: component.getValue() = "${component.getValue().substring(0, 30)}..."\n\n`;
-
-        // Append to log (or replace "Waiting..." message)
-        if (log.textContent.includes('Waiting')) {
-          log.textContent = logEntry;
-        } else {
-          log.textContent += logEntry;
-        }
-
-        // Auto-scroll to bottom
+        log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
         log.scrollTop = log.scrollHeight;
-
-        console.log(`🎯 ace-onload event received for #${id}`, event.detail);
       });
 
-      console.log('👂 Listening for ace-onload events...');
+      // Function to clear the event log
+      window.clearEventLog = () => {
+        const log = document.getElementById('event-log');
+        log.textContent = '';
+      };
     </script>
+
+    <ace-editor
+        id="editor-for-logs"
+        lang="javascript"
+    >
+      // Listen for ace-onload events from ALL ace-editor components
+      document.addEventListener('ace-onload', (event) => {
+        const log = document.getElementById('event-log');
+        const timestamp = new Date().toLocaleTimeString();
+        log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
+        log.scrollTop = log.scrollHeight;
+      });
+
+      // Function to clear the event log
+      window.clearEventLog = () => {
+        const log = document.getElementById('event-log');
+        log.textContent = '';
+      };
+    </ace-editor>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="margin: 0;">Event Log</h3>
+        <button onclick="clearEventLog()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Clear Log</button>
+      </div>
+      <pre id="event-log" style="background: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 13px; line-height: 1.5;"></pre>
+
+
+    </div>
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0;" />
 
