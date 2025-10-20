@@ -114,7 +114,7 @@
 
     <div class="info-box">
       <strong>📺 Open DevTools Network Tab:</strong> Watch how
-      <code>myTool.js</code> loads only ONCE, no matter how many
+      <code>myToolESM.js</code> loads only ONCE, no matter how many
       <code>&lt;my-tool&gt;</code> components you have!
     </div>
 
@@ -170,26 +170,26 @@
 
     <h2>The Code</h2>
     <pre><code>// Singleton loader for external module
-let myToolModule = null;           // Cached module
-let myToolPromise = null;          // Loading promise
+let myToolESMModule = null;           // Cached module
+let myToolESMPromise = null;          // Loading promise
 const waitingComponents = new Set(); // Components waiting for module
 
-async function loadMyTool() {
+async function loadmyToolESM() {
     // Return cached module if already loaded
-    if (myToolModule) {
-        return myToolModule;
+    if (myToolESMModule) {
+        return myToolESMModule;
     }
 
     // Return existing promise if currently loading
-    if (myToolPromise) {
-        return myToolPromise;
+    if (myToolESMPromise) {
+        return myToolESMPromise;
     }
 
     // Start loading
-    myToolPromise = import('./myTool.js')
+    myToolESMPromise = import('./myToolESM.js')
         .then(module => {
-            myToolModule = module;
-            console.log('✅ myTool.js loaded! Initializing waiting components...');
+            myToolESMModule = module;
+            console.log('✅ myToolESM.js loaded! Initializing waiting components...');
 
             // Initialize all components that were waiting
             waitingComponents.forEach(component => {
@@ -200,10 +200,10 @@ async function loadMyTool() {
             return module;
         });
 
-    return myToolPromise;
+    return myToolESMPromise;
 }
 
-class MyToolComponent extends HTMLElement {
+class myToolESMComponent extends HTMLElement {
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
 
@@ -220,19 +220,19 @@ class MyToolComponent extends HTMLElement {
                 p { margin: 0 0 10px 0; font-weight: bold; color: #667eea; }
             &lt;/style&gt;
             &lt;div class="my_component"&gt;
-                &lt;p&gt;My Web Component - Loading myTool.js...&lt;/p&gt;
+                &lt;p&gt;My Web Component - Loading myToolESM.js...&lt;/p&gt;
                 &lt;div class="tool-container"&gt;&lt;/div&gt;
             &lt;/div&gt;
         \`;
 
         // Check if module already loaded
-        if (myToolModule) {
+        if (myToolESMModule) {
             this.initializeWithTool();
         } else {
             // Add to waiting queue
             waitingComponents.add(this);
             // Trigger loading (singleton ensures it loads only once)
-            loadMyTool();
+            loadmyToolESM();
         }
     }
 
@@ -241,10 +241,10 @@ class MyToolComponent extends HTMLElement {
         const container = shadow.querySelector('.tool-container');
         const label = shadow.querySelector('p');
 
-        label.textContent = 'My Web Component - myTool.js Loaded!';
+        label.textContent = 'My Web Component - myToolESM.js Loaded!';
 
         // Use the loaded module
-        myToolModule.myTool(container);
+        myToolESMModule.myToolESM(container);
 
         console.log('✅ Component initialized:', this.id || 'unnamed');
     }
@@ -255,7 +255,7 @@ class MyToolComponent extends HTMLElement {
     }
 }
 
-customElements.define('my-tool', MyToolComponent);</code></pre>
+customElements.define('my-tool', myToolESMComponent);</code></pre>
 
     <h2>Key Concepts</h2>
     <ul>
@@ -335,31 +335,31 @@ customElements.define('my-tool', MyToolComponent);</code></pre>
     <script type="module">
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       // Singleton loader for external module
-      // let myToolModule = null;           // Cached module
-      let myToolPromise = null; // Loading promise
+      // let myToolESMModule = null;           // Cached module
+      let myToolESMPromise = null; // Loading promise
 
-      async function loadMyTool() {
+      async function loadmyToolESM() {
 
         // Return cached module if already loaded
-        if (myToolPromise) {
+        if (myToolESMPromise) {
           console.log(
-            "✅ myTool loading already initialized, returning cached module promise"
+            "✅ myToolESM loading already initialized, returning cached module promise"
           );
-          return myToolPromise;
+          return myToolESMPromise;
         }
 
         await delay(2000); // testing delay
 
         // Start loading
-        console.log("🔄 Loading myTool.js for the first time...");
+        console.log("🔄 Loading myToolESM.js for the first time...");
         
-        // myToolPromise = import('./myTool.js?delay=2000')
-        myToolPromise = import("./myTool.js");
+        // myToolESMPromise = import('./myToolESM.js?delay=2000')
+        myToolESMPromise = import("./myToolESM.js");
 
-        return myToolPromise;
+        return myToolESMPromise;
       }
 
-      class MyToolComponent extends HTMLElement {
+      class myToolESMComponent extends HTMLElement {
         connectedCallback() {
           const shadow = this.attachShadow({ mode: "open" });
 
@@ -388,7 +388,7 @@ customElements.define('my-tool', MyToolComponent);</code></pre>
                         }
                     </style>
                     <div class="my_component">
-                        <p>⏳ Loading myTool.js...</p>
+                        <p>⏳ Loading myToolESM.js...</p>
                         <div class="tool-container"></div>
                     </div>
                 `;
@@ -398,24 +398,24 @@ customElements.define('my-tool', MyToolComponent);</code></pre>
           console.log(`🔗 Component connected: ${componentId}`);
 
           (async () => {
-            const myToolModule = await loadMyTool();
+            const myToolESMModule = await loadmyToolESM();
 
-            this.initializeWithTool(myToolModule);
+            this.initializeWithTool(myToolESMModule);
           })();
         }
 
-        initializeWithTool(myToolModule) {
+        initializeWithTool(myToolESMModule) {
           const shadow = this.shadowRoot;
           const container = shadow.querySelector(".tool-container");
           const label = shadow.querySelector("p");
 
-          label.textContent = "✅ myTool.js Loaded!";
+          label.textContent = "✅ myToolESM.js Loaded!";
 
           // Use the loaded module
-          myToolModule.myTool(container);
+          myToolESMModule.myToolESM(container);
 
           console.log(
-            `  ✅ Component initialized with myTool: ${this.id || "unnamed"}`
+            `  ✅ Component initialized with myToolESM: ${this.id || "unnamed"}`
           );
         }
 
@@ -425,7 +425,7 @@ customElements.define('my-tool', MyToolComponent);</code></pre>
         }
       }
 
-      customElements.define("my-tool", MyToolComponent);
+      customElements.define("my-tool", myToolESMComponent);
 
       // Dynamic component addition
       let componentCounter = 3; // We already have 3 static components
@@ -452,7 +452,7 @@ customElements.define('my-tool', MyToolComponent);</code></pre>
       console.log("💡 Instructions:");
       console.log("1. Open DevTools Network tab");
       console.log("2. Reload the page");
-      console.log("3. Watch myTool.js load only ONCE");
+      console.log("3. Watch myToolESM.js load only ONCE");
       console.log("4. All 3 static components initialize together");
       console.log(
         '5. Click "Add New Component" - no additional network requests!'
