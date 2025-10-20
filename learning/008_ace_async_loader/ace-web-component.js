@@ -345,13 +345,24 @@
         editor.setReadOnly(true);
       }
 
-      // Set initial content from value attribute, textContent, or content attribute
-      // Priority: value > textContent > content
-      let initialContent =
-        this.getAttribute("value") ||
-        this.textContent ||
-        this.getAttribute("content") ||
-        "";
+      // Set initial content from multiple sources
+      // Priority: value attribute > <script type="ace"> > textContent > content attribute
+      let initialContent = "";
+
+      // Check for value attribute first
+      if (this.getAttribute("value")) {
+        initialContent = this.getAttribute("value");
+      }
+      // Check for <script type="ace"> tag
+      else {
+        const scriptTag = this.querySelector('script[type="ace"]');
+        if (scriptTag) {
+          initialContent = scriptTag.textContent || "";
+        } else {
+          // Fall back to textContent or content attribute
+          initialContent = this.textContent || this.getAttribute("content") || "";
+        }
+      }
 
       // Apply dedent logic unless data-notrim is present
       // Removes common leading whitespace from all lines
