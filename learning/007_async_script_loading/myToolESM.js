@@ -1,4 +1,4 @@
-export function myTool(el) {
+export function myToolESM(el) {
   el.classList.add("my-tool-class");
 
   const span = document.createElement("span");
