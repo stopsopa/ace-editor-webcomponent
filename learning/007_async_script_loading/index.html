@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>007 - Async Script Loading with Web Components</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 0 20px;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #667eea;
+        margin-top: 30px;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: "Courier New", monospace;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      .example {
+        border: 2px solid #333;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+        background: #fff;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #764ba2;
+      }
+      .component-wrapper {
+        border: 2px solid #e0e0e0;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+      .component-wrapper h4 {
+        margin: 0 0 10px 0;
+        color: #667eea;
+      }
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .info-box strong {
+        color: #1976d2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lesson 007: Async Script Loading with Web Components</h1>
+
+    <p>
+      <a href="../006_event_handling/">← Previous: Event Handling</a> |
+      <a href="../008_ace_async_loader/">Next: Ace Async Loader →</a>
+    </p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+      <li>Load external ESM modules dynamically</li>
+      <li>Singleton pattern for loading scripts once</li>
+      <li>Handle components declared in HTML before script loads</li>
+      <li>Support dynamically adding components after script loads</li>
+      <li>Proper lifecycle management with external dependencies</li>
+    </ul>
+
+    <h2>The Challenge</h2>
+    <p>Web components often depend on external libraries. The challenge is:</p>
+    <ul>
+      <li>✅ Load the external library only <strong>once</strong></li>
+      <li>
+        ✅ Support components declared in initial HTML (before library loads)
+      </li>
+      <li>✅ Support dynamically added components (after library loads)</li>
+      <li>✅ Initialize all waiting components once library is ready</li>
+      <li>✅ Don't block page rendering</li>
+    </ul>
+
+    <div class="info-box">
+      <strong>📺 Open DevTools Network Tab:</strong> Watch how
+      <code>myTool.js</code> loads only ONCE, no matter how many
+      <code>&lt;my-tool&gt;</code> components you have!
+    </div>
+
+    <h2>Live Example</h2>
+    <div class="example">
+      <h3>Components Declared in HTML (Before Script Loads)</h3>
+      <p>These components are already in the DOM when the page loads:</p>
+
+      <div class="component-wrapper">
+        <h4>Component #1 (static)</h4>
+        <my-tool id="tool-1"></my-tool>
+      </div>
+
+      <div class="component-wrapper">
+        <h4>Component #2 (static)</h4>
+        <my-tool id="tool-2"></my-tool>
+      </div>
+
+      <div class="component-wrapper">
+        <h4>Component #3 (static)</h4>
+        <my-tool id="tool-3"></my-tool>
+      </div>
+
+      <h3>Dynamically Add Components</h3>
+      <p>Click to add new components after the page has loaded:</p>
+      <button onclick="addNewComponent()">Add New Component</button>
+
+      <div id="dynamic-components"></div>
+    </div>
+
+    <h2>How It Works</h2>
+    <ol>
+      <li>
+        <strong>Component Registration:</strong> Define the web component class
+      </li>
+      <li>
+        <strong>Lazy Loading:</strong> Load external module only when first
+        component connects
+      </li>
+      <li>
+        <strong>Waiting Queue:</strong> Components added before module loads
+        wait in a queue
+      </li>
+      <li>
+        <strong>Batch Initialize:</strong> Once module loads, initialize all
+        waiting components
+      </li>
+      <li>
+        <strong>Immediate Initialize:</strong> Components added after module
+        loads initialize immediately
+      </li>
+    </ol>
+
+    <h2>The Code</h2>
+    <pre><code>// Singleton loader for external module
+let myToolModule = null;           // Cached module
+let myToolPromise = null;          // Loading promise
+const waitingComponents = new Set(); // Components waiting for module
+
+async function loadMyTool() {
+    // Return cached module if already loaded
+    if (myToolModule) {
+        return myToolModule;
+    }
+
+    // Return existing promise if currently loading
+    if (myToolPromise) {
+        return myToolPromise;
+    }
+
+    // Start loading
+    myToolPromise = import('./myTool.js')
+        .then(module => {
+            myToolModule = module;
+            console.log('✅ myTool.js loaded! Initializing waiting components...');
+
+            // Initialize all components that were waiting
+            waitingComponents.forEach(component => {
+                component.initializeWithTool();
+            });
+            waitingComponents.clear();
+
+            return module;
+        });
+
+    return myToolPromise;
+}
+
+class MyToolComponent extends HTMLElement {
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open' });
+
+        // Create structure immediately
+        shadow.innerHTML = \`
+            &lt;style&gt;
+                .my_component {
+                    padding: 20px;
+                    border: 2px solid #667eea;
+                    border-radius: 8px;
+                    background: #f0f0f0;
+                    min-height: 100px;
+                }
+                p { margin: 0 0 10px 0; font-weight: bold; color: #667eea; }
+            &lt;/style&gt;
+            &lt;div class="my_component"&gt;
+                &lt;p&gt;My Web Component - Loading myTool.js...&lt;/p&gt;
+                &lt;div class="tool-container"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        \`;
+
+        // Check if module already loaded
+        if (myToolModule) {
+            this.initializeWithTool();
+        } else {
+            // Add to waiting queue
+            waitingComponents.add(this);
+            // Trigger loading (singleton ensures it loads only once)
+            loadMyTool();
+        }
+    }
+
+    initializeWithTool() {
+        const shadow = this.shadowRoot;
+        const container = shadow.querySelector('.tool-container');
+        const label = shadow.querySelector('p');
+
+        label.textContent = 'My Web Component - myTool.js Loaded!';
+
+        // Use the loaded module
+        myToolModule.myTool(container);
+
+        console.log('✅ Component initialized:', this.id || 'unnamed');
+    }
+
+    disconnectedCallback() {
+        // Remove from waiting queue if still there
+        waitingComponents.delete(this);
+    }
+}
+
+customElements.define('my-tool', MyToolComponent);</code></pre>
+
+    <h2>Key Concepts</h2>
+    <ul>
+      <li>
+        <strong>Singleton Module Loading:</strong> <code>import()</code> is
+        called only once, result is cached
+      </li>
+      <li>
+        <strong>Waiting Queue:</strong> Components that connect before module
+        loads wait in a Set
+      </li>
+      <li>
+        <strong>Batch Initialization:</strong> All waiting components initialize
+        together when module loads
+      </li>
+      <li>
+        <strong>Immediate Initialization:</strong> Components added after
+        loading initialize instantly
+      </li>
+      <li>
+        <strong>Shadow DOM:</strong> Each component has isolated styles and
+        structure
+      </li>
+    </ul>
+
+    <h2>Why This Pattern?</h2>
+    <ul>
+      <li>✅ <strong>Performance:</strong> External module loads only once</li>
+      <li>
+        ✅ <strong>Flexibility:</strong> Works with components declared in HTML
+        or added dynamically
+      </li>
+      <li>
+        ✅ <strong>Clean:</strong> No manual coordination needed - components
+        self-manage
+      </li>
+      <li>
+        ✅ <strong>Scalable:</strong> Add unlimited components without
+        performance penalty
+      </li>
+      <li>
+        ✅ <strong>Real-world:</strong> This is the pattern used for Ace Editor
+        integration
+      </li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import"
+          target="_blank"
+          >MDN: Dynamic import()</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+          target="_blank"
+          >MDN: Promise</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+          target="_blank"
+          >MDN: Set</a
+        >
+      </li>
+    </ul>
+
+    <p>
+      <a href="../006_event_handling/">← Previous: Event Handling</a> |
+      <a href="../008_ace_async_loader/">Next: Ace Async Loader →</a>
+    </p>
+
+    <script type="module">
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+      // Singleton loader for external module
+      // let myToolModule = null;           // Cached module
+      let myToolPromise = null; // Loading promise
+
+      async function loadMyTool() {
+
+        // Return cached module if already loaded
+        if (myToolPromise) {
+          console.log(
+            "✅ myTool loading already initialized, returning cached module promise"
+          );
+          return myToolPromise;
+        }
+
+        await delay(2000); // testing delay
+
+        // Start loading
+        console.log("🔄 Loading myTool.js for the first time...");
+        
+        // myToolPromise = import('./myTool.js?delay=2000')
+        myToolPromise = import("./myTool.js");
+
+        return myToolPromise;
+      }
+
+      class MyToolComponent extends HTMLElement {
+        connectedCallback() {
+          const shadow = this.attachShadow({ mode: "open" });
+
+          // Create structure immediately
+          shadow.innerHTML = `
+                    <style>
+                        .my_component {
+                            padding: 20px;
+                            border: 2px solid #667eea;
+                            border-radius: 8px;
+                            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+                            min-height: 80px;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        p {
+                            margin: 0 0 10px 0;
+                            font-weight: bold;
+                            color: #667eea;
+                            font-size: 14px;
+                        }
+                        .tool-container {
+                            width: 100%;
+                        }
+                    </style>
+                    <div class="my_component">
+                        <p>⏳ Loading myTool.js...</p>
+                        <div class="tool-container"></div>
+                    </div>
+                `;
+
+          const componentId = this.id || "unnamed";
+          
+          console.log(`🔗 Component connected: ${componentId}`);
+
+          (async () => {
+            const myToolModule = await loadMyTool();
+
+            this.initializeWithTool(myToolModule);
+          })();
+        }
+
+        initializeWithTool(myToolModule) {
+          const shadow = this.shadowRoot;
+          const container = shadow.querySelector(".tool-container");
+          const label = shadow.querySelector("p");
+
+          label.textContent = "✅ myTool.js Loaded!";
+
+          // Use the loaded module
+          myToolModule.myTool(container);
+
+          console.log(
+            `  ✅ Component initialized with myTool: ${this.id || "unnamed"}`
+          );
+        }
+
+        disconnectedCallback() {
+          // Remove from waiting queue if still there
+          console.log(`🔌 Component disconnected: ${this.id || "unnamed"}`);
+        }
+      }
+
+      customElements.define("my-tool", MyToolComponent);
+
+      // Dynamic component addition
+      let componentCounter = 3; // We already have 3 static components
+
+      window.addNewComponent = function () {
+        componentCounter++;
+        const wrapper = document.createElement("div");
+        wrapper.className = "component-wrapper";
+
+        const heading = document.createElement("h4");
+        heading.textContent = `Component #${componentCounter} (dynamic)`;
+
+        const component = document.createElement("my-tool");
+        component.id = `tool-${componentCounter}`;
+
+        wrapper.appendChild(heading);
+        wrapper.appendChild(component);
+
+        document.getElementById("dynamic-components").appendChild(wrapper);
+
+        console.log(`➕ Dynamic component added: tool-${componentCounter}`);
+      };
+
+      console.log("💡 Instructions:");
+      console.log("1. Open DevTools Network tab");
+      console.log("2. Reload the page");
+      console.log("3. Watch myTool.js load only ONCE");
+      console.log("4. All 3 static components initialize together");
+      console.log(
+        '5. Click "Add New Component" - no additional network requests!'
+      );
+    </script>
+  </body>
+</html>
