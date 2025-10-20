@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>007 - Async Script Loading (Window Global Pattern)</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 0 20px;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #667eea;
+        margin-top: 30px;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: "Courier New", monospace;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #764ba2;
+      }
+      .component-wrapper {
+        border: 2px solid #e0e0e0;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+      .component-wrapper h4 {
+        margin: 0 0 10px 0;
+        color: #667eea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .remove-btn:hover {
+        background: #c82333;
+      }
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .info-box strong {
+        color: #1976d2;
+      }
+      .example {
+        border: 2px solid #333;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lesson 007: Async Script Loading (Window Global Pattern)</h1>
+
+    <p>
+      <a href="../../006_event_handling/">← Previous: Event Handling</a> |
+      <a href="../../008_ace_async_loader/">Next: Ace Async Loader →</a>
+    </p>
+
+    <h2>What You'll Learn</h2>
+    <ul>
+      <li>Load external scripts using window globals dynamically</li>
+      <li>Singleton pattern for loading scripts once</li>
+      <li>Use script onload/onerror events instead of checking globals</li>
+      <li>Handle components declared in HTML before script loads</li>
+      <li>Support dynamically adding components after script loads</li>
+    </ul>
+
+    <h2>The Challenge</h2>
+    <p>Non-ESM scripts expose functions on window. The challenge is:</p>
+    <ul>
+      <li>✅ Load the external script only <strong>once</strong></li>
+      <li>✅ Use script load events (not typeof checks)</li>
+      <li>✅ Support components declared in initial HTML (before script loads)</li>
+      <li>✅ Support dynamically added components (after script loads)</li>
+      <li>✅ Initialize all waiting components once script is ready</li>
+    </ul>
+
+    <div class="info-box">
+      <strong>📺 Open DevTools Network Tab:</strong> Watch how
+      <code>internalToolWindow.js</code> loads only ONCE, no matter how many
+      <code>&lt;my-tool-window&gt;</code> components you have!
+    </div>
+
+    <h2>Live Example</h2>
+    <div class="example">
+      <h3>Load Component Script & Add Components</h3>
+      <p>
+        <strong
+          >Click buttons to dynamically load script and add components:</strong
+        >
+      </p>
+      <div>
+        <button onclick="loadComponentScript()" id="load-script-btn">
+          Load my-tool-window.js
+        </button>
+        <button onclick="addNewComponent()">Add New Component</button>
+      </div>
+      <div
+        id="script-status"
+        style="
+          margin-top: 10px;
+          padding: 10px;
+          background: #fff3cd;
+          border-radius: 5px;
+        "
+      >
+        Status: Component script not loaded yet
+      </div>
+
+      <!-- These components are declared BEFORE the script loads! -->
+      <div class="component-wrapper" id="wrapper-tool-1">
+        <h4>
+          <span>Component #1 (static)</span>
+          <button
+            class="remove-btn"
+            onclick="removeComponent('wrapper-tool-1', 'tool-1')"
+          >
+            Remove
+          </button>
+        </h4>
+        <my-tool-window id="tool-1"></my-tool-window>
+      </div>
+
+      <div class="component-wrapper" id="wrapper-tool-2">
+        <h4>
+          <span>Component #2 (static)</span>
+          <button
+            class="remove-btn"
+            onclick="removeComponent('wrapper-tool-2', 'tool-2')"
+          >
+            Remove
+          </button>
+        </h4>
+        <my-tool-window id="tool-2"></my-tool-window>
+      </div>
+
+      <div id="dynamic-components"></div>
+    </div>
+
+    <h2>How It Works</h2>
+    <ol>
+      <li>
+        <strong>Dynamic Script Loading:</strong> Button creates regular
+        <code>&lt;script&gt;</code> tag (not module)
+      </li>
+      <li>
+        <strong>Script Events:</strong> Uses script.onload event to detect when
+        script loads
+      </li>
+      <li>
+        <strong>Auto Registration:</strong> Script registers the
+        <code>&lt;my-tool-window&gt;</code> custom element
+      </li>
+      <li>
+        <strong>Lazy Loading:</strong> External dependency (internalToolWindow.js)
+        loads only when first component connects
+      </li>
+      <li>
+        <strong>Singleton Pattern:</strong> Even with multiple components,
+        dependency loads only once
+      </li>
+    </ol>
+
+    <h2>Key Differences from ESM Version</h2>
+    <ul>
+      <li>
+        <strong>No type="module":</strong> Regular script tag (window globals)
+      </li>
+      <li>
+        <strong>Script Load Events:</strong> Uses onload/onerror instead of
+        typeof checks
+      </li>
+      <li>
+        <strong>Promise-wrapped:</strong> Script loading wrapped in Promise for
+        async/await
+      </li>
+      <li>
+        <strong>IIFE Pattern:</strong> Uses immediately invoked function to avoid
+        global pollution
+      </li>
+    </ul>
+
+    <h2>Further Reading</h2>
+    <ul>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLScriptElement"
+          target="_blank"
+          >MDN: HTMLScriptElement</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload"
+          target="_blank"
+          >MDN: onload event</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+          target="_blank"
+          >MDN: Promise</a
+        >
+      </li>
+    </ul>
+
+    <p>
+      <a href="../../006_event_handling/">← Previous: Event Handling</a> |
+      <a href="../../008_ace_async_loader/">Next: Ace Async Loader →</a>
+    </p>
+
+    <!-- Simple script for dynamic component addition and script loading -->
+    <script>
+      let componentCounter = 2; // We already have 2 static components
+
+      // Function to dynamically load the component script
+      window.loadComponentScript = async function () {
+        const statusEl = document.getElementById("script-status");
+        const btnEl = document.getElementById("load-script-btn");
+
+        try {
+          statusEl.textContent = "Status: Loading my-tool-window.js...";
+          statusEl.style.background = "#fff3cd";
+
+          console.log(
+            "📦 Dynamically creating <script> tag for my-tool-window.js..."
+          );
+
+          // Create script tag dynamically (regular script, not module)
+          const script = document.createElement("script");
+          script.src = "./my-tool-window.js";
+
+          // Wait for script to load
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+
+          statusEl.textContent =
+            "Status: ✅ my-tool-window.js loaded! Components are now alive!";
+          statusEl.style.background = "#d4edda";
+
+          // Replace button with success message
+          btnEl.outerHTML =
+            '<div style="padding: 10px 20px; background: #d4edda; color: #155724; border-radius: 5px; font-weight: bold; text-align: center;">✅ Script Loaded Successfully</div>';
+
+          console.log("✅ my-tool-window.js loaded successfully!");
+          console.log(
+            "✅ All <my-tool-window> components in the DOM are now initializing!"
+          );
+        } catch (error) {
+          console.error("❌ Failed to load script:", error);
+          statusEl.textContent = "Status: ❌ Failed to load script!";
+          statusEl.style.background = "#f8d7da";
+        }
+      };
+
+      window.removeComponent = function (wrapperId, componentId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (wrapper) {
+          wrapper.remove();
+          console.log(`🗑️ Component removed: ${componentId}`);
+        }
+      };
+
+      window.addNewComponent = function () {
+        componentCounter++;
+        const wrapperId = `wrapper-tool-${componentCounter}`;
+        const componentId = `tool-${componentCounter}`;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "component-wrapper";
+        wrapper.id = wrapperId;
+
+        const heading = document.createElement("h4");
+        const span = document.createElement("span");
+        span.textContent = `Component #${componentCounter} (dynamic)`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => removeComponent(wrapperId, componentId);
+
+        heading.appendChild(span);
+        heading.appendChild(removeBtn);
+
+        const component = document.createElement("my-tool-window");
+        component.id = componentId;
+
+        wrapper.appendChild(heading);
+        wrapper.appendChild(component);
+
+        document.getElementById("dynamic-components").appendChild(wrapper);
+
+        console.log(`➕ Dynamic component added: ${componentId}`);
+      };
+
+      console.log("💡 Instructions:");
+      console.log("1. Open DevTools Network tab");
+      console.log("2. Click 'Load my-tool-window.js' button");
+      console.log("3. Watch my-tool-window.js load");
+      console.log("4. Watch internalToolWindow.js (dependency) load only ONCE");
+      console.log("5. All 2 static <my-tool-window> components spring to life!");
+      console.log("6. Click 'Add New Component' - components work instantly!");
+    </script>
+  </body>
+</html>
