@@ -268,6 +268,7 @@
           // Create script tag dynamically (regular script, not module)
           const script = document.createElement("script");
           script.src = "./my-tool-window.js";
+          script.setAttribute("data-internal-tool-url", "./internalToolWindow.js");
 
           // Wait for script to load
           await new Promise((resolve, reject) => {
