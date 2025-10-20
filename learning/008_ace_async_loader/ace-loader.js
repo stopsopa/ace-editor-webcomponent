@@ -369,16 +369,15 @@
     }
 
     // Public API: Set editor value
+    // Note: This method bypasses readonly for programmatic updates
+    // Ace Editor's internal readonly mode still prevents user typing
     setValue(value) {
       if (this.editor) {
-        if (this.editor.getReadOnly()) {
-          // Store pending value if readonly
-          this._pendingValue = value;
-        } else {
-          this.editor.setValue(value, -1);
-          this.editor.clearSelection();
-          this._pendingValue = null;
-        }
+        // For programmatic updates via setValue(), bypass readonly check
+        // This allows readonly editors to display content via API
+        this.editor.setValue(value, -1);
+        this.editor.clearSelection();
+        this._pendingValue = null;
       }
     }
   }
