@@ -111,9 +111,13 @@
    * Web Component for Ace Editor
    * Usage: <ace-editor id="editor1" lang="javascript" value="code here"></ace-editor>
    *
-   * Supports both:
-   * 1. textContent for static HTML (initial value only)
-   * 2. value attribute for React/dynamic updates (controlled component)
+   * Supports multiple ways to provide initial content:
+   * 1. value attribute - for React/dynamic updates (controlled component)
+   * 2. <script type="ace">code here</script> - preserves formatting, Prettier-friendly
+   * 3. textContent - direct text content (initial value only)
+   * 4. content attribute - alternative to textContent
+   *
+   * Priority: value > <script type="ace"> > textContent > content
    */
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
