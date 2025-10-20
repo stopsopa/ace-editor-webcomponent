@@ -215,14 +215,16 @@
 
     <h2>ace-onload Event</h2>
     <p>
-      <strong>📡 Lifecycle Hook:</strong> Listen for <code>'ace-onload'</code> events to know when each editor is fully initialized.
-      This event fires once per editor and provides access to the component and native editor instance.
+      <strong>📡 Lifecycle Hook:</strong> Listen for
+      <code>'ace-onload'</code> events to know when each editor is fully
+      initialized. This event fires once per editor and provides access to the
+      component and native editor instance.
     </p>
 
     <script>
       // Listen for ace-onload events from ALL ace-editor components
-      document.addEventListener('ace-onload', (event) => {
-        const log = document.getElementById('event-log');
+      document.addEventListener("ace-onload", (event) => {
+        const log = document.getElementById("event-log");
         const timestamp = new Date().toLocaleTimeString();
         log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
         log.scrollTop = log.scrollHeight;
@@ -230,94 +232,162 @@
 
       // Function to clear the event log
       window.clearEventLog = () => {
-        const log = document.getElementById('event-log');
-        log.textContent = '';
+        const log = document.getElementById("event-log");
+        log.textContent = "";
       };
     </script>
 
-    <ace-editor
-        id="editor-for-logs"
-        lang="javascript"
-    >
-      // Listen for ace-onload events from ALL ace-editor components
-      document.addEventListener('ace-onload', (event) => {
-        const log = document.getElementById('event-log');
-        const timestamp = new Date().toLocaleTimeString();
-        log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
-        log.scrollTop = log.scrollHeight;
-      });
+    <ace-editor id="editor-for-logs" lang="javascript">
+      <script type="ace">
 
-      // Function to clear the event log
-      window.clearEventLog = () => {
-        const log = document.getElementById('event-log');
-        log.textContent = '';
-      };
+        // Listen for ace-onload events from ALL ace-editor components
+        document.addEventListener('ace-onload', (event) => {
+            const log = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+            log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
+            log.scrollTop = log.scrollHeight;
+          });
+
+          // Function to clear the event log
+          window.clearEventLog = () => {
+              const log = document.getElementById('event-log');
+              log.textContent = '';
+          };
+      </script>
     </ace-editor>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="margin: 0;">Event Log</h3>
-        <button onclick="clearEventLog()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Clear Log</button>
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        "
+      >
+        <h3 style="margin: 0">Event Log</h3>
+        <button
+          onclick="clearEventLog()"
+          style="
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+          "
+        >
+          Clear Log
+        </button>
       </div>
-      <pre id="event-log" style="background: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 13px; line-height: 1.5;"></pre>
-
-
+      <pre
+        id="event-log"
+        style="
+          background: #f8f9fa;
+          padding: 15px;
+          border-radius: 4px;
+          max-height: 200px;
+          overflow-y: auto;
+          font-size: 13px;
+          line-height: 1.5;
+        "
+      ></pre>
     </div>
 
-    <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0;" />
+    <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
 
     <h2>Auto-Generated IDs & Duplicate Detection</h2>
     <p>
-      <strong>🆔 Automatic IDs:</strong> If you don't provide an <code>id</code> attribute,
-      the component automatically generates a unique ID. If you provide a duplicate ID,
-      the component throws an error and displays a red error box.
+      <strong>🆔 Automatic IDs:</strong> If you don't provide an
+      <code>id</code> attribute, the component automatically generates a unique
+      ID. If you provide a duplicate ID, the component throws an error and
+      displays a red error box.
     </p>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h3 style="margin-top: 0;">Test Auto-Generated IDs</h3>
-      <p>These editors have NO id attribute - watch the console for auto-generated IDs:</p>
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">Test Auto-Generated IDs</h3>
+      <p>
+        These editors have NO id attribute - watch the console for
+        auto-generated IDs:
+      </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-        <ace-editor lang="javascript">
-console.log("Auto ID 1");
-        </ace-editor>
-        <ace-editor lang="python">
-print("Auto ID 2")
-        </ace-editor>
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 20px;
+        "
+      >
+        <ace-editor lang="js"> console.log("Auto ID 1"); </ace-editor>
+        <ace-editor lang="python"> print("Auto ID 2") </ace-editor>
       </div>
 
       <h3>Test Duplicate Detection</h3>
-      <p style="color: #dc3545; font-weight: bold;">
-        ⚠️ The second editor below has a DUPLICATE id="duplicate-test" and should show an error:
+      <p style="color: #dc3545; font-weight: bold">
+        ⚠️ The second editor below has a DUPLICATE id="duplicate-test" and
+        should show an error:
       </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
         <div>
-          <h4 style="margin: 10px 0;">✅ First Editor (valid)</h4>
+          <h4 style="margin: 10px 0">✅ First Editor (valid)</h4>
           <ace-editor id="duplicate-test" lang="javascript">
-console.log("First editor");
+            console.log("First editor");
           </ace-editor>
         </div>
         <div>
-          <h4 style="margin: 10px 0;">❌ Second Editor (duplicate ID)</h4>
+          <h4 style="margin: 10px 0">❌ Second Editor (duplicate ID)</h4>
           <ace-editor id="duplicate-test" lang="javascript">
-console.log("This should fail");
+            console.log("This should fail");
           </ace-editor>
         </div>
       </div>
 
-      <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 4px;">
+      <div
+        style="
+          margin-top: 20px;
+          padding: 15px;
+          background: #e3f2fd;
+          border-radius: 4px;
+        "
+      >
         <strong>💡 How it works:</strong>
-        <ul style="margin: 10px 0; padding-left: 20px;">
-          <li>No ID provided → Component generates unique ID like <code>ace-editor-1</code>, <code>ace-editor-2</code>, etc.</li>
-          <li>ID provided → Component validates it's unique across all ace-editors</li>
-          <li>Duplicate ID → Component throws error and shows red error box instead of loading</li>
+        <ul style="margin: 10px 0; padding-left: 20px">
+          <li>
+            No ID provided → Component generates unique ID like
+            <code>ace-editor-1</code>, <code>ace-editor-2</code>, etc.
+          </li>
+          <li>
+            ID provided → Component validates it's unique across all ace-editors
+          </li>
+          <li>
+            Duplicate ID → Component throws error and shows red error box
+            instead of loading
+          </li>
           <li>Component removed → ID is unregistered and can be reused</li>
         </ul>
       </div>
     </div>
 
-    <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0;" />
+    <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
 
     <h2>Dynamic Editor Controls</h2>
 
@@ -837,22 +907,25 @@ func main() {
 
     <h2>data-eval || data-eval="module"</h2>
     <ace-editor id="editor-eval" lang="js" data-eval="module">
-                    alert("Hello, World!");
-                    if (true) {
-                        console.log("This is a test.");
-                    }
-                    // JavaScript Example
-                    function fibonacci(n) {
-                        if (n <= 1) return n;
-                        return fibonacci(n - 1) + fibonacci(n - 2);
-                    }
+      <script type="ace">
+        alert("Hello, World!");
+        if (true) {
+            console.log("This is a test.");
+        }
+        // JavaScript Example
+        function fibonacci(n) {
+            if (n <= 1) return n;
+            return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+      </script>
     </ace-editor>
 
     <h2>onChange - Ace Editor Web Component</h2>
     <p>
-      <strong>✅ Behavior:</strong> Just like native textarea, programmatic value changes
-      (via <code>.value = "..."</code> or <code>.setValue(...)</code>) do NOT fire 'input' event.
-      Only user typing/editing triggers the 'input' event.
+      <strong>✅ Behavior:</strong> Just like native textarea, programmatic
+      value changes (via <code>.value = "..."</code> or
+      <code>.setValue(...)</code>) do NOT fire 'input' event. Only user
+      typing/editing triggers the 'input' event.
     </p>
 
     <style>
@@ -880,32 +953,34 @@ func main() {
       <div>
         <h3>📝 Editable Code</h3>
         <ace-editor id="editor-onchange" lang="javascript" data-eval>
-var acecomp = document.querySelector('#editor-onchange');
-var output = document.querySelector('#onchange-output');
-var replace_content = document.querySelector('#replace_content');
+          <script type="ace">
+            var acecomp = document.querySelector('#editor-onchange');
+            var output = document.querySelector('#onchange-output');
+            var replace_content = document.querySelector('#replace_content');
 
-// Bind to the 'input' event
-acecomp.addEventListener('input', (e) => {
-  // Extract content from editor
-  output.value = e.target.getValue();
-  console.log('📝 Content updated:', e.target.getValue().substring(0, 50) + '...');
-});
+            // Bind to the 'input' event
+            acecomp.addEventListener('input', (e) => {
+              // Extract content from editor
+              output.value = e.target.getValue();
+              console.log('📝 Content updated:', e.target.getValue().substring(0, 50) + '...');
+            });
 
-// Set initial content
-output.value = acecomp.getValue();
+            // Set initial content
+            output.value = acecomp.getValue();
 
-replace_content.addEventListener('click', () => {
-  // Replace editor content programmatically
-  // Notice: 'input' event will NOT fire (matches native textarea behavior)
+            replace_content.addEventListener('click', () => {
+              // Replace editor content programmatically
+              // Notice: 'input' event will NOT fire (matches native textarea behavior)
 
-  // You can use either syntax:
-  // acecomp.setValue('new code');  // Method call
-  // acecomp.value = 'new code';    // Property assignment (same as textarea.value = ...)
+              // You can use either syntax:
+              // acecomp.setValue('new code');  // Method call
+              // acecomp.value = 'new code';    // Property assignment (same as textarea.value = ...)
 
-  acecomp.value = '// Content replaced programmatically!\nconsole.log("New content set.");\n\n// ❌ Notice: The right side did NOT update!\n// That\'s because acecomp.value = "..." does NOT trigger input event.\n// This matches native textarea behavior.';
+              acecomp.value = '// Content replaced programmatically!\nconsole.log("New content set.");\n\n// ❌ Notice: The right side did NOT update!\n// That\'s because acecomp.value = "..." does NOT trigger input event.\n// This matches native textarea behavior.';
 
-  console.log('🔴 Setting acecomp.value programmatically - NO input event fired!');
-});
+              console.log('🔴 Setting acecomp.value programmatically - NO input event fired!');
+            });
+          </script>
         </ace-editor>
         <button id="replace_content">replace content</button>
       </div>
@@ -917,20 +992,33 @@ replace_content.addEventListener('click', () => {
 
     <h2>Native Textarea Comparison</h2>
     <p>
-      <strong>⚠️ Important:</strong> Native HTML elements (input, textarea) do NOT fire 'input' event
-      when their value is set programmatically. Only user interaction triggers it.
+      <strong>⚠️ Important:</strong> Native HTML elements (input, textarea) do
+      NOT fire 'input' event when their value is set programmatically. Only user
+      interaction triggers it.
     </p>
 
     <div class="onchange-demo">
       <div>
         <h3>📝 Editable Textarea</h3>
-        <textarea id="native-textarea" style="width: 100%; min-height: 200px; font-family: monospace; padding: 10px;">// Edit this text and watch it appear on the right!
+        <textarea
+          id="native-textarea"
+          style="
+            width: 100%;
+            min-height: 200px;
+            font-family: monospace;
+            padding: 10px;
+          "
+        >
+// Edit this text and watch it appear on the right!
 function greet(name) {
   console.log("Hello, " + name + "!");
 }
 
-greet("World");</textarea>
-        <button id="replace_textarea_content">Replace Content (no 'input' event!)</button>
+greet("World");</textarea
+        >
+        <button id="replace_textarea_content">
+          Replace Content (no 'input' event!)
+        </button>
       </div>
       <div>
         <h3>📤 Extracted Content (via 'input' event)</h3>
@@ -940,24 +1028,32 @@ greet("World");</textarea>
 
     <script>
       // Native textarea demo
-      const nativeTextarea = document.querySelector('#native-textarea');
-      const nativeOutput = document.querySelector('#native-output');
-      const replaceTextareaBtn = document.querySelector('#replace_textarea_content');
+      const nativeTextarea = document.querySelector("#native-textarea");
+      const nativeOutput = document.querySelector("#native-output");
+      const replaceTextareaBtn = document.querySelector(
+        "#replace_textarea_content"
+      );
 
       // Bind to the 'input' event
-      nativeTextarea.addEventListener('input', (e) => {
+      nativeTextarea.addEventListener("input", (e) => {
         // Extract content from textarea
         nativeOutput.value = e.target.value;
-        console.log('📝 Native textarea input event fired:', e.target.value.substring(0, 50) + '...');
+        console.log(
+          "📝 Native textarea input event fired:",
+          e.target.value.substring(0, 50) + "..."
+        );
       });
 
       // Set initial content
       nativeOutput.value = nativeTextarea.value;
 
       // Button click - this will NOT trigger 'input' event
-      replaceTextareaBtn.addEventListener('click', () => {
-        console.log('🔴 Setting textarea.value programmatically - NO input event will fire!');
-        nativeTextarea.value = '// Content replaced programmatically!\nconsole.log("New content set.");\n\n// ❌ Notice: The right side did NOT update!\n// That\'s because textarea.value = "..." does NOT trigger input event.';
+      replaceTextareaBtn.addEventListener("click", () => {
+        console.log(
+          "🔴 Setting textarea.value programmatically - NO input event will fire!"
+        );
+        nativeTextarea.value =
+          '// Content replaced programmatically!\nconsole.log("New content set.");\n\n// ❌ Notice: The right side did NOT update!\n// That\'s because textarea.value = "..." does NOT trigger input event.';
       });
     </script>
 
@@ -965,178 +1061,306 @@ greet("World");</textarea>
 
     <h2>Advanced: Access Native Ace Editor with getEditor()</h2>
     <p>
-      <strong>🔧 Direct Access:</strong> Use <code>.getEditor()</code> to access the native Ace Editor instance
-      and use advanced features not exposed by our web component API.
+      <strong>🔧 Direct Access:</strong> Use <code>.getEditor()</code> to access
+      the native Ace Editor instance and use advanced features not exposed by
+      our web component API.
     </p>
 
-    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h3 style="margin-top: 0;">🔍 Advanced Features Demo</h3>
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">🔍 Advanced Features Demo</h3>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 20px;
+        "
+      >
         <div>
-          <h4 style="margin: 0 0 10px 0;">Search & Replace</h4>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <input type="text" id="search-term" placeholder="Search for..." value="let" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <input type="text" id="replace-term" placeholder="Replace with..." value="const" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-            <div style="display: flex; gap: 8px;">
-              <button onclick="findNext()" style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Find Next</button>
-              <button onclick="replaceNext()" style="flex: 1; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Replace</button>
-              <button onclick="replaceAll()" style="flex: 1; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Replace All</button>
+          <h4 style="margin: 0 0 10px 0">Search & Replace</h4>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <input
+              type="text"
+              id="search-term"
+              placeholder="Search for..."
+              value="let"
+              style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+            />
+            <input
+              type="text"
+              id="replace-term"
+              placeholder="Replace with..."
+              value="const"
+              style="padding: 8px; border: 1px solid #ddd; border-radius: 4px"
+            />
+            <div style="display: flex; gap: 8px">
+              <button
+                onclick="findNext()"
+                style="
+                  flex: 1;
+                  padding: 8px;
+                  background: #667eea;
+                  color: white;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+                "
+              >
+                Find Next
+              </button>
+              <button
+                onclick="replaceNext()"
+                style="
+                  flex: 1;
+                  padding: 8px;
+                  background: #28a745;
+                  color: white;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+                "
+              >
+                Replace
+              </button>
+              <button
+                onclick="replaceAll()"
+                style="
+                  flex: 1;
+                  padding: 8px;
+                  background: #dc3545;
+                  color: white;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+                "
+              >
+                Replace All
+              </button>
             </div>
           </div>
         </div>
 
         <div>
-          <h4 style="margin: 0 0 10px 0;">Editor Controls</h4>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <button onclick="toggleLineNumbers()" style="padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Toggle Line Numbers</button>
-            <button onclick="setFontSize()" style="padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Increase Font Size</button>
-            <button onclick="gotoLine()" style="padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Go to Line 11 (findNext)</button>
-            <button onclick="addMarker()" style="padding: 8px; background: #ff6b6b; color: white; border: none; border-radius: 4px; cursor: pointer;">Highlight Lines 5-8 (getEditor)</button>
+          <h4 style="margin: 0 0 10px 0">Editor Controls</h4>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <button
+              onclick="toggleLineNumbers()"
+              style="
+                padding: 8px;
+                background: #667eea;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Toggle Line Numbers
+            </button>
+            <button
+              onclick="setFontSize()"
+              style="
+                padding: 8px;
+                background: #667eea;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Increase Font Size
+            </button>
+            <button
+              onclick="gotoLine()"
+              style="
+                padding: 8px;
+                background: #667eea;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Go to Line 11 (findNext)
+            </button>
+            <button
+              onclick="addMarker()"
+              style="
+                padding: 8px;
+                background: #ff6b6b;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              Highlight Lines 5-8 (getEditor)
+            </button>
           </div>
         </div>
       </div>
 
       <ace-editor id="advanced-editor" lang="javascript" data-eval>
-// This editor demonstrates getEditor() by setting up controls that operate on ITSELF!
-// The code below executes once via data-eval and sets up the interactive demo.
+        <script type="ace">
+          // This editor demonstrates getEditor() by setting up controls that operate on ITSELF!
+          // The code below executes once via data-eval and sets up the interactive demo.
 
-const advancedEditor = document.querySelector('#advanced-editor');
-let currentFontSize = 14;
-let lineNumbersVisible = true;
-let highlightMarker = null;
+          const advancedEditor = document.querySelector('#advanced-editor');
+          let currentFontSize = 14;
+          let lineNumbersVisible = true;
+          let highlightMarker = null;
 
-// Get the native Ace Editor instance - this is the key feature being demonstrated!
-const editor = advancedEditor.getEditor();
+          // Get the native Ace Editor instance - this is the key feature being demonstrated!
+          const editor = advancedEditor.getEditor();
 
-// Find next occurrence in THIS editor
-window.findNext = () => {
-  const searchTerm = document.getElementById('search-term').value;
-  const resultsDiv = document.getElementById('search-results');
+          // Find next occurrence in THIS editor
+          window.findNext = () => {
+            const searchTerm = document.getElementById('search-term').value;
+            const resultsDiv = document.getElementById('search-results');
 
-  if (!searchTerm) {
-    resultsDiv.textContent = '⚠️ Please enter a search term';
-    return;
-  }
+            if (!searchTerm) {
+              resultsDiv.textContent = '⚠️ Please enter a search term';
+              return;
+            }
 
-  editor.find(searchTerm, {
-    backwards: false,
-    wrap: true,
-    caseSensitive: false,
-    wholeWord: false,
-    regExp: false
-  });
+            editor.find(searchTerm, {
+              backwards: false,
+              wrap: true,
+              caseSensitive: false,
+              wholeWord: false,
+              regExp: false
+            });
 
-  const selection = editor.getSelection();
-  const range = selection.getRange();
+            const selection = editor.getSelection();
+            const range = selection.getRange();
 
-  if (!range.isEmpty()) {
-    resultsDiv.textContent = `✅ Found at line ${range.start.row + 1}, column ${range.start.column + 1}`;
-  } else {
-    resultsDiv.textContent = '❌ No matches found';
-  }
-};
+            if (!range.isEmpty()) {
+              resultsDiv.textContent = `✅ Found at line ${range.start.row + 1}, column ${range.start.column + 1}`;
+            } else {
+              resultsDiv.textContent = '❌ No matches found';
+            }
+          };
 
-// Replace next occurrence in THIS editor
-window.replaceNext = () => {
-  const searchTerm = document.getElementById('search-term').value;
-  const replaceTerm = document.getElementById('replace-term').value;
-  const resultsDiv = document.getElementById('search-results');
+          // Replace next occurrence in THIS editor
+          window.replaceNext = () => {
+            const searchTerm = document.getElementById('search-term').value;
+            const replaceTerm = document.getElementById('replace-term').value;
+            const resultsDiv = document.getElementById('search-results');
 
-  if (!searchTerm) {
-    resultsDiv.textContent = '⚠️ Please enter a search term';
-    return;
-  }
+            if (!searchTerm) {
+              resultsDiv.textContent = '⚠️ Please enter a search term';
+              return;
+            }
 
-  editor.find(searchTerm, {
-    backwards: false,
-    wrap: true,
-    caseSensitive: false,
-    wholeWord: false,
-    regExp: false
-  });
+            editor.find(searchTerm, {
+              backwards: false,
+              wrap: true,
+              caseSensitive: false,
+              wholeWord: false,
+              regExp: false
+            });
 
-  const selection = editor.getSelection();
-  const range = selection.getRange();
+            const selection = editor.getSelection();
+            const range = selection.getRange();
 
-  if (!range.isEmpty()) {
-    editor.replace(replaceTerm);
-    resultsDiv.textContent = `✅ Replaced at line ${range.start.row + 1}`;
-  } else {
-    resultsDiv.textContent = '❌ No matches found to replace';
-  }
-};
+            if (!range.isEmpty()) {
+              editor.replace(replaceTerm);
+              resultsDiv.textContent = `✅ Replaced at line ${range.start.row + 1}`;
+            } else {
+              resultsDiv.textContent = '❌ No matches found to replace';
+            }
+          };
 
-// Replace all occurrences in THIS editor
-window.replaceAll = () => {
-  const searchTerm = document.getElementById('search-term').value;
-  const replaceTerm = document.getElementById('replace-term').value;
-  const resultsDiv = document.getElementById('search-results');
+          // Replace all occurrences in THIS editor
+          window.replaceAll = () => {
+            const searchTerm = document.getElementById('search-term').value;
+            const replaceTerm = document.getElementById('replace-term').value;
+            const resultsDiv = document.getElementById('search-results');
 
-  if (!searchTerm) {
-    resultsDiv.textContent = '⚠️ Please enter a search term';
-    return;
-  }
+            if (!searchTerm) {
+              resultsDiv.textContent = '⚠️ Please enter a search term';
+              return;
+            }
 
-  const count = editor.replaceAll(replaceTerm, {
-    needle: searchTerm,
-    caseSensitive: false,
-    wholeWord: false,
-    regExp: false
-  });
+            const count = editor.replaceAll(replaceTerm, {
+              needle: searchTerm,
+              caseSensitive: false,
+              wholeWord: false,
+              regExp: false
+            });
 
-  resultsDiv.textContent = `✅ Replaced ${count} occurrence(s)`;
-};
+            resultsDiv.textContent = `✅ Replaced ${count} occurrence(s)`;
+          };
 
-// Toggle line numbers for THIS editor
-window.toggleLineNumbers = () => {
-  lineNumbersVisible = !lineNumbersVisible;
-  editor.renderer.setShowGutter(lineNumbersVisible);
-  const resultsDiv = document.getElementById('search-results');
-  resultsDiv.textContent = `✅ Line numbers ${lineNumbersVisible ? 'enabled' : 'disabled'}`;
-};
+          // Toggle line numbers for THIS editor
+          window.toggleLineNumbers = () => {
+            lineNumbersVisible = !lineNumbersVisible;
+            editor.renderer.setShowGutter(lineNumbersVisible);
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.textContent = `✅ Line numbers ${lineNumbersVisible ? 'enabled' : 'disabled'}`;
+          };
 
-// Increase font size of THIS editor
-window.setFontSize = () => {
-  currentFontSize += 2;
-  if (currentFontSize > 24) currentFontSize = 12; // Reset after max
-  editor.setFontSize(currentFontSize);
-  const resultsDiv = document.getElementById('search-results');
-  resultsDiv.textContent = `✅ Font size set to ${currentFontSize}px`;
-};
+          // Increase font size of THIS editor
+          window.setFontSize = () => {
+            currentFontSize += 2;
+            if (currentFontSize > 24) currentFontSize = 12; // Reset after max
+            editor.setFontSize(currentFontSize);
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.textContent = `✅ Font size set to ${currentFontSize}px`;
+          };
 
-// Go to line 30 in THIS editor (where the find/replace functions start)
-window.gotoLine = () => {
-  editor.gotoLine(11, 0, true);
-  editor.focus();
-  const resultsDiv = document.getElementById('search-results');
-  resultsDiv.textContent = `✅ Jumped to line 30 (find function)`;
-};
+          // Go to line 30 in THIS editor (where the find/replace functions start)
+          window.gotoLine = () => {
+            editor.gotoLine(11, 0, true);
+            editor.focus();
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.textContent = `✅ Jumped to line 30 (find function)`;
+          };
 
-// Add marker to highlight lines 12-15 (the getEditor() call!)
-window.addMarker = () => {
-  const Range = editor.getSelectionRange().constructor;
-  const resultsDiv = document.getElementById('search-results');
+          // Add marker to highlight lines 12-15 (the getEditor() call!)
+          window.addMarker = () => {
+            const Range = editor.getSelectionRange().constructor;
+            const resultsDiv = document.getElementById('search-results');
 
-  // Remove previous marker if exists
-  if (highlightMarker !== null) {
-    editor.session.removeMarker(highlightMarker);
-    highlightMarker = null;
-    resultsDiv.textContent = `✅ Highlight removed`;
-    return;
-  }
+            // Remove previous marker if exists
+            if (highlightMarker !== null) {
+              editor.session.removeMarker(highlightMarker);
+              highlightMarker = null;
+              resultsDiv.textContent = `✅ Highlight removed`;
+              return;
+            }
 
-  // Highlight the getEditor() call (lines 12-14)
-  const range = new Range(4, 0, 7, 0); // 0-indexed
-  highlightMarker = editor.session.addMarker(range, "ace_selection", "fullLine");
-  resultsDiv.textContent = `✅ Lines 5-7 highlighted (the getEditor() magic!)`;
-};
+            // Highlight the getEditor() call (lines 12-14)
+            const range = new Range(4, 0, 7, 0); // 0-indexed
+            highlightMarker = editor.session.addMarker(range, "ace_selection", "fullLine");
+            resultsDiv.textContent = `✅ Lines 5-7 highlighted (the getEditor() magic!)`;
+          };
 
-console.log('✅ Advanced editor features initialized using getEditor()!');
-console.log('💡 Try: Search "let" and replace with "const", then click Replace All!');
+          console.log('✅ Advanced editor features initialized using getEditor()!');
+          console.log('💡 Try: Search "let" and replace with "const", then click Replace All!');
+        </script>
       </ace-editor>
 
-      <div id="search-results" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 14px; min-height: 30px;">
+      <div
+        id="search-results"
+        style="
+          margin-top: 15px;
+          padding: 10px;
+          background: #f8f9fa;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 14px;
+          min-height: 30px;
+        "
+      >
         Ready to search...
       </div>
     </div>
