@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>007 - Async Script Loading with Web Components</title>
+
+    
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -70,6 +72,21 @@
       .component-wrapper h4 {
         margin: 0 0 10px 0;
         color: #667eea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .remove-btn:hover {
+        background: #c82333;
       }
       .info-box {
         background: #e3f2fd;
@@ -120,27 +137,46 @@
 
     <h2>Live Example</h2>
     <div class="example">
-      <h3>Components Declared in HTML (Before Script Loads)</h3>
-      <p>These components are already in the DOM when the page loads:</p>
+      <h3>Step 1: Load the Component Module</h3>
+      <p>
+        <strong
+          >Click buttons to dynamically load script and add components:</strong
+        >
+      </p>
+      <div>
+        <button onclick="loadComponentScript()" id="load-script-btn">
+          Load my-tool-esm.js
+        </button>
+        <button onclick="addNewComponent()">Add New Component</button>
+      </div>
+      <div
+        id="script-status"
+        style="
+          margin-top: 10px;
+          padding: 10px;
+          background: #fff3cd;
+          border-radius: 5px;
+        "
+      >
+        Status: Component script not loaded yet
+      </div>
 
-      <div class="component-wrapper">
-        <h4>Component #1 (static)</h4>
+      <!-- These components are declared BEFORE the script loads! -->
+      <div class="component-wrapper" id="wrapper-tool-1">
+        <h4>
+          <span>Component #1 (static)</span>
+          <button class="remove-btn" onclick="removeComponent('wrapper-tool-1', 'tool-1')">Remove</button>
+        </h4>
         <my-tool id="tool-1"></my-tool>
       </div>
 
-      <div class="component-wrapper">
-        <h4>Component #2 (static)</h4>
+      <div class="component-wrapper" id="wrapper-tool-2">
+        <h4>
+          <span>Component #2 (static)</span>
+          <button class="remove-btn" onclick="removeComponent('wrapper-tool-2', 'tool-2')">Remove</button>
+        </h4>
         <my-tool id="tool-2"></my-tool>
       </div>
-
-      <div class="component-wrapper">
-        <h4>Component #3 (static)</h4>
-        <my-tool id="tool-3"></my-tool>
-      </div>
-
-      <h3>Dynamically Add Components</h3>
-      <p>Click to add new components after the page has loaded:</p>
-      <button onclick="addNewComponent()">Add New Component</button>
 
       <div id="dynamic-components"></div>
     </div>
@@ -148,157 +184,63 @@
     <h2>How It Works</h2>
     <ol>
       <li>
-        <strong>Component Registration:</strong> Define the web component class
+        <strong>Dynamic Script Loading:</strong> Button creates and injects
+        <code>&lt;script&gt;</code> tag on demand
       </li>
       <li>
-        <strong>Lazy Loading:</strong> Load external module only when first
-        component connects
+        <strong>Auto Registration:</strong> The module registers the
+        <code>&lt;my-tool&gt;</code> custom element
       </li>
       <li>
-        <strong>Waiting Queue:</strong> Components added before module loads
-        wait in a queue
+        <strong>Lazy Loading:</strong> External dependency (myToolESM.js) loads
+        only when first component connects
       </li>
       <li>
-        <strong>Batch Initialize:</strong> Once module loads, initialize all
-        waiting components
+        <strong>Singleton Pattern:</strong> Even with multiple components,
+        dependency loads only once
       </li>
       <li>
-        <strong>Immediate Initialize:</strong> Components added after module
-        loads initialize immediately
+        <strong>Works Everywhere:</strong> Components declared in HTML or added
+        dynamically both work!
       </li>
     </ol>
-
-    <h2>The Code</h2>
-    <pre><code>// Singleton loader for external module
-let myToolESMModule = null;           // Cached module
-let myToolESMPromise = null;          // Loading promise
-const waitingComponents = new Set(); // Components waiting for module
-
-async function loadmyToolESM() {
-    // Return cached module if already loaded
-    if (myToolESMModule) {
-        return myToolESMModule;
-    }
-
-    // Return existing promise if currently loading
-    if (myToolESMPromise) {
-        return myToolESMPromise;
-    }
-
-    // Start loading
-    myToolESMPromise = import('./myToolESM.js')
-        .then(module => {
-            myToolESMModule = module;
-            console.log('✅ myToolESM.js loaded! Initializing waiting components...');
-
-            // Initialize all components that were waiting
-            waitingComponents.forEach(component => {
-                component.initializeWithTool();
-            });
-            waitingComponents.clear();
-
-            return module;
-        });
-
-    return myToolESMPromise;
-}
-
-class myToolESMComponent extends HTMLElement {
-    connectedCallback() {
-        const shadow = this.attachShadow({ mode: 'open' });
-
-        // Create structure immediately
-        shadow.innerHTML = \`
-            &lt;style&gt;
-                .my_component {
-                    padding: 20px;
-                    border: 2px solid #667eea;
-                    border-radius: 8px;
-                    background: #f0f0f0;
-                    min-height: 100px;
-                }
-                p { margin: 0 0 10px 0; font-weight: bold; color: #667eea; }
-            &lt;/style&gt;
-            &lt;div class="my_component"&gt;
-                &lt;p&gt;My Web Component - Loading myToolESM.js...&lt;/p&gt;
-                &lt;div class="tool-container"&gt;&lt;/div&gt;
-            &lt;/div&gt;
-        \`;
-
-        // Check if module already loaded
-        if (myToolESMModule) {
-            this.initializeWithTool();
-        } else {
-            // Add to waiting queue
-            waitingComponents.add(this);
-            // Trigger loading (singleton ensures it loads only once)
-            loadmyToolESM();
-        }
-    }
-
-    initializeWithTool() {
-        const shadow = this.shadowRoot;
-        const container = shadow.querySelector('.tool-container');
-        const label = shadow.querySelector('p');
-
-        label.textContent = 'My Web Component - myToolESM.js Loaded!';
-
-        // Use the loaded module
-        myToolESMModule.myToolESM(container);
-
-        console.log('✅ Component initialized:', this.id || 'unnamed');
-    }
-
-    disconnectedCallback() {
-        // Remove from waiting queue if still there
-        waitingComponents.delete(this);
-    }
-}
-
-customElements.define('my-tool', myToolESMComponent);</code></pre>
 
     <h2>Key Concepts</h2>
     <ul>
       <li>
-        <strong>Singleton Module Loading:</strong> <code>import()</code> is
-        called only once, result is cached
+        <strong>On-Demand Loading:</strong> Script loads only when needed
+        (button click)
       </li>
       <li>
-        <strong>Waiting Queue:</strong> Components that connect before module
-        loads wait in a Set
+        <strong>Singleton Loading:</strong> External dependency loads only once
       </li>
       <li>
-        <strong>Batch Initialization:</strong> All waiting components initialize
-        together when module loads
+        <strong>Declarative HTML:</strong> Components can be declared before
+        script loads
       </li>
       <li>
-        <strong>Immediate Initialization:</strong> Components added after
-        loading initialize instantly
+        <strong>No Manual Init:</strong> Components automatically initialize
+        when script registers them
       </li>
-      <li>
-        <strong>Shadow DOM:</strong> Each component has isolated styles and
-        structure
-      </li>
+      <li><strong>Shadow DOM:</strong> Each component has isolated styles</li>
     </ul>
 
     <h2>Why This Pattern?</h2>
     <ul>
-      <li>✅ <strong>Performance:</strong> External module loads only once</li>
+      <li>✅ <strong>Simple:</strong> One script, use anywhere</li>
       <li>
-        ✅ <strong>Flexibility:</strong> Works with components declared in HTML
-        or added dynamically
+        ✅ <strong>Performance:</strong> Load script only when needed, external
+        module loads once
       </li>
       <li>
-        ✅ <strong>Clean:</strong> No manual coordination needed - components
-        self-manage
+        ✅ <strong>Flexible:</strong> Works with static and dynamic components
       </li>
       <li>
-        ✅ <strong>Scalable:</strong> Add unlimited components without
-        performance penalty
+        ✅ <strong>Clean:</strong> No global variables or manual coordination
       </li>
       <li>
-        ✅ <strong>Real-world:</strong> This is the pattern used for Ace Editor
-        integration
+        ✅ <strong>Real-world:</strong> This is how you'll build the Ace Editor
+        component!
       </li>
     </ul>
 
@@ -320,9 +262,9 @@ customElements.define('my-tool', myToolESMComponent);</code></pre>
       </li>
       <li>
         <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+          href="https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define"
           target="_blank"
-          >MDN: Set</a
+          >MDN: customElements.define()</a
         >
       </li>
     </ul>
@@ -332,131 +274,101 @@ customElements.define('my-tool', myToolESMComponent);</code></pre>
       <a href="../008_ace_async_loader/">Next: Ace Async Loader →</a>
     </p>
 
+    <!-- Simple script for dynamic component addition and script loading -->
     <script type="module">
-      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-      // Singleton loader for external module
-      // let myToolESMModule = null;           // Cached module
-      let myToolESMPromise = null; // Loading promise
-
-      async function loadmyToolESM() {
-
-        // Return cached module if already loaded
-        if (myToolESMPromise) {
-          console.log(
-            "✅ myToolESM loading already initialized, returning cached module promise"
-          );
-          return myToolESMPromise;
-        }
-
-        await delay(2000); // testing delay
-
-        // Start loading
-        console.log("🔄 Loading myToolESM.js for the first time...");
-        
-        // myToolESMPromise = import('./myToolESM.js?delay=2000')
-        myToolESMPromise = import("./myToolESM.js");
-
-        return myToolESMPromise;
-      }
-
-      class myToolESMComponent extends HTMLElement {
-        connectedCallback() {
-          const shadow = this.attachShadow({ mode: "open" });
-
-          // Create structure immediately
-          shadow.innerHTML = `
-                    <style>
-                        .my_component {
-                            padding: 20px;
-                            border: 2px solid #667eea;
-                            border-radius: 8px;
-                            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-                            min-height: 80px;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
-                        }
-                        p {
-                            margin: 0 0 10px 0;
-                            font-weight: bold;
-                            color: #667eea;
-                            font-size: 14px;
-                        }
-                        .tool-container {
-                            width: 100%;
-                        }
-                    </style>
-                    <div class="my_component">
-                        <p>⏳ Loading myToolESM.js...</p>
-                        <div class="tool-container"></div>
-                    </div>
-                `;
-
-          const componentId = this.id || "unnamed";
-          
-          console.log(`🔗 Component connected: ${componentId}`);
-
-          (async () => {
-            const myToolESMModule = await loadmyToolESM();
-
-            this.initializeWithTool(myToolESMModule);
-          })();
-        }
-
-        initializeWithTool(myToolESMModule) {
-          const shadow = this.shadowRoot;
-          const container = shadow.querySelector(".tool-container");
-          const label = shadow.querySelector("p");
-
-          label.textContent = "✅ myToolESM.js Loaded!";
-
-          // Use the loaded module
-          myToolESMModule.myToolESM(container);
-
-          console.log(
-            `  ✅ Component initialized with myToolESM: ${this.id || "unnamed"}`
-          );
-        }
-
-        disconnectedCallback() {
-          // Remove from waiting queue if still there
-          console.log(`🔌 Component disconnected: ${this.id || "unnamed"}`);
-        }
-      }
-
-      customElements.define("my-tool", myToolESMComponent);
-
-      // Dynamic component addition
       let componentCounter = 3; // We already have 3 static components
+
+      // Function to dynamically load the component script
+      window.loadComponentScript = async function () {
+        const statusEl = document.getElementById("script-status");
+        const btnEl = document.getElementById("load-script-btn");
+
+        try {
+          statusEl.textContent = "Status: Loading my-tool-esm.js...";
+          statusEl.style.background = "#fff3cd";
+
+          console.log(
+            "📦 Dynamically creating <script> tag for my-tool-esm.js..."
+          );
+
+          // Create script tag dynamically
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = "./my-tool-esm.js?delay=1000";
+
+          // Wait for script to load
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+
+          statusEl.textContent =
+            "Status: ✅ my-tool-esm.js loaded! Components are now alive!";
+          statusEl.style.background = "#d4edda";
+
+          // Replace button with success message
+          btnEl.outerHTML =
+            '<div style="padding: 10px 20px; background: #d4edda; color: #155724; border-radius: 5px; font-weight: bold; text-align: center;">✅ Script Loaded Successfully</div>';
+
+          console.log("✅ my-tool-esm.js loaded successfully!");
+          console.log(
+            "✅ All <my-tool> components in the DOM are now initializing!"
+          );
+        } catch (error) {
+          console.error("❌ Failed to load script:", error);
+          statusEl.textContent = "Status: ❌ Failed to load script!";
+          statusEl.style.background = "#f8d7da";
+        }
+      };
+
+      window.removeComponent = function (wrapperId, componentId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (wrapper) {
+          wrapper.remove();
+          console.log(`🗑️ Component removed: ${componentId}`);
+        }
+      };
 
       window.addNewComponent = function () {
         componentCounter++;
+        const wrapperId = `wrapper-tool-${componentCounter}`;
+        const componentId = `tool-${componentCounter}`;
+
         const wrapper = document.createElement("div");
         wrapper.className = "component-wrapper";
+        wrapper.id = wrapperId;
 
         const heading = document.createElement("h4");
-        heading.textContent = `Component #${componentCounter} (dynamic)`;
+        const span = document.createElement("span");
+        span.textContent = `Component #${componentCounter} (dynamic)`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => removeComponent(wrapperId, componentId);
+
+        heading.appendChild(span);
+        heading.appendChild(removeBtn);
 
         const component = document.createElement("my-tool");
-        component.id = `tool-${componentCounter}`;
+        component.id = componentId;
 
         wrapper.appendChild(heading);
         wrapper.appendChild(component);
 
         document.getElementById("dynamic-components").appendChild(wrapper);
 
-        console.log(`➕ Dynamic component added: tool-${componentCounter}`);
+        console.log(`➕ Dynamic component added: ${componentId}`);
       };
 
       console.log("💡 Instructions:");
       console.log("1. Open DevTools Network tab");
-      console.log("2. Reload the page");
-      console.log("3. Watch myToolESM.js load only ONCE");
-      console.log("4. All 3 static components initialize together");
-      console.log(
-        '5. Click "Add New Component" - no additional network requests!'
-      );
+      console.log("2. Click 'Load my-tool-esm.js' button");
+      console.log("3. Watch my-tool-esm.js load");
+      console.log("4. Watch myToolESM.js (dependency) load only ONCE");
+      console.log("5. All 3 static <my-tool> components spring to life!");
+      console.log("6. Click 'Add New Component' - components work instantly!");
     </script>
   </body>
 </html>
