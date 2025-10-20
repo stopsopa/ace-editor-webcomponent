@@ -406,10 +406,37 @@ func main() {
           </div>
         `;
 
+        // Min-height control group
+        const minHeightGroup = document.createElement('div');
+        minHeightGroup.className = 'control-group';
+        minHeightGroup.innerHTML = `
+          <label>Min Height:</label>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="${editorId}-enable-min-height">
+              <span>Enable min height</span>
+            </div>
+            <div id="${editorId}-min-height-controls" style="display: none; padding-left: 10px;">
+              <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+                <label style="display: flex; align-items: center; gap: 5px;">
+                  <input type="radio" name="${editorId}-height-unit" value="lines" checked>
+                  <span>Lines</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px;">
+                  <input type="radio" name="${editorId}-height-unit" value="px">
+                  <span>Pixels</span>
+                </label>
+              </div>
+              <input type="number" id="${editorId}-min-height-value" value="10" min="1" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+          </div>
+        `;
+
         controls.appendChild(langGroup);
         controls.appendChild(themeGroup);
         controls.appendChild(snippetGroup);
         controls.appendChild(readonlyGroup);
+        controls.appendChild(minHeightGroup);
 
         // Create content area
         const content = document.createElement('div');
@@ -436,7 +463,7 @@ func main() {
         rightCol.className = 'column';
         rightCol.innerHTML = `
           <h3>📝 HTML Usage Example</h3>
-          <ace-editor id="${editorId}-html-view" lang="html" readonly></ace-editor>
+          <ace-editor id="${editorId}-html-view" lang="html"></ace-editor>
         `;
 
         content.appendChild(leftCol);
@@ -459,6 +486,10 @@ func main() {
         const themeSelect = document.getElementById(`${editorId}-theme`);
         const snippetSelect = document.getElementById(`${editorId}-snippet`);
         const readonlyCheckbox = document.getElementById(`${editorId}-readonly`);
+        const enableMinHeightCheckbox = document.getElementById(`${editorId}-enable-min-height`);
+        const minHeightControls = document.getElementById(`${editorId}-min-height-controls`);
+        const minHeightValue = document.getElementById(`${editorId}-min-height-value`);
+        const heightUnitRadios = document.getElementsByName(`${editorId}-height-unit`);
 
         // Function to generate HTML code representation
         function generateHtmlCode() {
@@ -466,6 +497,7 @@ func main() {
           const currentTheme = themeSelect.value;
           const currentValue = textarea.value;
           const isReadonly = readonlyCheckbox.checked;
+          const minHeightEnabled = enableMinHeightCheckbox.checked;
 
           const escapedValue = currentValue
             .replace(/&/g, '&amp;')
@@ -480,6 +512,16 @@ func main() {
 
           if (isReadonly) {
             htmlCode += `\n  readonly`;
+          }
+
+          if (minHeightEnabled) {
+            const selectedUnit = Array.from(heightUnitRadios).find(r => r.checked).value;
+            const heightVal = minHeightValue.value;
+            if (selectedUnit === 'lines') {
+              htmlCode += `\n  min-height-lines="${heightVal}"`;
+            } else {
+              htmlCode += `\n  min-height-px="${heightVal}"`;
+            }
           }
 
           htmlCode += `\n>\n${escapedValue}\n</ace-editor>`;
@@ -550,6 +592,48 @@ func main() {
           }
           updateHtmlView();
         });
+
+        // Function to apply min-height to editor
+        const applyMinHeight = () => {
+          if (enableMinHeightCheckbox.checked) {
+            const selectedUnit = Array.from(heightUnitRadios).find(r => r.checked).value;
+            const heightVal = minHeightValue.value;
+
+            // Remove both attributes first
+            aceEditor.removeAttribute('min-height-px');
+            aceEditor.removeAttribute('min-height-lines');
+
+            // Apply the selected one
+            if (selectedUnit === 'lines') {
+              aceEditor.setAttribute('min-height-lines', heightVal);
+            } else {
+              aceEditor.setAttribute('min-height-px', heightVal);
+            }
+          } else {
+            // Remove both attributes when disabled
+            aceEditor.removeAttribute('min-height-px');
+            aceEditor.removeAttribute('min-height-lines');
+          }
+          updateHtmlView();
+        };
+
+        // Min-height enable/disable toggle
+        enableMinHeightCheckbox.addEventListener('change', () => {
+          if (enableMinHeightCheckbox.checked) {
+            minHeightControls.style.display = 'block';
+          } else {
+            minHeightControls.style.display = 'none';
+          }
+          applyMinHeight();
+        });
+
+        // Min-height unit radio change
+        heightUnitRadios.forEach(radio => {
+          radio.addEventListener('change', applyMinHeight);
+        });
+
+        // Min-height value input change
+        minHeightValue.addEventListener('input', applyMinHeight);
 
         // Handle up/down buttons for all selects
         wrapper.addEventListener('click', (e) => {
