@@ -1,7 +1,17 @@
 // ace-loader.js - Singleton loader for Ace Editor using window global pattern
 // This file loads the Ace Editor library only once, no matter how many components use it
+// use: <script src="./ace-loader.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"></script>
 
 (function () {
+  // Get configuration from the script tag that loaded this file
+  // NOTE: We use "data-main-ace" (which Ace converts to "aceUrl" - not a valid Ace config)
+  // Ace Editor reads data-ace-* attributes, so we avoid names like "data-ace-editor-url"
+  // that would convert to "editorUrl" and conflict with Ace's config
+  const currentScript = document.currentScript;
+  const aceEditorUrl = currentScript?.getAttribute("data-main-ace");
+
+  console.log(`📋 Configuration: aceEditorUrl = "${aceEditorUrl}"`);
+
   // Singleton loader for Ace Editor
   let aceEditorPromise = null;
 
@@ -12,7 +22,9 @@
   async function loadAceEditor() {
     // Return cached promise if already loading/loaded
     if (aceEditorPromise) {
-      console.log("✅ Ace Editor loading already initialized, returning cached promise");
+      console.log(
+        "✅ Ace Editor loading already initialized, returning cached promise"
+      );
       return aceEditorPromise;
     }
 
@@ -21,7 +33,7 @@
     aceEditorPromise = new Promise((resolve, reject) => {
       // Create script element for main Ace library
       const script = document.createElement("script");
-      script.src = "/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js";
+      script.src = aceEditorUrl;
 
       // Handle load success
       script.onload = () => {
@@ -109,7 +121,10 @@
           const ace = await loadAceEditor();
           this.initializeEditor(ace);
         } catch (error) {
-          console.error(`❌ Failed to initialize Ace Editor ${componentId}:`, error);
+          console.error(
+            `❌ Failed to initialize Ace Editor ${componentId}:`,
+            error
+          );
           const label = shadow.querySelector(".loading-message");
           if (label) {
             label.textContent = "❌ Failed to load Ace Editor";
@@ -142,33 +157,35 @@
         const existingAdoptedSheets = shadow.adoptedStyleSheets || [];
 
         // Get all document stylesheets that Ace has created
-        const aceStyleSheets = Array.from(document.styleSheets).filter(sheet => {
-          try {
-            // Check if it's an Ace-related stylesheet
-            const href = sheet.href || '';
-            const ownerNode = sheet.ownerNode;
+        const aceStyleSheets = Array.from(document.styleSheets).filter(
+          (sheet) => {
+            try {
+              // Check if it's an Ace-related stylesheet
+              const href = sheet.href || "";
+              const ownerNode = sheet.ownerNode;
 
-            // Ace creates style tags dynamically
-            if (ownerNode && ownerNode.tagName === 'STYLE') {
-              const content = ownerNode.textContent || '';
-              // Check if it contains Ace-specific classes
-              if (content.includes('.ace_') || content.includes('ace-')) {
-                return true;
+              // Ace creates style tags dynamically
+              if (ownerNode && ownerNode.tagName === "STYLE") {
+                const content = ownerNode.textContent || "";
+                // Check if it contains Ace-specific classes
+                if (content.includes(".ace_") || content.includes("ace-")) {
+                  return true;
+                }
               }
-            }
 
-            return false;
-          } catch (e) {
-            return false;
+              return false;
+            } catch (e) {
+              return false;
+            }
           }
-        });
+        );
 
         // For browsers that support adoptedStyleSheets
         if (shadow.adoptedStyleSheets !== undefined) {
           try {
             shadow.adoptedStyleSheets = [...aceStyleSheets];
           } catch (e) {
-            console.log('Could not adopt stylesheets:', e);
+            console.log("Could not adopt stylesheets:", e);
             // Fallback: copy styles manually
             copyStylesManually();
           }
@@ -178,14 +195,16 @@
         }
 
         function copyStylesManually() {
-          aceStyleSheets.forEach(sheet => {
+          aceStyleSheets.forEach((sheet) => {
             try {
-              const styleEl = document.createElement('style');
+              const styleEl = document.createElement("style");
               const rules = Array.from(sheet.cssRules || sheet.rules || []);
-              styleEl.textContent = rules.map(rule => rule.cssText).join('\n');
+              styleEl.textContent = rules
+                .map((rule) => rule.cssText)
+                .join("\n");
               shadow.appendChild(styleEl);
             } catch (e) {
-              console.log('Could not copy stylesheet:', e);
+              console.log("Could not copy stylesheet:", e);
             }
           });
         }
@@ -210,7 +229,8 @@
       }
 
       // Set initial content from textContent or attribute
-      const initialContent = this.textContent.trim() || this.getAttribute("content") || "";
+      const initialContent =
+        this.textContent.trim() || this.getAttribute("content") || "";
       if (initialContent) {
         editor.setValue(initialContent, -1); // -1 moves cursor to start
         editor.clearSelection();
@@ -219,7 +239,8 @@
       // Auto-resize to fit content
       const heightUpdateFunction = () => {
         const newHeight =
-          session.getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+          session.getScreenLength() * editor.renderer.lineHeight +
+          editor.renderer.scrollBar.getWidth();
 
         container.style.height = newHeight + "px";
         editor.resize();
@@ -237,10 +258,14 @@
 
       // Also set up a MutationObserver to catch styles added later
       const styleObserver = new MutationObserver((mutations) => {
-        mutations.forEach(mutation => {
+        mutations.forEach((mutation) => {
           if (mutation.addedNodes) {
-            mutation.addedNodes.forEach(node => {
-              if (node.tagName === 'STYLE' && node.textContent && node.textContent.includes('.ace_')) {
+            mutation.addedNodes.forEach((node) => {
+              if (
+                node.tagName === "STYLE" &&
+                node.textContent &&
+                node.textContent.includes(".ace_")
+              ) {
                 // New Ace style detected, adopt it
                 adoptStylesheets();
                 setTimeout(heightUpdateFunction, 50);
@@ -268,7 +293,9 @@
         this._styleObserver.disconnect();
         this._styleObserver = null;
       }
-      console.log(`🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`);
+      console.log(
+        `🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`
+      );
     }
 
     // Public API: Get editor value
@@ -288,5 +315,7 @@
   // Register the custom element
   customElements.define("ace-editor", AceEditorComponent);
 
-  console.log("📦 ace-loader.js loaded! <ace-editor> components are now registered.");
+  console.log(
+    "📦 ace-loader.js loaded! <ace-editor> components are now registered."
+  );
 })();
