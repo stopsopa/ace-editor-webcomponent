@@ -3,29 +3,29 @@
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-// Singleton loader for external module (myToolESM.js)
-let myToolESMPromise = null; // Loading promise
+// Singleton loader for external module (internalToolESM.js)
+let internalToolESMPromise = null; // Loading promise
 
-async function loadMyToolESM() {
+async function loadinternalToolESM() {
   // Return cached promise if already loading/loaded
-  if (myToolESMPromise) {
+  if (internalToolESMPromise) {
     console.log(
-      " myToolESM loading already initialized, returning cached module promise"
+      " internalToolESM loading already initialized, returning cached module promise"
     );
-    return myToolESMPromise;
+    return internalToolESMPromise;
   }
 
-//   await delay(2000); // testing delay
+  await delay(1000); // testing delay
 
   // Start loading
-  console.log("= Loading myToolESM.js for the first time...");
+  console.log("= Loading internalToolESM.js for the first time...");
 
-  myToolESMPromise = import("./myToolESM.js");
+  internalToolESMPromise = import("./internalToolESM.js");
 
-  return myToolESMPromise;
+  return internalToolESMPromise;
 }
 
-class MyToolESMComponent extends HTMLElement {
+class internalToolESMComponent extends HTMLElement {
   connectedCallback() {
     const shadow = this.attachShadow({ mode: "open" });
 
@@ -51,7 +51,7 @@ class MyToolESMComponent extends HTMLElement {
         }
       </style>
       <div class="my_component">
-        <p>Loading myToolESM.js...</p>
+        <p>Loading internalToolESM.js...</p>
         <div class="tool-container"></div>
       </div>
     `;
@@ -62,24 +62,24 @@ class MyToolESMComponent extends HTMLElement {
 
     // Load module and initialize
     (async () => {
-      const myToolESMModule = await loadMyToolESM();
+      const internalToolESMModule = await loadinternalToolESM();
 
-      this.initializeWithTool(myToolESMModule);
+      this.initializeWithTool(internalToolESMModule);
     })();
   }
 
-  initializeWithTool(myToolESMModule) {
+  initializeWithTool(internalToolESMModule) {
     const shadow = this.shadowRoot;
     const container = shadow.querySelector(".tool-container");
     const label = shadow.querySelector("p");
 
-    label.textContent = " myToolESM.js Loaded!";
+    label.textContent = " internalToolESM.js Loaded!";
 
     // Use the loaded module
-    myToolESMModule.myToolESM(container);
+    internalToolESMModule.internalToolESM(container);
 
     console.log(
-      `   Component initialized with myToolESM: ${this.id || "unnamed"}`
+      `   Component initialized with internalToolESM: ${this.id || "unnamed"}`
     );
   }
 
@@ -89,6 +89,6 @@ class MyToolESMComponent extends HTMLElement {
 }
 
 // Register the custom element
-customElements.define("my-tool", MyToolESMComponent);
+customElements.define("my-tool", internalToolESMComponent);
 
 console.log("=� my-tool-esm.js loaded! <my-tool> components are now registered.");
