@@ -486,15 +486,7 @@
     
     </ace-editor>
 
-      <div
-        style="
-          padding: 15px;
-          background: #e3f2fd;
-          border-left: 4px solid #2196f3;
-          border-radius: 4px;
-          margin-top: 15px;
-        "
-      >
+      <alert-box type="note">
         <strong>💡 Explanation:</strong>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8">
           <li>
@@ -508,7 +500,7 @@
             <code>ace.js</code> file
           </li>
         </ul>
-      </div>
+      </alert-box>
     </div>
 
     <div
@@ -824,14 +816,7 @@ print(factorial(5))
         </div>
       </div>
 
-      <div
-        style="
-          margin-top: 20px;
-          padding: 15px;
-          background: #e3f2fd;
-          border-radius: 4px;
-        "
-      >
+      <alert-box type="note">
         <strong>💡 How it works:</strong>
         <ul style="margin: 10px 0; padding-left: 20px">
           <li>
@@ -851,7 +836,7 @@ print(factorial(5))
             reused on a new editor
           </li>
         </ul>
-      </div>
+      </alert-box>
     </div>
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
@@ -1085,20 +1070,12 @@ print(factorial(5))
         </tbody>
       </table>
 
-      <div
-        style="
-          padding: 15px;
-          background: #fff3cd;
-          border-left: 4px solid #ffc107;
-          border-radius: 4px;
-          margin-top: 20px;
-        "
-      >
-        <strong style="color: #856404">⚠️ Note:</strong> The
+      <alert-box type="warning">
+        <strong>⚠️ Note:</strong> The
         <code>min-height-lines</code> and <code>min-height-px</code> attributes
         are mutually exclusive. If both are provided, <code>min-height-px</code>
         takes precedence.
-      </div>
+      </alert-box>
     </div>
 
     <h2>Try It: Add New Editors</h2>
@@ -1863,21 +1840,13 @@ func main() {
         it will override content from Methods 1 or 2.
       </p>
 
-      <div
-        style="
-          padding: 15px;
-          background: #e3f2fd;
-          border-left: 4px solid #2196f3;
-          border-radius: 4px;
-          margin-bottom: 20px;
-        "
-      >
+      <alert-box type="important">
         <strong>💡 Important:</strong> The <code>value</code> attribute takes
         precedence over plain text content or
         <code>&lt;script type="ace"&gt;</code>. You can initialize with Methods 1
         or 2, then override programmatically using <code>value</code> or the
         <code>.setValue()</code> method.
-      </div>
+      </alert-box>
 
       <h4 style="color: #667eea; margin-top: 20px">
         Interactive Example: Programmatic Control
@@ -2076,22 +2045,14 @@ def bubble_sort(arr):
         });
       </script>
 
-      <div
-        style="
-          padding: 15px;
-          background: #d4edda;
-          border-left: 4px solid #28a745;
-          border-radius: 4px;
-          margin-top: 20px;
-        "
-      >
-        <strong style="color: #155724">✅ Key Takeaway:</strong> Use
+      <alert-box type="tip">
+        <strong>✅ Key Takeaway:</strong> Use
         <code>setAttribute('value', newCode)</code>,
         <code>setAttribute('lang', newLanguage)</code>, and
         <code>setAttribute('theme', newTheme)</code> to dynamically control the
         editor. This is essential for building interactive applications where
         content changes based on user actions or data fetching.
-      </div>
+      </alert-box>
     </div>
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
@@ -2488,18 +2449,9 @@ alert("Script with type='application/javascript' executed!");
         ▶️ Run Example 2.3
       </button>
 
-      <div
-        style="
-          padding: 15px;
-          background: #d4edda;
-          border-left: 4px solid #28a745;
-          border-radius: 4px;
-          margin-top: 15px;
-        "
-      >
-
-        <strong style="color: #856404">⚠️ Warning:</strong> I guess you could use both data-eval and &lt;script type="text/javascript"&gt; then you would end up with having that code being executed twice but ... probably you don't need to do that :) 
-      </div>
+      <alert-box type="warning">
+        <strong>⚠️ Warning:</strong> I guess you could use both data-eval and &lt;script type="text/javascript"&gt; then you would end up with having that code being executed twice but ... probably you don't need to do that :)
+      </alert-box>
     </div>
       <div id="demo2-3-container"></div>
 
@@ -2654,15 +2606,7 @@ alert(greeting);
         </tbody>
       </table>
 
-      <div
-        style="
-          padding: 15px;
-          background: #e3f2fd;
-          border-left: 4px solid #2196f3;
-          border-radius: 4px;
-          margin-top: 20px;
-        "
-      >
+      <alert-box type="important">
         <strong>💡 Important:</strong>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8">
           <li>
@@ -2678,7 +2622,7 @@ alert(greeting);
             may be too early for some use cases).
           </li>
         </ul>
-      </div>
+      </alert-box>
     </div>
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
@@ -2754,11 +2698,12 @@ alert(greeting);
     </div>
 
     <h2>Native Textarea Comparison</h2>
-    <p>
+
+    <alert-box type="important">
       <strong>⚠️ Important:</strong> Native HTML elements (input, textarea) do
       NOT fire 'input' event when their value is set programmatically. Only user
       interaction triggers it.
-    </p>
+    </alert-box>
 
     <div class="onchange-demo">
       <div>
@@ -2828,15 +2773,7 @@ greet("World");</textarea
       our web component API.
     </p>
 
-    <div
-      style="
-        padding: 15px;
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        border-radius: 4px;
-        margin: 20px 0;
-      "
-    >
+    <alert-box type="tip">
       <strong>💡 Alternative Approach - Global Event:</strong> You can also use
       the global <code>document.addEventListener("ace-onload", ...)</code> event
       (see <a href="#logs" style="color: #1976d2; font-weight: bold">Event Log section</a>)
@@ -2849,7 +2786,7 @@ greet("World");</textarea
       in the <code>ace-onload</code> event handler, check
       <code>event.detail.component</code> to distinguish between editors and
       apply specific tweaks to each one.
-    </div>
+    </alert-box>
 
     <div
       style="
