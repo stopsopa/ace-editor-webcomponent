@@ -536,11 +536,13 @@
           <ace-editor lang="html" readonly min-height-lines="6">
             <script type="ace">
               <ace-editor lang="javascript">
+                <script type="ace">
                   function greet(name) {
                       console.log("Hello, " + name + "!");
                   }
 
                   greet("World");
+                &lt;/script>
               </ace-editor>
             </script>
           </ace-editor>
@@ -548,8 +550,13 @@
         <div>
           <h5 style="margin: 10px 0; color: #333">Live Result:</h5>
           <ace-editor lang="javascript">
-            function greet(name) { console.log("Hello, " + name + "!"); }
-            greet("World");
+            <script type="ace">
+              function greet(name) {
+                  console.log("Hello, " + name + "!");
+              }
+
+              greet("World");
+            </script>
           </ace-editor>
         </div>
       </div>
@@ -575,22 +582,30 @@
           <ace-editor lang="html" readonly min-height-lines="8">
             <script type="ace">
               <ace-editor lang="python" theme="monokai" readonly>
-
+                <script type="ace">
                   def factorial(n):
-                      if n <= 1:
-                          return 1
-                      return n * factorial(n - 1)
+                    if n <= 1:
+                      return 1
+                    return n * factorial(n - 1)
 
                   print(factorial(5))
+                &lt;/script>
               </ace-editor>
             </script>
           </ace-editor>
         </div>
         <div>
           <h5 style="margin: 10px 0; color: #333">Live Result:</h5>
+
           <ace-editor lang="python" theme="monokai" readonly>
-            def factorial(n): if n <= 1: return 1 return n * factorial(n - 1)
-            print(factorial(5))
+            <script type="ace">
+              def factorial(n):
+                if n <= 1:
+                  return 1
+                return n * factorial(n - 1)
+
+              print(factorial(5))
+            </script>
           </ace-editor>
         </div>
       </div>
