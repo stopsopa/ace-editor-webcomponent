@@ -283,8 +283,6 @@
 
       // Initialize Ace Editor
       const editor = ace.edit(container);
-
-      editor.setOption("wrap", true);
       
       // Flag to track if we're in a programmatic update (to suppress 'input' event)
       // Initialize early so we can use it during initial content setting
@@ -368,6 +366,12 @@
 
       editor.setTheme(`ace/theme/${theme}`);
       session.setMode(`ace/mode/${lang}`);
+
+      // Hide horizontal scrollbar since we're using wrap mode
+      editor.setOption("hScrollBarAlwaysVisible", false);
+
+      // Additional scrollbar configuration
+      editor.renderer.setScrollMargin(0, 0, 0, 0);   
 
       if (readonly) {
         editor.setReadOnly(true);
