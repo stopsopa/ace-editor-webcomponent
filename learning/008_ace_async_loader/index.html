@@ -355,7 +355,7 @@ print("Hello!")
 
           // Create script tag dynamically (regular script, not module)
           const script = document.createElement("script");
-          script.setAttribute('src', "./ace-web-component.js");
+          script.setAttribute('src', "../../ace-web-component.js");
           // NOTE: Use "data-main-ace" - Ace reads data-ace-* but "aceUrl" is not a valid config key
           // Avoid "data-ace-editor-url" which would become "editorUrl" and conflict
           script.setAttribute("data-main-ace", "/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js");
