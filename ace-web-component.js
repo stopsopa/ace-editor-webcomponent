@@ -238,8 +238,8 @@
             width: 100%;
           }
           .ace-wrapper {
+            // height: 22px;
             border: 1px solid #999;
-            background: #f5f5f5;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -254,11 +254,11 @@
             font-weight: bold;
             color: #666;
             font-size: 14px;
+            margin: 0;
           }
           .ace-container {
             position: relative;
             width: 100%;
-            // height: 200px;
           }
           /* Hide horizontal scrollbar since we use wrap mode */
           .ace_scrollbar-h {
