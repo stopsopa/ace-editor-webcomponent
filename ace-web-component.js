@@ -284,6 +284,8 @@
       // Initialize Ace Editor
       const editor = ace.edit(container);
 
+      editor.setOption("wrap", true);
+      
       // Flag to track if we're in a programmatic update (to suppress 'input' event)
       // Initialize early so we can use it during initial content setting
       this._isProgrammaticChange = false;
