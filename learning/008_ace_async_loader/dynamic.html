@@ -243,20 +243,21 @@
       data-eval="module"
       readonly
     >
-      <script type="ace">
-        // Listen for ace-onload events from ALL ace-editor components
-        document.addEventListener('ace-onload', (event) => {
-            const log = document.getElementById('event-log');
-            const timestamp = new Date().toLocaleTimeString();
-            log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
-            log.scrollTop = log.scrollHeight;
-          });
+      <script type="text/javascript">
+        const log = document.getElementById("event-log");
 
-          // Function to clear the event log
-          window.clearEventLog = () => {
-              const log = document.getElementById('event-log');
-              log.textContent = '';
-          };
+        // Listen for ace-onload events from ALL ace-editor components
+        document.addEventListener("ace-onload", (event) => {
+          const timestamp = new Date().toLocaleTimeString();
+          log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
+          log.scrollTop = log.scrollHeight;
+        });
+
+        // Function to clear the event log
+        window.clearEventLog = () => {
+          const log = document.getElementById("event-log");
+          log.textContent = "";
+        };
       </script>
     </ace-editor>
 
