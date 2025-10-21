@@ -192,6 +192,63 @@
         color: #999;
         font-style: italic;
       }
+      /* Anchor link styling */
+      h1, h2, h3 {
+        position: relative;
+      }
+      .header-anchor {
+        position: absolute;
+        left: -30px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.8em;
+        cursor: pointer;
+        user-select: none;
+      }
+      h1:hover .header-anchor,
+      h2:hover .header-anchor,
+      h3:hover .header-anchor,
+      .header-anchor:hover {
+        opacity: 1;
+      }
+      .header-anchor:active {
+        color: #28a745;
+      }
+      .copy-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+        pointer-events: none;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
     </style>
 
     <!-- Load the ace-web-component script with configuration -->
@@ -199,6 +256,90 @@
       src="./ace-web-component.js"
       data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"
     ></script>
+
+    <!-- Script to add IDs and anchor links to headers -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Function to create URL-friendly ID from header text
+        function createId(text) {
+          return text
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-')      // Replace spaces with hyphens
+            .replace(/^-+|-+$/g, '');  // Trim hyphens from start/end
+        }
+
+        // Function to copy URL with hash to clipboard
+        function copyAnchorUrl(id) {
+          const url = `${window.location.origin}${window.location.pathname}#${id}`;
+          navigator.clipboard.writeText(url).then(() => {
+            // Show notification
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = '✓ Link copied to clipboard!';
+            document.body.appendChild(notification);
+
+            // Remove notification after animation
+            setTimeout(() => {
+              notification.remove();
+            }, 3000);
+          }).catch(err => {
+            console.error('Failed to copy:', err);
+          });
+        }
+
+        // Process all h1, h2, h3 headers
+        const headers = document.querySelectorAll('h1, h2, h3');
+        const usedIds = new Set();
+
+        headers.forEach(header => {
+          // Skip if header already has an ID
+          if (header.id) {
+            usedIds.add(header.id);
+
+            // Add anchor link even if ID exists
+            const anchor = document.createElement('span');
+            anchor.className = 'header-anchor';
+            anchor.textContent = '🔗';
+            anchor.title = 'Copy link to this section';
+            anchor.addEventListener('click', (e) => {
+              e.preventDefault();
+              copyAnchorUrl(header.id);
+            });
+            header.insertBefore(anchor, header.firstChild);
+            return;
+          }
+
+          // Create ID from header text
+          let baseId = createId(header.textContent);
+          let finalId = baseId;
+          let counter = 1;
+
+          // Ensure ID is unique
+          while (usedIds.has(finalId)) {
+            finalId = `${baseId}-${counter}`;
+            counter++;
+          }
+
+          usedIds.add(finalId);
+          header.id = finalId;
+
+          // Add anchor link
+          const anchor = document.createElement('span');
+          anchor.className = 'header-anchor';
+          anchor.textContent = '🔗';
+          anchor.title = 'Copy link to this section';
+          anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            copyAnchorUrl(finalId);
+          });
+
+          header.insertBefore(anchor, header.firstChild);
+        });
+
+        console.log('✅ Added anchor links to', headers.length, 'headers');
+      });
+    </script>
   </head>
   <body>
     <h1>Lesson 008: Ace Editor - Dynamic Demo</h1>
@@ -2009,20 +2150,583 @@ def bubble_sort(arr):
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
 
-    <h2>data-eval || data-eval="module"</h2>
-    <ace-editor id="editor-eval" lang="js" data-eval="module">
-      <script type="ace">
-        alert("Hello, World!");
-        if (true) {
-            console.log("This is a test.");
-        }
-        // JavaScript Example
-        function fibonacci(n) {
-            if (n <= 1) return n;
-            return fibonacci(n - 1) + fibonacci(n - 2);
-        }
+    <h2>Code Execution: Displaying AND Running Code</h2>
+
+    <p>
+      <strong>💻 Dual Purpose:</strong> The
+      <code>&lt;ace-editor&gt;</code> component is primarily designed for
+      <strong>presenting code</strong> with syntax highlighting. However, in many
+      JavaScript scenarios, we want to both <strong>display</strong> the code
+      <em>and</em> <strong>execute</strong> it. To avoid code duplication, the
+      component provides built-in execution capabilities.
+    </p>
+
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">Two Approaches to Code Execution</h3>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin: 20px 0;
+        "
+      >
+        <div style="padding: 15px; background: #e3f2fd; border-radius: 4px">
+          <h4 style="margin-top: 0; color: #1976d2">
+            Approach 1: data-eval Attribute
+          </h4>
+          <p style="margin: 0">
+            Add <code>data-eval</code> or <code>data-eval="module"</code> to the
+            <code>&lt;ace-editor&gt;</code> tag. Code executes
+            <strong>after</strong> the editor is fully initialized.
+          </p>
+        </div>
+
+        <div style="padding: 15px; background: #fff3cd; border-radius: 4px">
+          <h4 style="margin-top: 0; color: #856404">
+            Approach 2: Executable &lt;script&gt; Tag
+          </h4>
+          <p style="margin: 0">
+            Use <code>&lt;script&gt;</code> with executable type attribute inside
+            the component. Code executes <strong>immediately</strong> when the
+            browser parses it.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">Approach 1: Using data-eval Attribute</h3>
+
+      <h4 style="color: #667eea">Example 1.1: data-eval (Regular Script Mode)</h4>
+      <p>
+        Using <code>data-eval</code> alone creates a regular
+        <code>&lt;script&gt;</code> tag in the background, executing code in
+        <strong>non-ESM mode</strong> (classic script context).
+      </p>
+
+      <ace-editor lang="html" readonly min-height-lines="7">
+        <script type="ace">
+<ace-editor lang="javascript" data-eval>
+    <script type="ace">
+        // This runs in regular (non-ESM) script mode
+        console.log("Hello from data-eval!");
+        alert("data-eval executed!");
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo1-1-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 1.1
+      </button>
+      <div id="demo1-1-container"></div>
+
+      <script>
+        document.getElementById('demo1-1-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo1-1-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.setAttribute('lang', 'javascript');
+          editor.setAttribute('data-eval', '');
+          editor.innerHTML = `<script type="ace">
+// This runs in regular (non-ESM) script mode
+console.log("Hello from data-eval!");
+alert("data-eval executed!");
+<\/script>`;
+          container.appendChild(editor);
+        });
       </script>
-    </ace-editor>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0" />
+
+      <h4 style="color: #667eea">Example 1.2: data-eval="module" (ESM Mode)</h4>
+      <p>
+        Using <code>data-eval="module"</code> creates a
+        <code>&lt;script type="module"&gt;</code> tag, executing code in
+        <strong>ESM mode</strong> with import/export support.
+      </p>
+
+      <ace-editor lang="html" readonly min-height-lines="8">
+        <script type="ace">
+<ace-editor lang="javascript" data-eval="module">
+    <script type="ace">
+        // This runs in ESM (module) mode
+        console.log("Hello from data-eval module!");
+        // You can use import statements here
+        const message = "ESM mode active!";
+        alert(message);
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo1-2-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 1.2
+      </button>
+      <div id="demo1-2-container"></div>
+
+      <script>
+        document.getElementById('demo1-2-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo1-2-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.setAttribute('lang', 'javascript');
+          editor.setAttribute('data-eval', 'module');
+          editor.innerHTML = `<script type="ace">
+// This runs in ESM (module) mode
+console.log("Hello from data-eval module!");
+// You can use import statements here
+const message = "ESM mode active!";
+alert(message);
+<\/script>`;
+          container.appendChild(editor);
+        });
+      </script>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0" />
+
+      <h4 style="color: #667eea">
+        Example 1.3: Interacting with the Editor Instance
+      </h4>
+      <p>
+        With <code>data-eval</code>, code executes
+        <strong>after the editor is fully initialized</strong>, allowing you to
+        interact with the editor instance programmatically.
+      </p>
+
+      <ace-editor lang="html" readonly min-height-lines="10">
+        <script type="ace">
+<ace-editor id="self-modifying-editor" lang="javascript" data-eval="module">
+    <script type="ace">
+        // Access the editor instance that contains this code
+        const editor = document.getElementById('self-modifying-editor');
+
+        setTimeout(() => {
+            editor.setAttribute('theme', 'monokai');
+            alert('Theme changed to monokai!');
+        }, 1000);
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo1-3-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 1.3
+      </button>
+      <div id="demo1-3-container"></div>
+
+      <script>
+        document.getElementById('demo1-3-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo1-3-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.id = 'self-modifying-editor-instance';
+          editor.setAttribute('lang', 'javascript');
+          editor.setAttribute('data-eval', 'module');
+          editor.innerHTML = `<script type="ace">
+// Access the editor instance that contains this code
+const editor = document.getElementById('self-modifying-editor-instance');
+
+setTimeout(() => {
+    editor.setAttribute('theme', 'monokai');
+    alert('Theme changed to monokai!');
+}, 1000);
+<\/script>`;
+          container.appendChild(editor);
+        });
+      </script>
+    </div>
+
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">Approach 2: Using Executable &lt;script&gt; Tags</h3>
+      <p>
+        Instead of using <code>data-eval</code>, you can use
+        <code>&lt;script&gt;</code> tags with executable type attributes. These
+        execute <strong>immediately</strong> when the browser's HTML parser
+        encounters them.
+      </p>
+
+      <h4 style="color: #667eea">
+        Example 2.1: &lt;script type="text/javascript"&gt;
+      </h4>
+      <p>Standard JavaScript execution (non-ESM mode):</p>
+
+      <ace-editor lang="html" readonly min-height-lines="8">
+        <script type="ace">
+<ace-editor lang="javascript">
+    <script type="text/javascript">
+        // Executes immediately in non-ESM mode
+        console.log("Executing via type='text/javascript'");
+        alert("Script with type='text/javascript' executed!");
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo2-1-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 2.1
+      </button>
+      <div id="demo2-1-container"></div>
+
+      <script>
+        document.getElementById('demo2-1-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo2-1-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.setAttribute('lang', 'javascript');
+          editor.innerHTML = `<script type="text/javascript">
+// Executes immediately in non-ESM mode
+console.log("Executing via type='text/javascript'");
+alert("Script with type='text/javascript' executed!");
+<\/script>`;
+          container.appendChild(editor);
+        });
+      </script>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0" />
+
+      <h4 style="color: #667eea">
+        Example 2.2: &lt;script type="application/javascript"&gt;
+      </h4>
+      <p>Alternative MIME type for JavaScript (also non-ESM mode):</p>
+
+      <ace-editor lang="html" readonly min-height-lines="8">
+        <script type="ace">
+<ace-editor lang="javascript">
+    <script type="application/javascript">
+        // Executes immediately in non-ESM mode
+        console.log("Executing via type='application/javascript'");
+        alert("Script with type='application/javascript' executed!");
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo2-2-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 2.2
+      </button>
+      <div id="demo2-2-container"></div>
+
+      <script>
+        document.getElementById('demo2-2-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo2-2-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.setAttribute('lang', 'javascript');
+          editor.innerHTML = `<script type="application/javascript">
+// Executes immediately in non-ESM mode
+console.log("Executing via type='application/javascript'");
+alert("Script with type='application/javascript' executed!");
+<\/script>`;
+          container.appendChild(editor);
+        });
+      </script>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0" />
+
+      <h4 style="color: #667eea">Example 2.3: &lt;script type="module"&gt;</h4>
+      <p>ESM (ECMAScript Module) execution with import/export support:</p>
+
+      <ace-editor lang="html" readonly min-height-lines="9">
+        <script type="ace">
+<ace-editor lang="javascript">
+    <script type="module">
+        // Executes immediately in ESM mode
+        console.log("Executing via type='module'");
+        const greeting = "Hello from ESM!";
+        alert(greeting);
+    &lt;/script>
+</ace-editor>
+        </script>
+      </ace-editor>
+
+      <button
+        id="demo2-3-btn"
+        style="
+          margin: 10px 0;
+          padding: 10px 20px;
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+        "
+      >
+        ▶️ Run Example 2.3
+      </button>
+      <div id="demo2-3-container"></div>
+
+      <script>
+        document.getElementById('demo2-3-btn').addEventListener('click', () => {
+          const container = document.getElementById('demo2-3-container');
+          container.innerHTML = '';
+          const editor = document.createElement('ace-editor');
+          editor.setAttribute('lang', 'javascript');
+          editor.innerHTML = `<script type="module">
+// Executes immediately in ESM mode
+console.log("Executing via type='module'");
+const greeting = "Hello from ESM!";
+alert(greeting);
+<\/script>`;
+          container.appendChild(editor);
+        });
+      </script>
+    </div>
+
+    <div
+      style="
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <h3 style="margin-top: 0">⚡ Key Difference: Execution Timing</h3>
+
+      <table
+        style="
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 15px;
+          font-size: 14px;
+        "
+      >
+        <thead>
+          <tr style="background: #667eea; color: white">
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
+              Method
+            </th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
+              Execution Timing
+            </th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
+              Can Access Editor Instance?
+            </th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
+              Use Case
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: #f9f9f9">
+            <td
+              style="
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-family: monospace;
+              "
+            >
+              data-eval
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
+              ✅ <strong>After</strong> editor initialization (delayed)
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
+              ✅ Yes - editor is fully ready
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              Interacting with the editor instance, modifying editor properties
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-family: monospace;
+              "
+            >
+              data-eval="module"
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
+              ✅ <strong>After</strong> editor initialization (delayed)
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
+              ✅ Yes - editor is fully ready
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              Same as above, but with ESM support (import/export)
+            </td>
+          </tr>
+          <tr style="background: #f9f9f9">
+            <td
+              style="
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-family: monospace;
+              "
+            >
+              &lt;script type="text/javascript"&gt;
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ⚠️ <strong>Immediately</strong> during HTML parsing (early)
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ❌ No - editor not initialized yet
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              Simple alerts, console logs, standalone operations
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-family: monospace;
+              "
+            >
+              &lt;script type="application/javascript"&gt;
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ⚠️ <strong>Immediately</strong> during HTML parsing (early)
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ❌ No - editor not initialized yet
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              Alternative MIME type, same behavior as text/javascript
+            </td>
+          </tr>
+          <tr style="background: #f9f9f9">
+            <td
+              style="
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-family: monospace;
+              "
+            >
+              &lt;script type="module"&gt;
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ⚠️ <strong>Immediately</strong> during HTML parsing (early)
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
+              ❌ No - editor not initialized yet
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              ESM imports/exports, but can't access editor instance
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div
+        style="
+          padding: 15px;
+          background: #e3f2fd;
+          border-left: 4px solid #2196f3;
+          border-radius: 4px;
+          margin-top: 20px;
+        "
+      >
+        <strong>💡 Important:</strong>
+        <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8">
+          <li>
+            <strong>Use data-eval</strong> when you need to interact with the
+            editor instance (change theme, modify content, access the Ace Editor
+            API). The code runs <strong>after</strong> the editor is fully
+            initialized.
+          </li>
+          <li>
+            <strong>Use executable &lt;script&gt; tags</strong> when you need
+            immediate execution during HTML parsing. This is useful for simple
+            demonstrations, but the editor instance won't be accessible yet (which
+            may be too early for some use cases).
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
 
     <h2>onChange - Ace Editor Web Component</h2>
     <p>
@@ -2172,6 +2876,29 @@ greet("World");</textarea
 
     <div
       style="
+        padding: 15px;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        border-radius: 4px;
+        margin: 20px 0;
+      "
+    >
+      <strong>💡 Alternative Approach - Global Event:</strong> You can also use
+      the global <code>document.addEventListener("ace-onload", ...)</code> event
+      (see <a href="#logs" style="color: #1976d2; font-weight: bold">Event Log section</a>)
+      to tweak each newly created ace-editor instance. This is particularly useful
+      when you want to apply custom configurations to multiple editors.
+      <br /><br />
+      <strong>Tip:</strong> Add custom attributes or classes to individual
+      <code>&lt;ace-editor&gt;</code> tags (e.g.,
+      <code>data-custom="special"</code> or <code>class="my-editor"</code>), then
+      in the <code>ace-onload</code> event handler, check
+      <code>event.detail.component</code> to distinguish between editors and
+      apply specific tweaks to each one.
+    </div>
+
+    <div
+      style="
         background: white;
         padding: 20px;
         border-radius: 8px;
@@ -2314,16 +3041,18 @@ greet("World");</textarea
 
       <ace-editor id="advanced-editor" lang="javascript" data-eval>
         <script type="ace">
-          // This editor demonstrates getEditor() by setting up controls that operate on ITSELF!
-          // The code below executes once via data-eval and sets up the interactive demo.
+          // Wrap in block scope to avoid variable conflicts with other editors
+          {
+            // This editor demonstrates getEditor() by setting up controls that operate on ITSELF!
+            // The code below executes once via data-eval and sets up the interactive demo.
 
-          const advancedEditor = document.querySelector('#advanced-editor');
-          let currentFontSize = 14;
-          let lineNumbersVisible = true;
-          let highlightMarker = null;
+            const advancedEditor = document.querySelector('#advanced-editor');
+            let currentFontSize = 14;
+            let lineNumbersVisible = true;
+            let highlightMarker = null;
 
-          // Get the native Ace Editor instance - this is the key feature being demonstrated!
-          const editor = advancedEditor.getEditor();
+            // Get the native Ace Editor instance - this is the key feature being demonstrated!
+            const editor = advancedEditor.getEditor();
 
           // Find next occurrence in THIS editor
           window.findNext = () => {
@@ -2448,8 +3177,9 @@ greet("World");</textarea
             resultsDiv.textContent = `✅ Lines 5-7 highlighted (the getEditor() magic!)`;
           };
 
-          console.log('✅ Advanced editor features initialized using getEditor()!');
-          console.log('💡 Try: Search "let" and replace with "const", then click Replace All!');
+            console.log('✅ Advanced editor features initialized using getEditor()!');
+            console.log('💡 Try: Search "let" and replace with "const", then click Replace All!');
+          } // End of block scope
         </script>
       </ace-editor>
 
