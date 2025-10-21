@@ -271,12 +271,6 @@
 
     <script src="https://stopsopa.github.io/alert-webcomponent/alert-box.js"></script>
 
-    <!-- Load the ace-web-component script with configuration -->
-    <script
-      src="../../ace-web-component.js"
-      data-main-ace="../../noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"
-    ></script>
-
     <!-- Script to add IDs and anchor links to headers -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -415,6 +409,12 @@
       </script>
     </ace-editor>
 
+    <!-- load after above id="editor-for-logs", because log event have to be mounted first -->
+    <script
+      src="../../ace-web-component.js"
+      data-main-ace="../../noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"
+    ></script>
+
     <div class="content-card">
       <div
         style="
@@ -474,7 +474,6 @@
 
       <ace-editor lang="html" readonly>
         <script type="ace">
-
           <script
             src="https://stopsopa.github.io/ace-editor-webcomponent/ace-web-component.js"
             data-main-ace="https://stopsopa.github.io/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"
@@ -520,7 +519,7 @@
       >
         <div>
           <h5 style="margin: 10px 0; color: #333">HTML Code:</h5>
-          <ace-editor lang="html" readonly >
+          <ace-editor lang="html" readonly>
             <script type="ace">
               <ace-editor lang="javascript">
                 <script type="ace">
@@ -566,7 +565,7 @@
       >
         <div>
           <h5 style="margin: 10px 0; color: #333">HTML Code:</h5>
-          <ace-editor lang="html" readonly >
+          <ace-editor lang="html" readonly>
             <script type="ace">
               <ace-editor lang="python" theme="monokai" readonly>
                 <script type="ace">
@@ -1605,7 +1604,7 @@ func main() {
       >
         <div>
           <h4 style="margin: 10px 0; color: #333">HTML Code:</h4>
-          <ace-editor lang="html" readonly >
+          <ace-editor lang="html" readonly>
             <script type="ace">
               <ace-editor lang="javascript">
                   // JavaScript Example
@@ -2147,7 +2146,7 @@ alert("data-eval executed!");
         <strong>ESM mode</strong> with import/export support.
       </p>
 
-      <ace-editor lang="html" readonly >
+      <ace-editor lang="html" readonly>
         <script type="ace">
           <ace-editor lang="javascript" data-eval="module">
               <script type="ace">
@@ -2278,7 +2277,7 @@ setTimeout(() => {
       </h4>
       <p>Standard JavaScript execution (non-ESM mode):</p>
 
-      <ace-editor lang="html" readonly >
+      <ace-editor lang="html" readonly>
         <script type="ace">
           <ace-editor lang="javascript">
               <script type="text/javascript">
@@ -2329,7 +2328,7 @@ alert("Script with type='text/javascript' executed!");
       </h4>
       <p>Alternative MIME type for JavaScript (also non-ESM mode):</p>
 
-      <ace-editor lang="html" readonly >
+      <ace-editor lang="html" readonly>
         <script type="ace">
           <ace-editor lang="javascript">
               <script type="application/javascript">
@@ -2378,7 +2377,7 @@ alert("Script with type='application/javascript' executed!");
       <h4 style="color: #667eea">Example 2.3: &lt;script type="module"&gt;</h4>
       <p>ESM (ECMAScript Module) execution with import/export support:</p>
 
-      <ace-editor lang="html" readonly >
+      <ace-editor lang="html" readonly>
         <script type="ace">
           <ace-editor lang="javascript">
               <script type="module">
