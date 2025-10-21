@@ -215,39 +215,33 @@
 
     <h2>ace-onload Event</h2>
     <p>
-      <strong>📡 Lifecycle Hook:</strong> Listen for
-      <code>'ace-onload'</code> events to know when each editor is fully
-      initialized. This event fires once per editor and provides access to the
-      component and native editor instance.
+      Before we dive into dynamic controls, let me introduce a powerful global
+      event that's available for advanced configuration scenarios. The
+      <code>'ace-onload'</code> event is not always needed for basic usage, but
+      it becomes invaluable when you need to configure each editor instance
+      beyond the standard attributes available on the main
+      <code>&lt;ace-editor&gt;</code> tag.
+    </p>
+    <p>
+      <strong>📡 Lifecycle Hook:</strong> This event fires once per editor when
+      it's fully initialized, providing access to both the web component wrapper
+      and the native Ace Editor instance. Use it to apply advanced
+      configurations, attach custom event handlers, or integrate with other
+      libraries that need direct editor access.
     </p>
 
-    <script>
-      // Listen for ace-onload events from ALL ace-editor components
-      document.addEventListener("ace-onload", (event) => {
-        const log = document.getElementById("event-log");
-        const timestamp = new Date().toLocaleTimeString();
-        log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
-        log.scrollTop = log.scrollHeight;
-      });
-
-      // Function to clear the event log
-      window.clearEventLog = () => {
-        const log = document.getElementById("event-log");
-        log.textContent = "";
-      };
-    </script>
-
-    <ace-editor
-      id="editor-for-logs"
-      lang="javascript"
-      data-eval="module"
-      readonly
-    >
-      <script type="text/javascript">
-        const log = document.getElementById("event-log");
-
+    <ace-editor id="editor-for-logs" lang="javascript" readonly>
+      <script type="module">
         // Listen for ace-onload events from ALL ace-editor components
         document.addEventListener("ace-onload", (event) => {
+          // TypeScript notation showing what's available in event.detail:
+          // event.detail: {
+          //   component: HTMLElement,  // The <ace-editor> web component element
+          //   editor: AceEditor,       // The native Ace Editor instance (same as component.getEditor())
+          //   id: string               // The ID of the editor (auto-generated or user-provided)
+          // }
+
+          const log = document.getElementById("event-log");
           const timestamp = new Date().toLocaleTimeString();
           log.textContent += `[${timestamp}] ace-onload fired for #${event.detail.id}\n`;
           log.scrollTop = log.scrollHeight;
