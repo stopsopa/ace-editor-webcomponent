@@ -13,6 +13,23 @@
   const currentScript = document.currentScript;
   const aceEditorUrl = currentScript?.getAttribute("data-main-ace");
 
+  if (!aceEditorUrl) {
+    /**
+     * TODO:
+     * This is interesting case - might actually return when I would like to use it with react and bundler
+     * Because in such case I will not have separate script tag loading this file
+     * Probably it would work when we would set attribute [data-main-ace] on the script tag that loads the bundle
+     * But we cannot asume we will always have such luxury - some frameworks might make it difficult
+     *
+     * So in that case we would need to have alternative way to provide aceEditorUrl
+     */
+    console.error(
+      "❌ ace-web-component.js: Missing required data-main-ace attribute on script tag that loads this file. " +
+        "Please provide the URL to the Ace Editor main script."
+    );
+    return;
+  }
+
   // Singleton loader for Ace Editor
   let aceEditorPromise = null;
 
@@ -41,7 +58,7 @@
    */
   function unescapeHtmlEntities(str) {
     const htmlEntities = {
-      '&lt;': '<',
+      "&lt;": "<",
       // '&gt;': '>',
       // '&amp;': '&',
       // '&quot;': '"',
@@ -50,7 +67,10 @@
       // '&#x2F;': '/',
     };
 
-    return str.replace(/&(?:lt|gt|amp|quot|#39|#x27|#x2F);/g, (match) => htmlEntities[match] || match);
+    return str.replace(
+      /&(?:lt|gt|amp|quot|#39|#x27|#x2F);/g,
+      (match) => htmlEntities[match] || match
+    );
   }
 
   /**
@@ -240,6 +260,10 @@
             width: 100%;
             // height: 200px;
           }
+          /* Hide horizontal scrollbar since we use wrap mode */
+          .ace_scrollbar-h {
+            display: none !important;
+          }
         </style>
         <div class="ace-wrapper">
           <p class="loading-message">Loading Ace Editor...</p>
@@ -283,7 +307,7 @@
 
       // Initialize Ace Editor
       const editor = ace.edit(container);
-      
+
       // Flag to track if we're in a programmatic update (to suppress 'input' event)
       // Initialize early so we can use it during initial content setting
       this._isProgrammaticChange = false;
@@ -292,14 +316,11 @@
       // Ace injects its styles into document.styleSheets dynamically
       // We need to copy those styles into the shadow DOM
       const adoptStylesheets = () => {
-        const existingAdoptedSheets = shadow.adoptedStyleSheets || [];
-
         // Get all document stylesheets that Ace has created
         const aceStyleSheets = Array.from(document.styleSheets).filter(
           (sheet) => {
             try {
               // Check if it's an Ace-related stylesheet
-              const href = sheet.href || "";
               const ownerNode = sheet.ownerNode;
 
               // Ace creates style tags dynamically
@@ -319,7 +340,10 @@
         );
 
         // For browsers that support adoptedStyleSheets
-        if (shadow.adoptedStyleSheets !== undefined) {
+        if (shadow.adoptedStyleSheets === undefined) {
+          // Fallback: copy styles manually
+          copyStylesManually();
+        } else {
           try {
             shadow.adoptedStyleSheets = [...aceStyleSheets];
           } catch (e) {
@@ -328,9 +352,6 @@
             // Fallback: copy styles manually
             copyStylesManually();
           }
-        } else {
-          // Fallback: copy styles manually
-          copyStylesManually();
         }
 
         function copyStylesManually() {
@@ -371,7 +392,7 @@
       editor.setOption("hScrollBarAlwaysVisible", false);
 
       // Additional scrollbar configuration
-      editor.renderer.setScrollMargin(0, 0, 0, 0);   
+      editor.renderer.setScrollMargin(0, 0, 0, 0);
 
       if (readonly) {
         editor.setReadOnly(true);
@@ -385,9 +406,9 @@
       if (this.getAttribute("value")) {
         initialContent = this.getAttribute("value");
       }
-      // Check for <script type="ace"> tag
+      // Check for <script> tag
       else {
-        const scriptTag = this.querySelector('script[type="ace"]');
+        const scriptTag = this.querySelector('script');
         if (scriptTag) {
           initialContent = scriptTag.textContent || "";
         } else {
@@ -398,7 +419,7 @@
 
         // Decode HTML entities ONLY when reading from static content (not from value attribute)
         // and ONLY if data-nolt attribute is NOT present
-        // This allows writing &lt;/script&gt; inside <script type="ace"> without prematurely closing the tag
+        // This allows writing &lt;/script&gt; inside <script> without prematurely closing the tag
         if (initialContent && !this.hasAttribute("data-nolt")) {
           initialContent = unescapeHtmlEntities(initialContent);
         }
@@ -408,7 +429,7 @@
       // Removes common leading whitespace from all lines
       if (initialContent && !this.hasAttribute("data-notrim")) {
         (function (v) {
-          let diff = 1111;
+          let diff = Number.MAX_SAFE_INTEGER;
 
           let tmp = v.split("\n");
 
@@ -427,14 +448,10 @@
             }
           });
 
-          if (diff !== 1111 && diff > 0) {
+          if (diff !== Number.MAX_SAFE_INTEGER && diff > 0) {
             tmp = tmp.map((line) => line.substring(diff));
 
             initialContent = tmp.join("\n");
-
-            if (tmp[tmp.length - 2] && tmp[tmp.length - 2].trim() !== "") {
-              initialContent += "\n";
-            }
           }
         })(initialContent);
       }
@@ -459,9 +476,9 @@
 
       // Auto-resize to fit content
       const heightUpdateFunction = () => {
+        // Calculate height based on content only (horizontal scrollbar is hidden)
         const contentHeight =
-          session.getScreenLength() * editor.renderer.lineHeight +
-          editor.renderer.scrollBar.getWidth();
+          session.getScreenLength() * editor.renderer.lineHeight;
 
         // Check for min-height constraints
         const minHeightPx = this.getAttribute("min-height-px");
@@ -472,8 +489,7 @@
           minHeight = parseInt(minHeightPx, 10);
         } else if (minHeightLines) {
           minHeight =
-            parseInt(minHeightLines, 10) * editor.renderer.lineHeight +
-            editor.renderer.scrollBar.getWidth();
+            parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
         }
 
         const finalHeight = Math.max(contentHeight, minHeight);
@@ -649,9 +665,7 @@
         unregisterEditorId(this.id);
       }
 
-      log(
-        `🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`
-      );
+      log(`🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`);
     }
 
     // Public API: Get editor value
@@ -704,7 +718,5 @@
   // Register the custom element
   customElements.define("ace-editor", AceEditorComponent);
 
-  log(
-    "loaded! <ace-editor> components are now registered."
-  );
+  log("loaded! <ace-editor> components are now registered.");
 })();
