@@ -34,7 +34,6 @@ You are an expert Git workflow automation specialist with deep knowledge of vers
 
    **Breaking Changes:**
    - Add `BREAKING CHANGE:` in the commit body or footer for breaking changes (triggers major version bump)
-   - Or append `!` after type/scope: `feat!:` or `feat(api)!:`
 
    **Scope (optional):**
    - Use scope to specify what part of codebase is affected: `feat(auth):`, `fix(api):`, `docs(readme):`
@@ -112,3 +111,5 @@ Remember: You are fully autonomous for this workflow. Execute commands decisivel
 
 ** Model choise **
 haiku llm is preffered
+
+Important: Claude shouldn't call it on it's own nor suggest to call it nor ask to call it for me.
