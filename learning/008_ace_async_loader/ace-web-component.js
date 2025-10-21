@@ -3,14 +3,15 @@
 // use: <script src="./ace-web-component.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"></script>
 
 (function () {
+  function log(...args) {
+    console.log("📦 ace-web-component.js", ...args);
+  }
   // Get configuration from the script tag that loaded this file
   // NOTE: We use "data-main-ace" (which Ace converts to "aceUrl" - not a valid Ace config)
   // Ace Editor reads data-ace-* attributes, so we avoid names like "data-ace-editor-url"
   // that would convert to "editorUrl" and conflict with Ace's config
   const currentScript = document.currentScript;
   const aceEditorUrl = currentScript?.getAttribute("data-main-ace");
-
-  console.log(`📋 Configuration: aceEditorUrl = "${aceEditorUrl}"`);
 
   // Singleton loader for Ace Editor
   let aceEditorPromise = null;
@@ -41,8 +42,8 @@
     if (registeredIds.has(id)) {
       throw new Error(
         `❌ Duplicate ace-editor ID detected: "${id}". ` +
-        `Each ace-editor must have a unique ID. ` +
-        `Either remove the duplicate ID or let the component auto-generate unique IDs.`
+          `Each ace-editor must have a unique ID. ` +
+          `Either remove the duplicate ID or let the component auto-generate unique IDs.`
       );
     }
     registeredIds.add(id);
@@ -63,13 +64,10 @@
   async function loadAceEditor() {
     // Return cached promise if already loading/loaded
     if (aceEditorPromise) {
-      console.log(
-        "✅ Ace Editor loading already initialized, returning cached promise"
-      );
       return aceEditorPromise;
     }
 
-    console.log("🔄 Loading Ace Editor for the first time...");
+    log("Loading Ace Editor for the first time...");
 
     aceEditorPromise = new Promise((resolve, reject) => {
       // Create script element for main Ace library
@@ -78,15 +76,13 @@
 
       // Handle load success
       script.onload = () => {
-        console.log("✅ Ace Editor core script loaded successfully!");
+        log("Ace Editor core script loaded successfully!");
 
         // Wait for window.ace to be available
         const checkAce = () => {
           if (window?.ace && typeof window?.ace?.edit === "function") {
-            console.log("✅ window.ace.edit is ready!", window.ace);
             resolve(window.ace);
           } else {
-            console.log("⏳ Waiting for window.ace.edit...");
             setTimeout(checkAce, 150);
           }
         };
@@ -179,7 +175,7 @@
       } else {
         // Generate unique ID automatically
         this.id = generateUniqueId();
-        console.log(`🆔 Auto-generated unique ID: ${this.id}`);
+        log(`🆔 Auto-generated unique ID: ${this.id}`);
 
         // Register auto-generated IDs (they won't be duplicates by design)
         registerEditorId(this.id);
@@ -226,7 +222,6 @@
       `;
 
       const componentId = this.id;
-      console.log(`🔗 Ace Editor component connected: ${componentId}`);
 
       // Load Ace and initialize
       (async () => {
@@ -302,7 +297,8 @@
           try {
             shadow.adoptedStyleSheets = [...aceStyleSheets];
           } catch (e) {
-            console.log("Could not adopt stylesheets:", e);
+            // Expected error: Ace creates regular <style> tags, not constructed stylesheets
+            // console.log("Could not adopt stylesheets:", e);
             // Fallback: copy styles manually
             copyStylesManually();
           }
@@ -321,7 +317,7 @@
                 .join("\n");
               shadow.appendChild(styleEl);
             } catch (e) {
-              console.log("Could not copy stylesheet:", e);
+              log("Could not copy stylesheet:", e);
             }
           });
         }
@@ -364,7 +360,8 @@
           initialContent = scriptTag.textContent || "";
         } else {
           // Fall back to textContent or content attribute
-          initialContent = this.textContent || this.getAttribute("content") || "";
+          initialContent =
+            this.textContent || this.getAttribute("content") || "";
         }
       }
 
@@ -494,8 +491,6 @@
       // Store pending value that was blocked by readonly
       this._pendingValue = null;
 
-      console.log(`✅ Ace Editor initialized: ${this.id || "unnamed"}`);
-
       // Execute data-eval code AFTER everything is fully initialized
       // This ensures this.editor is set and getValue() works correctly
       if (shouldEval && codeToEval) {
@@ -506,7 +501,7 @@
           // - data-eval or data-eval="" -> regular script (no type attribute)
           const scriptType = dataEvalValue === "module" ? "module" : null;
 
-          console.log(
+          log(
             `🔥 Executing data-eval code for: ${this.id || "unnamed"}${
               scriptType ? ` (type: ${scriptType})` : ""
             }`
@@ -529,14 +524,16 @@
 
       // Dispatch custom 'ace-onload' event when editor is fully ready
       // This allows external code to hook into the initialization lifecycle
-      this.dispatchEvent(new CustomEvent('ace-onload', {
-        bubbles: true,
-        detail: {
-          component: this,
-          editor: this.editor,
-          id: this.id || 'unnamed'
-        }
-      }));
+      this.dispatchEvent(
+        new CustomEvent("ace-onload", {
+          bubbles: true,
+          detail: {
+            component: this,
+            editor: this.editor,
+            id: this.id || "unnamed",
+          },
+        })
+      );
     }
 
     // Handle attribute changes (React compatibility)
@@ -613,7 +610,7 @@
         unregisterEditorId(this.id);
       }
 
-      console.log(
+      log(
         `🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`
       );
     }
@@ -668,7 +665,7 @@
   // Register the custom element
   customElements.define("ace-editor", AceEditorComponent);
 
-  console.log(
-    "📦 ace-web-component.js loaded! <ace-editor> components are now registered."
+  log(
+    "loaded! <ace-editor> components are now registered."
   );
 })();
