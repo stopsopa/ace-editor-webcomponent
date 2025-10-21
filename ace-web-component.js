@@ -34,6 +34,26 @@
   }
 
   /**
+   * Decodes HTML entities in a string (similar to lodash _.unescape)
+   * Converts &lt; to <, &gt; to >, &amp; to &, &quot; to ", &#39; to '
+   * @param {string} str - String with HTML entities
+   * @returns {string} Decoded string
+   */
+  function unescapeHtmlEntities(str) {
+    const htmlEntities = {
+      '&lt;': '<',
+      // '&gt;': '>',
+      // '&amp;': '&',
+      // '&quot;': '"',
+      // '&#39;': "'",
+      // '&#x27;': "'",
+      // '&#x2F;': '/',
+    };
+
+    return str.replace(/&(?:lt|gt|amp|quot|#39|#x27|#x2F);/g, (match) => htmlEntities[match] || match);
+  }
+
+  /**
    * Registers an ID and throws if it's a duplicate
    * @param {string} id - The ID to register
    * @throws {Error} If ID is already registered
@@ -114,6 +134,13 @@
    * 4. content attribute - alternative to textContent
    *
    * Priority: value > <script type="ace"> > textContent > content
+   *
+   * HTML Entity Decoding:
+   * By default, HTML entities like &lt; &gt; &amp; are decoded to < > & when reading
+   * from static content (methods 2-4). This allows you to write &lt;/script&gt; inside
+   * <script type="ace"> without prematurely closing the tag.
+   * Use data-nolt attribute to disable this decoding if needed.
+   * Note: value attribute (method 1) never decodes entities.
    */
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
@@ -125,6 +152,7 @@
         "readonly",
         "min-height-px",
         "min-height-lines",
+        "data-nolt",
       ];
     }
 
@@ -360,6 +388,13 @@
           // Fall back to textContent or content attribute
           initialContent =
             this.textContent || this.getAttribute("content") || "";
+        }
+
+        // Decode HTML entities ONLY when reading from static content (not from value attribute)
+        // and ONLY if data-nolt attribute is NOT present
+        // This allows writing &lt;/script&gt; inside <script type="ace"> without prematurely closing the tag
+        if (initialContent && !this.hasAttribute("data-nolt")) {
+          initialContent = unescapeHtmlEntities(initialContent);
         }
       }
 
