@@ -466,12 +466,22 @@
     <div class="content-card">
       <h3 style="margin-top: 0">Step 1: Load the Script</h3>
       <p>
-        Add this <code>&lt;script&gt;</code> tag to your HTML
+        Add ONE of these <code>&lt;script&gt;</code> tag to your HTML
         <code>&lt;head&gt;</code> section:
       </p>
 
       <ace-editor lang="html" readonly>
         <script type="ace">
+          <script
+            src="https://stopsopa.github.io/ace-editor-webcomponent/ace-web-component.js"
+            data-main-ace="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.min.js"
+          >&lt;/script>
+
+          <script
+            src="https://stopsopa.github.io/ace-editor-webcomponent/ace-web-component.js"
+            data-main-ace="https://cdn.jsdelivr.net/npm/ace-builds@1.43.4/src-min-noconflict/ace.js"
+          >&lt;/script>
+
           <script
             src="https://stopsopa.github.io/ace-editor-webcomponent/ace-web-component.js"
             data-main-ace="https://stopsopa.github.io/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js"
