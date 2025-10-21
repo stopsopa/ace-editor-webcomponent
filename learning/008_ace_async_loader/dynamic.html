@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>008 - Ace Editor Dynamic Demo</title>
 
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+
     <style>
+:root { font-family: 'Inter', sans-serif; }
+@supports (font-variation-settings: normal) {
+  :root { font-family: 'Inter var', sans-serif; }
+}
       body {
-        font-family: Arial, sans-serif;
         max-width: 1400px;
         margin: 20px auto;
         padding: 0 20px;
@@ -160,7 +167,6 @@
         width: 100%;
         min-height: 300px;
         padding: 10px;
-        font-family: "Courier New", monospace;
         font-size: 14px;
         border: 2px solid #ddd;
         border-radius: 4px;
@@ -350,15 +356,15 @@
       <a href="./index.html">← Back to Main Lesson</a>
     </p>
 
-    <div class="info-box">
+    <alert-box type="note">
       <strong>🎮 Interactive Demo:</strong> This page demonstrates real-time
       attribute updates to the <code>&lt;ace-editor&gt;</code> web component.
       Change any control and see the editor update instantly!
-    </div>
+    </alert-box>
 
     <h2>ace-onload Event</h2>
     <p>
-      Before we dive into dynamic controls, let me introduce a powerful global
+      Before we dive into dynamic controls, let 00 me introduce a powerful global
       event that's available for advanced configuration scenarios. The
       <code>'ace-onload'</code> event is not always needed for basic usage, but
       it becomes invaluable when you need to configure each editor instance
@@ -612,20 +618,12 @@ print(factorial(5))
         </div>
       </div>
 
-      <div
-        style="
-          padding: 15px;
-          background: #d4edda;
-          border-left: 4px solid #28a745;
-          border-radius: 4px;
-          margin-top: 20px;
-        "
-      >
-        <strong style="color: #155724">✅ That's it!</strong> Once you load the
+      <alert-box type="tip">
+        <strong>✅ That's it!</strong> Once you load the
         script, the <code>&lt;ace-editor&gt;</code> tag becomes available
         throughout your entire page. You can use it as many times as you need,
         just like any other HTML element!
-      </div>
+      </alert-box>
     </div>
 
     <hr style="margin: 40px 0; border: none; border-top: 2px solid #e0e0e0" />
@@ -701,19 +699,11 @@ print(factorial(5))
 
       </div>
 
-      <div
-        style="
-          padding: 15px;
-          background: #d4edda;
-          border-left: 4px solid #28a745;
-          border-radius: 4px;
-          margin-bottom: 30px;
-        "
-      >
-        <strong style="color: #155724">✅ Best Practice:</strong> Don't provide
+      <alert-box type="tip">
+        <strong>✅ Best Practice:</strong> Don't provide
         an ID unless you specifically need to reference the editor by ID. Let
         the component auto-generate IDs to avoid conflicts.
-      </div>
+      </alert-box>
 
       <h3>Example 2: Manual IDs (Use with Caution)</h3>
       <p>
@@ -778,20 +768,12 @@ print(factorial(5))
         </div>
       </div>
 
-      <div
-        style="
-          padding: 15px;
-          background: #fff3cd;
-          border-left: 4px solid #ffc107;
-          border-radius: 4px;
-          margin-bottom: 30px;
-        "
-      >
-        <strong style="color: #856404">⚠️ Warning:</strong> When providing
+      <alert-box type="warning">
+        <strong>⚠️ Warning:</strong> When providing
         manual IDs, you must ensure each ID is unique across
         <strong>all</strong> ace-editor components on the page. Duplicate IDs
         will cause errors!
-      </div>
+      </alert-box>
 
       <h3>Example 3: Duplicate ID Error</h3>
       <p style="color: #dc3545; font-weight: bold">
@@ -914,19 +896,12 @@ print(factorial(5))
         </li>
       </ul>
 
-      <div
-        style="
-          padding: 15px;
-          background: #e3f2fd;
-          border-radius: 4px;
-          margin-top: 15px;
-        "
-      >
+      <alert-box type="note">
         <strong>💡 Key Feature:</strong> The "HTML Usage Example" panel is
         particularly useful - it generates the exact
         <code>&lt;ace-editor&gt;</code> tag with all attributes you've
         configured, so you can copy-paste it directly into your own projects!
-      </div>
+      </alert-box>
     </div>
 
     <div
@@ -974,7 +949,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               id
@@ -996,7 +970,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               lang
@@ -1016,7 +989,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               theme
@@ -1037,7 +1009,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               value
@@ -1059,7 +1030,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               readonly
@@ -1079,7 +1049,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               min-height-lines
@@ -1099,7 +1068,6 @@ print(factorial(5))
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               min-height-px
@@ -1712,20 +1680,12 @@ func main() {
         </div>
       </div>
 
-      <div
-        style="
-          padding: 15px;
-          background: #fff3cd;
-          border-left: 4px solid #ffc107;
-          border-radius: 4px;
-          margin-top: 15px;
-        "
-      >
-        <strong style="color: #856404">⚠️ Warning:</strong> While this method
+      <alert-box type="warning">
+        <strong>⚠️ Warning:</strong> While this method
         is simple, code formatting tools like <strong>Prettier</strong> may
         reformat your code, potentially destroying your carefully crafted
         indentation and layout.
-      </div>
+      </alert-box>
     </div>
 
     <div
@@ -1783,21 +1743,13 @@ func main() {
         </div>
       </div>
 
-      <div
-        style="
-          padding: 15px;
-          background: #d4edda;
-          border-left: 4px solid #28a745;
-          border-radius: 4px;
-          margin-top: 15px;
-        "
-      >
-        <strong style="color: #155724">✅ Recommended:</strong> The
+      <alert-box type="tip">
+        <strong>✅ Recommended:</strong> The
         <code>&lt;script type="ace"&gt;</code> syntax prevents Prettier and
         other formatting tools from modifying your code. The
         <code>type="ace"</code> attribute tells these tools to ignore the
         content, preserving your exact formatting and indentation.
-      </div>
+      </alert-box>
     </div>
 
     <div
@@ -1887,19 +1839,11 @@ func main() {
         </tbody>
       </table>
 
-      <div
-        style="
-          padding: 15px;
-          background: #e3f2fd;
-          border-left: 4px solid #2196f3;
-          border-radius: 4px;
-          margin-top: 20px;
-        "
-      >
+      <alert-box type="tip">
         <strong>💡 Pro Tip:</strong> Both methods produce identical results at
         runtime. The <code>&lt;script type="ace"&gt;</code> method is purely for
         better development experience when working with code formatting tools.
-      </div>
+      </alert-box>
     </div>
 
     <div
@@ -2617,7 +2561,6 @@ alert(greeting);
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               data-eval
@@ -2637,7 +2580,6 @@ alert(greeting);
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               data-eval="module"
@@ -2657,7 +2599,6 @@ alert(greeting);
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               &lt;script type="text/javascript"&gt;
@@ -2677,7 +2618,6 @@ alert(greeting);
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               &lt;script type="application/javascript"&gt;
@@ -2697,7 +2637,6 @@ alert(greeting);
               style="
                 padding: 10px;
                 border: 1px solid #ddd;
-                font-family: monospace;
               "
             >
               &lt;script type="module"&gt;
@@ -2829,7 +2768,6 @@ alert(greeting);
           style="
             width: 100%;
             min-height: 200px;
-            font-family: monospace;
             padding: 10px;
           "
         >
@@ -3206,7 +3144,6 @@ greet("World");</textarea
           padding: 10px;
           background: #f8f9fa;
           border-radius: 4px;
-          font-family: monospace;
           font-size: 14px;
           min-height: 30px;
         "
