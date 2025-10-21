@@ -147,11 +147,10 @@
                 width: 100%;
               }
               .error-wrapper {
-                border: 2px solid #dc3545;
-                border-radius: 8px;
-                background: #f8d7da;
+                border: 2px solid #999;
+                background: #e0e0e0;
                 padding: 20px;
-                color: #721c24;
+                color: #333;
               }
               .error-title {
                 font-weight: bold;
@@ -191,9 +190,8 @@
             width: 100%;
           }
           .ace-wrapper {
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #999;
+            background: #f5f5f5;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -206,7 +204,7 @@
           }
           .loading-message {
             font-weight: bold;
-            color: #667eea;
+            color: #666;
             font-size: 14px;
           }
           .ace-container {
@@ -216,7 +214,7 @@
           }
         </style>
         <div class="ace-wrapper">
-          <p class="loading-message">⏳ Loading Ace Editor...</p>
+          <p class="loading-message">Loading Ace Editor...</p>
           <div class="ace-container"></div>
         </div>
       `;
@@ -236,7 +234,7 @@
           const label = shadow.querySelector(".loading-message");
           if (label) {
             label.textContent = "❌ Failed to load Ace Editor";
-            label.style.color = "#dc3545";
+            label.style.color = "#555";
           }
         }
       })();
@@ -249,7 +247,7 @@
       const label = shadow.querySelector(".loading-message");
 
       // Update UI to show loaded state
-      label.textContent = "✅ Ace Editor Loaded!";
+      label.textContent = "Ace Editor Loaded!";
       setTimeout(() => {
         label.style.display = "none";
         wrapper.classList.add("loaded");
