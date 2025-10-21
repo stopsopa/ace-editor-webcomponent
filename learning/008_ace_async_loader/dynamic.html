@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>008 - Ace Editor Dynamic Demo</title>
 
-    <link rel="preconnect" href="https://rsms.me/">
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
     <style>
-:root { font-family: 'Inter', sans-serif; }
-@supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
-}
+      :root {
+        font-family: "Inter", sans-serif;
+      }
+      @supports (font-variation-settings: normal) {
+        :root {
+          font-family: "Inter var", sans-serif;
+        }
+      }
       body {
         max-width: 1400px;
         margin: 20px auto;
@@ -199,7 +202,9 @@
         font-style: italic;
       }
       /* Anchor link styling */
-      h1, h2, h3 {
+      h1,
+      h2,
+      h3 {
         position: relative;
       }
       .header-anchor {
@@ -267,50 +272,53 @@
 
     <!-- Script to add IDs and anchor links to headers -->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         // Function to create URL-friendly ID from header text
         function createId(text) {
           return text
             .toLowerCase()
-            .replace(/[^\w\s-]/g, '') // Remove special characters
-            .replace(/\s+/g, '-')      // Replace spaces with hyphens
-            .replace(/^-+|-+$/g, '');  // Trim hyphens from start/end
+            .replace(/[^\w\s-]/g, "") // Remove special characters
+            .replace(/\s+/g, "-") // Replace spaces with hyphens
+            .replace(/^-+|-+$/g, ""); // Trim hyphens from start/end
         }
 
         // Function to copy URL with hash to clipboard
         function copyAnchorUrl(id) {
           const url = `${window.location.origin}${window.location.pathname}#${id}`;
-          navigator.clipboard.writeText(url).then(() => {
-            // Show notification
-            const notification = document.createElement('div');
-            notification.className = 'copy-notification';
-            notification.textContent = '✓ Link copied to clipboard!';
-            document.body.appendChild(notification);
+          navigator.clipboard
+            .writeText(url)
+            .then(() => {
+              // Show notification
+              const notification = document.createElement("div");
+              notification.className = "copy-notification";
+              notification.textContent = "✓ Link copied to clipboard!";
+              document.body.appendChild(notification);
 
-            // Remove notification after animation
-            setTimeout(() => {
-              notification.remove();
-            }, 3000);
-          }).catch(err => {
-            console.error('Failed to copy:', err);
-          });
+              // Remove notification after animation
+              setTimeout(() => {
+                notification.remove();
+              }, 3000);
+            })
+            .catch((err) => {
+              console.error("Failed to copy:", err);
+            });
         }
 
         // Process all h1, h2, h3 headers
-        const headers = document.querySelectorAll('h1, h2, h3');
+        const headers = document.querySelectorAll("h1, h2, h3");
         const usedIds = new Set();
 
-        headers.forEach(header => {
+        headers.forEach((header) => {
           // Skip if header already has an ID
           if (header.id) {
             usedIds.add(header.id);
 
             // Add anchor link even if ID exists
-            const anchor = document.createElement('span');
-            anchor.className = 'header-anchor';
-            anchor.textContent = '🔗';
-            anchor.title = 'Copy link to this section';
-            anchor.addEventListener('click', (e) => {
+            const anchor = document.createElement("span");
+            anchor.className = "header-anchor";
+            anchor.textContent = "🔗";
+            anchor.title = "Copy link to this section";
+            anchor.addEventListener("click", (e) => {
               e.preventDefault();
               copyAnchorUrl(header.id);
             });
@@ -333,11 +341,11 @@
           header.id = finalId;
 
           // Add anchor link
-          const anchor = document.createElement('span');
-          anchor.className = 'header-anchor';
-          anchor.textContent = '🔗';
-          anchor.title = 'Copy link to this section';
-          anchor.addEventListener('click', (e) => {
+          const anchor = document.createElement("span");
+          anchor.className = "header-anchor";
+          anchor.textContent = "🔗";
+          anchor.title = "Copy link to this section";
+          anchor.addEventListener("click", (e) => {
             e.preventDefault();
             copyAnchorUrl(finalId);
           });
@@ -345,16 +353,12 @@
           header.insertBefore(anchor, header.firstChild);
         });
 
-        console.log('✅ Added anchor links to', headers.length, 'headers');
+        console.log("✅ Added anchor links to", headers.length, "headers");
       });
     </script>
   </head>
   <body>
-    <h1>Lesson 008: Ace Editor - Dynamic Demo</h1>
-
-    <p>
-      <a href="./index.html">← Back to Main Lesson</a>
-    </p>
+    <h1>Documentation and demo for &lt;ace-editor&gt; web component</h1>
 
     <alert-box type="note">
       <strong>🎮 Interactive Demo:</strong> This page demonstrates real-time
@@ -364,8 +368,8 @@
 
     <h2>ace-onload Event</h2>
     <p>
-      Before we dive into dynamic controls, let 00 me introduce a powerful global
-      event that's available for advanced configuration scenarios. The
+      Before we dive into dynamic controls, let 00 me introduce a powerful
+      global event that's available for advanced configuration scenarios. The
       <code>'ace-onload'</code> event is not always needed for basic usage, but
       it becomes invaluable when you need to configure each editor instance
       beyond the standard attributes available on the main
@@ -477,14 +481,10 @@
         <code>&lt;head&gt;</code> section:
       </p>
 
-      <ace-editor
-        lang="html"
-        readonly
-      >
-      
-      &lt;script src="./ace-web-component.js" data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js">&lt;/script>
-    
-    </ace-editor>
+      <ace-editor lang="html" readonly>
+        &lt;script src="./ace-web-component.js"
+        data-main-ace="/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js">&lt;/script>
+      </ace-editor>
 
       <alert-box type="note">
         <strong>💡 Explanation:</strong>
@@ -533,30 +533,23 @@
       >
         <div>
           <h5 style="margin: 10px 0; color: #333">HTML Code:</h5>
-          <ace-editor
-            lang="html"
-            readonly
-            min-height-lines="6"
-          >
-          <script type="ace">
-    <ace-editor lang="javascript">
-        function greet(name) {
-            console.log("Hello, " + name + "!");
-        }
+          <ace-editor lang="html" readonly min-height-lines="6">
+            <script type="ace">
+              <ace-editor lang="javascript">
+                  function greet(name) {
+                      console.log("Hello, " + name + "!");
+                  }
 
-        greet("World");
-    </ace-editor>
-</script>
-</ace-editor>
+                  greet("World");
+              </ace-editor>
+            </script>
+          </ace-editor>
         </div>
         <div>
           <h5 style="margin: 10px 0; color: #333">Live Result:</h5>
           <ace-editor lang="javascript">
-function greet(name) {
-  console.log("Hello, " + name + "!");
-}
-
-greet("World");
+            function greet(name) { console.log("Hello, " + name + "!"); }
+            greet("World");
           </ace-editor>
         </div>
       </div>
@@ -579,42 +572,34 @@ greet("World");
       >
         <div>
           <h5 style="margin: 10px 0; color: #333">HTML Code:</h5>
-          <ace-editor
-            lang="html"
-            readonly
-            min-height-lines="8"
-          >
+          <ace-editor lang="html" readonly min-height-lines="8">
             <script type="ace">
-                <ace-editor lang="python" theme="monokai" readonly>
+              <ace-editor lang="python" theme="monokai" readonly>
 
-                    def factorial(n):
-                        if n <= 1:
-                            return 1
-                        return n * factorial(n - 1)
+                  def factorial(n):
+                      if n <= 1:
+                          return 1
+                      return n * factorial(n - 1)
 
-                    print(factorial(5))
-                </ace-editor>
+                  print(factorial(5))
+              </ace-editor>
             </script>
-        </ace-editor>
+          </ace-editor>
         </div>
         <div>
           <h5 style="margin: 10px 0; color: #333">Live Result:</h5>
           <ace-editor lang="python" theme="monokai" readonly>
-def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)
-
-print(factorial(5))
+            def factorial(n): if n <= 1: return 1 return n * factorial(n - 1)
+            print(factorial(5))
           </ace-editor>
         </div>
       </div>
 
       <alert-box type="tip">
-        <strong>✅ That's it!</strong> Once you load the
-        script, the <code>&lt;ace-editor&gt;</code> tag becomes available
-        throughout your entire page. You can use it as many times as you need,
-        just like any other HTML element!
+        <strong>✅ That's it!</strong> Once you load the script, the
+        <code>&lt;ace-editor&gt;</code> tag becomes available throughout your
+        entire page. You can use it as many times as you need, just like any
+        other HTML element!
       </alert-box>
     </div>
 
@@ -669,32 +654,29 @@ print(factorial(5))
 &lt;ace-editor lang="javascript"&gt;
   console.log("Hello, World!");
 &lt;/ace-editor&gt;</pre
-
           >
 
           <button id="render1">render</button>
           <script>
+            const render1 = document.getElementById("render1");
+            render1.addEventListener("click", () => {
+              const editor = document.createElement("ace-editor");
+              editor.setAttribute("lang", "javascript");
+              editor.textContent = `console.log("Hello, World!");`;
+              render1.parentNode.appendChild(editor);
 
-                const render1 = document.getElementById("render1");
-                render1.addEventListener("click", () => {
-                  const editor = document.createElement("ace-editor");
-                  editor.setAttribute("lang", "javascript");
-                  editor.textContent = `console.log("Hello, World!");`;
-                  render1.parentNode.appendChild(editor)
-                  
-                  const p = document.createElement("p");
-                  p.innerHTML = `Now see last log (at the bottom) in the <a href="#logs">Event Log</a> section above.`;
-                  render1.parentNode.appendChild(p)
-                });
+              const p = document.createElement("p");
+              p.innerHTML = `Now see last log (at the bottom) in the <a href="#logs">Event Log</a> section above.`;
+              render1.parentNode.appendChild(p);
+            });
           </script>
         </div>
-
       </div>
 
       <alert-box type="tip">
-        <strong>✅ Best Practice:</strong> Don't provide
-        an ID unless you specifically need to reference the editor by ID. Let
-        the component auto-generate IDs to avoid conflicts.
+        <strong>✅ Best Practice:</strong> Don't provide an ID unless you
+        specifically need to reference the editor by ID. Let the component
+        auto-generate IDs to avoid conflicts.
       </alert-box>
 
       <h3>Example 2: Manual IDs (Use with Caution)</h3>
@@ -761,10 +743,9 @@ print(factorial(5))
       </div>
 
       <alert-box type="warning">
-        <strong>⚠️ Warning:</strong> When providing
-        manual IDs, you must ensure each ID is unique across
-        <strong>all</strong> ace-editor components on the page. Duplicate IDs
-        will cause errors!
+        <strong>⚠️ Warning:</strong> When providing manual IDs, you must ensure
+        each ID is unique across <strong>all</strong> ace-editor components on
+        the page. Duplicate IDs will cause errors!
       </alert-box>
 
       <h3>Example 3: Duplicate ID Error</h3>
@@ -791,7 +772,9 @@ print(factorial(5))
   console.log("First editor");
 &lt;/ace-editor&gt;</pre
           >
-          <ace-editor id="duplicate-test" lang="javascript">            console.log("First editor");          </ace-editor>
+          <ace-editor id="duplicate-test" lang="javascript">
+            console.log("First editor");
+          </ace-editor>
         </div>
         <div>
           <h4 style="margin: 10px 0; color: #dc3545">
@@ -860,7 +843,8 @@ print(factorial(5))
     >
       <h3 style="margin-top: 0">What This Demo Shows</h3>
       <p>
-        Each editor you create will have <strong>three synchronized panels</strong>:
+        Each editor you create will have
+        <strong>three synchronized panels</strong>:
       </p>
       <ul style="line-height: 1.8">
         <li>
@@ -920,7 +904,14 @@ print(factorial(5))
             <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
               Type
             </th>
-            <th style="padding: 12px; text-align: left; border: 1px solid #ddd; width: 122px;">
+            <th
+              style="
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+                width: 122px;
+              "
+            >
               Default
             </th>
             <th style="padding: 12px; text-align: left; border: 1px solid #ddd">
@@ -930,140 +921,148 @@ print(factorial(5))
         </thead>
         <tbody>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              id
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">id</td>
             <td style="padding: 10px; border: 1px solid #ddd">String</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">ace-editor-N</code>
-              <br>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >ace-editor-N</code
+              >
+              <br />
               <small style="color: #666">(auto-generated)</small>
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
               Unique identifier for the editor. Auto-generated if not provided
-              (e.g., <code>ace-editor-1</code>, <code>ace-editor-2</code>). Must be unique across all
-              ace-editors on the page.
+              (e.g., <code>ace-editor-1</code>, <code>ace-editor-2</code>). Must
+              be unique across all ace-editors on the page.
             </td>
           </tr>
           <tr>
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              lang
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">lang</td>
             <td style="padding: 10px; border: 1px solid #ddd">String</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">javascript</code>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >javascript</code
+              >
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Programming language mode for syntax highlighting. Default is <code>javascript</code>.
-              Other examples: <code>python</code>, <code>typescript</code>,
-              <code>go</code>, <code>html</code>, <code>css</code>, <code>json</code>, <code>text</code> (plain text, no highlighting), etc.
+              Programming language mode for syntax highlighting. Default is
+              <code>javascript</code>. Other examples: <code>python</code>,
+              <code>typescript</code>, <code>go</code>, <code>html</code>,
+              <code>css</code>, <code>json</code>, <code>text</code> (plain
+              text, no highlighting), etc.
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              theme
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">theme</td>
             <td style="padding: 10px; border: 1px solid #ddd">String</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">idle_fingers</code>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >idle_fingers</code
+              >
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Visual theme for the editor. Default is <code>idle_fingers</code> (dark theme).
-              Other popular options: <code>monokai</code>,
-              <code>github</code>, <code>dracula</code>,
-              <code>solarized_dark</code>, <code>solarized_light</code>, <code>ambiance</code>, etc.
+              Visual theme for the editor. Default is
+              <code>idle_fingers</code> (dark theme). Other popular options:
+              <code>monokai</code>, <code>github</code>, <code>dracula</code>,
+              <code>solarized_dark</code>, <code>solarized_light</code>,
+              <code>ambiance</code>, etc.
             </td>
           </tr>
           <tr>
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              value
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">value</td>
             <td style="padding: 10px; border: 1px solid #ddd">String</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">""</code>
-              <br>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >""</code
+              >
+              <br />
               <small style="color: #666">(empty)</small>
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Initial content of the editor. Default is empty string. Can also be provided as text content
-              between the opening and closing tags. Supports both attribute and
-              inner content approaches.
+              Initial content of the editor. Default is empty string. Can also
+              be provided as text content between the opening and closing tags.
+              Supports both attribute and inner content approaches.
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              readonly
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">readonly</td>
             <td style="padding: 10px; border: 1px solid #ddd">Boolean</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">false</code>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >false</code
+              >
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Makes the editor read-only (no user editing allowed). Default is <code>false</code> (editable).
-              Presence of attribute = true, absence = false. Example:
+              Makes the editor read-only (no user editing allowed). Default is
+              <code>false</code> (editable). Presence of attribute = true,
+              absence = false. Example:
               <code>&lt;ace-editor readonly&gt;</code>
             </td>
           </tr>
           <tr>
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
+            <td style="padding: 10px; border: 1px solid #ddd">
               min-height-lines
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">Number</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">none</code>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >none</code
+              >
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Minimum height of the editor measured in number of lines. No minimum by default (auto-sizes to content).
-              Example: <code>min-height-lines="10"</code> ensures at least 10 lines are
+              Minimum height of the editor measured in number of lines. No
+              minimum by default (auto-sizes to content). Example:
+              <code>min-height-lines="10"</code> ensures at least 10 lines are
               visible.
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              min-height-px
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">min-height-px</td>
             <td style="padding: 10px; border: 1px solid #ddd">Number</td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">none</code>
+              <code
+                style="
+                  background: #e8f4f8;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                "
+                >none</code
+              >
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Minimum height of the editor measured in pixels. No minimum by default (auto-sizes to content).
-              Example: <code>min-height-px="300"</code> ensures at least 300px height.
+              Minimum height of the editor measured in pixels. No minimum by
+              default (auto-sizes to content). Example:
+              <code>min-height-px="300"</code> ensures at least 300px height.
               Cannot be used with <code>min-height-lines</code> simultaneously.
             </td>
           </tr>
@@ -1071,9 +1070,9 @@ print(factorial(5))
       </table>
 
       <alert-box type="warning">
-        <strong>⚠️ Note:</strong> The
-        <code>min-height-lines</code> and <code>min-height-px</code> attributes
-        are mutually exclusive. If both are provided, <code>min-height-px</code>
+        <strong>⚠️ Note:</strong> The <code>min-height-lines</code> and
+        <code>min-height-px</code> attributes are mutually exclusive. If both
+        are provided, <code>min-height-px</code>
         takes precedence.
       </alert-box>
     </div>
@@ -1083,7 +1082,10 @@ print(factorial(5))
       Click the button below to dynamically create new editor instances and
       experiment with different configurations!
     </p>
-    <p>Also you can clear section <a href="#logs">Logs</a> and see each new id created in new logs</p>
+    <p>
+      Also you can clear section <a href="#logs">Logs</a> and see each new id
+      created in new logs
+    </p>
 
     <div class="controls">
       <button class="add-button" onclick="addEditor()">
@@ -1634,34 +1636,30 @@ func main() {
         <div>
           <h4 style="margin: 10px 0; color: #333">HTML Code:</h4>
           <ace-editor lang="html" readonly min-height-lines="8">
-<script type="ace">
-<ace-editor lang="javascript">
-    // JavaScript Example
-    function fibonacci(n) {
-        if (n <= 1) return n;
-        return fibonacci(n - 1) + fibonacci(n - 2);
-    }
-</ace-editor>
-</script>
-</ace-editor>
+            <script type="ace">
+              <ace-editor lang="javascript">
+                  // JavaScript Example
+                  function fibonacci(n) {
+                      if (n <= 1) return n;
+                      return fibonacci(n - 1) + fibonacci(n - 2);
+                  }
+              </ace-editor>
+            </script>
+          </ace-editor>
         </div>
         <div>
           <h4 style="margin: 10px 0; color: #333">Live Result:</h4>
           <ace-editor lang="javascript">
-    // JavaScript Example
-    function fibonacci(n) {
-        if (n <= 1) return n;
-        return fibonacci(n - 1) + fibonacci(n - 2);
-    }
+            // JavaScript Example function fibonacci(n) { if (n <= 1) return n;
+            return fibonacci(n - 1) + fibonacci(n - 2); }
           </ace-editor>
         </div>
       </div>
 
       <alert-box type="warning">
-        <strong>⚠️ Warning:</strong> While this method
-        is simple, code formatting tools like <strong>Prettier</strong> may
-        reformat your code, potentially destroying your carefully crafted
-        indentation and layout.
+        <strong>⚠️ Warning:</strong> While this method is simple, code
+        formatting tools like <strong>Prettier</strong> may reformat your code,
+        potentially destroying your carefully crafted indentation and layout.
       </alert-box>
     </div>
 
@@ -1693,28 +1691,28 @@ func main() {
         <div>
           <h4 style="margin: 10px 0; color: #333">HTML Code:</h4>
           <ace-editor lang="html" readonly min-height-lines="10">
-<script type="ace">
-<ace-editor lang="javascript">
-    <script type="ace">
-        // JavaScript Example
-        function fibonacci(n) {
-            if (n <= 1) return n;
-            return fibonacci(n - 1) + fibonacci(n - 2);
-        }
-    &lt;/script>
-</ace-editor>
-</script>
-</ace-editor>
+            <script type="ace">
+              <ace-editor lang="javascript">
+                  <script type="ace">
+                      // JavaScript Example
+                      function fibonacci(n) {
+                          if (n <= 1) return n;
+                          return fibonacci(n - 1) + fibonacci(n - 2);
+                      }
+                  &lt;/script>
+              </ace-editor>
+            </script>
+          </ace-editor>
         </div>
         <div>
           <h4 style="margin: 10px 0; color: #333">Live Result:</h4>
           <ace-editor lang="javascript">
             <script type="ace">
-        // JavaScript Example
-        function fibonacci(n) {
-            if (n <= 1) return n;
-            return fibonacci(n - 1) + fibonacci(n - 2);
-        }
+              // JavaScript Example
+              function fibonacci(n) {
+                  if (n <= 1) return n;
+                  return fibonacci(n - 1) + fibonacci(n - 2);
+              }
             </script>
           </ace-editor>
         </div>
@@ -1763,18 +1761,25 @@ func main() {
         </thead>
         <tbody>
           <tr style="background: #f9f9f9">
-            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold">
+            <td
+              style="padding: 10px; border: 1px solid #ddd; font-weight: bold"
+            >
               Syntax
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
               <code>&lt;ace-editor&gt;code&lt;/ace-editor&gt;</code>
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              <code>&lt;ace-editor&gt;&lt;script type="ace"&gt;code&lt;/script&gt;&lt;/ace-editor&gt;</code>
+              <code
+                >&lt;ace-editor&gt;&lt;script
+                type="ace"&gt;code&lt;/script&gt;&lt;/ace-editor&gt;</code
+              >
             </td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold">
+            <td
+              style="padding: 10px; border: 1px solid #ddd; font-weight: bold"
+            >
               Prettier-Safe
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
@@ -1785,7 +1790,9 @@ func main() {
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold">
+            <td
+              style="padding: 10px; border: 1px solid #ddd; font-weight: bold"
+            >
               Simplicity
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
@@ -1796,7 +1803,9 @@ func main() {
             </td>
           </tr>
           <tr>
-            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold">
+            <td
+              style="padding: 10px; border: 1px solid #ddd; font-weight: bold"
+            >
               Recommendation
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
@@ -1817,9 +1826,9 @@ func main() {
       </table>
 
       <alert-box type="tip">
-        Both methods produce identical results at
-        runtime. The <code>&lt;script type="ace"&gt;</code> method is purely for
-        better development experience when working with code formatting tools.
+        Both methods produce identical results at runtime. The
+        <code>&lt;script type="ace"&gt;</code> method is purely for better
+        development experience when working with code formatting tools.
       </alert-box>
     </div>
 
@@ -1832,20 +1841,21 @@ func main() {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       "
     >
-      <h3 style="margin-top: 0">Method 3: Programmatic Control with JavaScript</h3>
+      <h3 style="margin-top: 0">
+        Method 3: Programmatic Control with JavaScript
+      </h3>
       <p>
         For dynamic applications, you can control the editor content, theme, and
         language programmatically using JavaScript. The
-        <code>value</code> attribute can also be used to set initial content, and
-        it will override content from Methods 1 or 2.
+        <code>value</code> attribute can also be used to set initial content,
+        and it will override content from Methods 1 or 2.
       </p>
 
       <alert-box type="important">
-        The <code>value</code> attribute takes
-        precedence over plain text content or
-        <code>&lt;script type="ace"&gt;</code>. You can initialize with Methods 1
-        or 2, then override programmatically using <code>value</code> or the
-        <code>.setValue()</code> method.
+        The <code>value</code> attribute takes precedence over plain text
+        content or <code>&lt;script type="ace"&gt;</code>. You can initialize
+        with Methods 1 or 2, then override programmatically using
+        <code>value</code> or the <code>.setValue()</code> method.
       </alert-box>
 
       <h4 style="color: #667eea; margin-top: 20px">
@@ -1866,7 +1876,14 @@ func main() {
       >
         <div>
           <h5 style="margin: 10px 0; color: #333">Control Buttons:</h5>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              margin-bottom: 15px;
+            "
+          >
             <button
               id="btn-js-code"
               style="
@@ -1928,53 +1945,53 @@ func main() {
           <h5 style="margin: 10px 0; color: #333">JavaScript Code:</h5>
           <ace-editor lang="javascript" readonly min-height-lines="25">
             <script type="ace">
-// Get reference to the editor
-const editor = document.getElementById('programmatic-demo');
+              // Get reference to the editor
+              const editor = document.getElementById('programmatic-demo');
 
-// Button 1: Load JavaScript code
-document.getElementById('btn-js-code').addEventListener('click', () => {
-  editor.setAttribute('lang', 'javascript');
-  editor.setAttribute('value', `// JavaScript Example
-function quickSort(arr) {
-  if (arr.length <= 1) return arr;
-  const pivot = arr[arr.length - 1];
-  const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);
-  const right = arr.filter(x => x > pivot);
-  return [...quickSort(left), pivot, ...quickSort(right)];
-}`);
-});
+              // Button 1: Load JavaScript code
+              document.getElementById('btn-js-code').addEventListener('click', () => {
+                editor.setAttribute('lang', 'javascript');
+                editor.setAttribute('value', `// JavaScript Example
+              function quickSort(arr) {
+                if (arr.length <= 1) return arr;
+                const pivot = arr[arr.length - 1];
+                const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);
+                const right = arr.filter(x => x > pivot);
+                return [...quickSort(left), pivot, ...quickSort(right)];
+              }`);
+              });
 
-// Button 2: Load Python code
-document.getElementById('btn-python-code').addEventListener('click', () => {
-  editor.setAttribute('lang', 'python');
-  editor.setAttribute('value', `# Python Example
-def bubble_sort(arr):
-    n = len(arr)
-    for i in range(n):
-        for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr`);
+              // Button 2: Load Python code
+              document.getElementById('btn-python-code').addEventListener('click', () => {
+                editor.setAttribute('lang', 'python');
+                editor.setAttribute('value', `# Python Example
+              def bubble_sort(arr):
+                  n = len(arr)
+                  for i in range(n):
+                      for j in range(0, n - i - 1):
+                          if arr[j] > arr[j + 1]:
+                              arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                  return arr`);
 
-  // Alternative methods to set content (all work the same):
-  // Method 1: setAttribute (shown above)
-  // Method 2: Property assignment
-  // editor.value = "your code here";
-  // Method 3: setValue() method
-  // editor.setValue("your code here");
-});
+                // Alternative methods to set content (all work the same):
+                // Method 1: setAttribute (shown above)
+                // Method 2: Property assignment
+                // editor.value = "your code here";
+                // Method 3: setValue() method
+                // editor.setValue("your code here");
+              });
 
-// Button 3: Change theme
-document.getElementById('btn-change-theme').addEventListener('click', () => {
-  editor.setAttribute('theme', 'monokai');
-});
+              // Button 3: Change theme
+              document.getElementById('btn-change-theme').addEventListener('click', () => {
+                editor.setAttribute('theme', 'monokai');
+              });
 
-// Button 4: Reset
-document.getElementById('btn-reset').addEventListener('click', () => {
-  editor.setAttribute('lang', 'javascript');
-  editor.setAttribute('theme', 'idle_fingers');
-  editor.setAttribute('value', '// Original content\nconsole.log("Hello, World!");');
-});
+              // Button 4: Reset
+              document.getElementById('btn-reset').addEventListener('click', () => {
+                editor.setAttribute('lang', 'javascript');
+                editor.setAttribute('theme', 'idle_fingers');
+                editor.setAttribute('value', '// Original content\nconsole.log("Hello, World!");');
+              });
             </script>
           </ace-editor>
         </div>
@@ -1983,20 +2000,22 @@ document.getElementById('btn-reset').addEventListener('click', () => {
           <h5 style="margin: 10px 0; color: #333">Initial HTML Code:</h5>
           <ace-editor lang="html" readonly min-height-lines="7">
             <script type="ace">
-<ace-editor id="programmatic-demo" lang="javascript">
-    <script type="ace">
-        // Original content
-        console.log("Hello, World!");
-    &lt;/script>
-</ace-editor>
+              <ace-editor id="programmatic-demo" lang="javascript">
+                  <script type="ace">
+                      // Original content
+                      console.log("Hello, World!");
+                  &lt;/script>
+              </ace-editor>
             </script>
           </ace-editor>
 
-          <h5 style="margin: 20px 0 10px 0; color: #333">Live Editor (Try It!):</h5>
+          <h5 style="margin: 20px 0 10px 0; color: #333">
+            Live Editor (Try It!):
+          </h5>
           <ace-editor id="programmatic-demo" lang="javascript">
             <script type="ace">
-// Original content
-console.log("Hello, World!");
+              // Original content
+              console.log("Hello, World!");
             </script>
           </ace-editor>
         </div>
@@ -2004,44 +2023,57 @@ console.log("Hello, World!");
 
       <script>
         // Get reference to the editor
-        const editor = document.getElementById('programmatic-demo');
+        const editor = document.getElementById("programmatic-demo");
 
         // Button 1: Load JavaScript code
-        document.getElementById('btn-js-code').addEventListener('click', () => {
-          editor.setAttribute('lang', 'javascript');
-          editor.setAttribute('value', `// JavaScript Example
+        document.getElementById("btn-js-code").addEventListener("click", () => {
+          editor.setAttribute("lang", "javascript");
+          editor.setAttribute(
+            "value",
+            `// JavaScript Example
 function quickSort(arr) {
   if (arr.length <= 1) return arr;
   const pivot = arr[arr.length - 1];
   const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);
   const right = arr.filter(x => x > pivot);
   return [...quickSort(left), pivot, ...quickSort(right)];
-}`);
+}`
+          );
         });
 
         // Button 2: Load Python code
-        document.getElementById('btn-python-code').addEventListener('click', () => {
-          editor.setAttribute('lang', 'python');
-          editor.setAttribute('value', `# Python Example
+        document
+          .getElementById("btn-python-code")
+          .addEventListener("click", () => {
+            editor.setAttribute("lang", "python");
+            editor.setAttribute(
+              "value",
+              `# Python Example
 def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
         for j in range(0, n - i - 1):
             if arr[j] > arr[j + 1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr`);
-        });
+    return arr`
+            );
+          });
 
         // Button 3: Change theme
-        document.getElementById('btn-change-theme').addEventListener('click', () => {
-          editor.setAttribute('theme', 'monokai');
-        });
+        document
+          .getElementById("btn-change-theme")
+          .addEventListener("click", () => {
+            editor.setAttribute("theme", "monokai");
+          });
 
         // Button 4: Reset
-        document.getElementById('btn-reset').addEventListener('click', () => {
-          editor.setAttribute('lang', 'javascript');
-          editor.setAttribute('theme', 'idle_fingers');
-          editor.setAttribute('value', '// Original content\nconsole.log("Hello, World!");');
+        document.getElementById("btn-reset").addEventListener("click", () => {
+          editor.setAttribute("lang", "javascript");
+          editor.setAttribute("theme", "idle_fingers");
+          editor.setAttribute(
+            "value",
+            '// Original content\nconsole.log("Hello, World!");'
+          );
         });
       </script>
 
@@ -2062,10 +2094,10 @@ def bubble_sort(arr):
     <p>
       <strong>💻 Dual Purpose:</strong> The
       <code>&lt;ace-editor&gt;</code> component is primarily designed for
-      <strong>presenting code</strong> with syntax highlighting. However, in many
-      JavaScript scenarios, we want to both <strong>display</strong> the code
-      <em>and</em> <strong>execute</strong> it. To avoid code duplication, the
-      component provides built-in execution capabilities.
+      <strong>presenting code</strong> with syntax highlighting. However, in
+      many JavaScript scenarios, we want to both <strong>display</strong> the
+      code <em>and</em> <strong>execute</strong> it. To avoid code duplication,
+      the component provides built-in execution capabilities.
     </p>
 
     <div
@@ -2103,9 +2135,9 @@ def bubble_sort(arr):
             Approach 2: Executable &lt;script&gt; Tag
           </h4>
           <p style="margin: 0">
-            Use <code>&lt;script&gt;</code> with executable type attribute inside
-            the component. Code executes <strong>immediately</strong> when the
-            browser parses it.
+            Use <code>&lt;script&gt;</code> with executable type attribute
+            inside the component. Code executes
+            <strong>immediately</strong> when the browser parses it.
           </p>
         </div>
       </div>
@@ -2122,7 +2154,9 @@ def bubble_sort(arr):
     >
       <h3 style="margin-top: 0">Approach 1: Using data-eval Attribute</h3>
 
-      <h4 style="color: #667eea">Example 1.1: data-eval (Regular Script Mode)</h4>
+      <h4 style="color: #667eea">
+        Example 1.1: data-eval (Regular Script Mode)
+      </h4>
       <p>
         Using <code>data-eval</code> alone creates a regular
         <code>&lt;script&gt;</code> tag in the background, executing code in
@@ -2131,13 +2165,13 @@ def bubble_sort(arr):
 
       <ace-editor lang="html" readonly min-height-lines="7">
         <script type="ace">
-<ace-editor lang="javascript" data-eval>
-    <script type="ace">
-        // This runs in regular (non-ESM) script mode
-        console.log("Hello from data-eval!");
-        alert("data-eval executed!");
-    &lt;/script>
-</ace-editor>
+          <ace-editor lang="javascript" data-eval>
+              <script type="ace">
+                  // This runs in regular (non-ESM) script mode
+                  console.log("Hello from data-eval!");
+                  alert("data-eval executed!");
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2159,12 +2193,12 @@ def bubble_sort(arr):
       <div id="demo1-1-container"></div>
 
       <script>
-        document.getElementById('demo1-1-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo1-1-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.setAttribute('lang', 'javascript');
-          editor.setAttribute('data-eval', '');
+        document.getElementById("demo1-1-btn").addEventListener("click", () => {
+          const container = document.getElementById("demo1-1-container");
+          container.innerHTML = "";
+          const editor = document.createElement("ace-editor");
+          editor.setAttribute("lang", "javascript");
+          editor.setAttribute("data-eval", "");
           editor.innerHTML = `<script type="ace">
 // This runs in regular (non-ESM) script mode
 console.log("Hello from data-eval!");
@@ -2185,15 +2219,15 @@ alert("data-eval executed!");
 
       <ace-editor lang="html" readonly min-height-lines="8">
         <script type="ace">
-<ace-editor lang="javascript" data-eval="module">
-    <script type="ace">
-        // This runs in ESM (module) mode
-        console.log("Hello from data-eval module!");
-        // You can use import statements here
-        const message = "ESM mode active!";
-        alert(message);
-    &lt;/script>
-</ace-editor>
+          <ace-editor lang="javascript" data-eval="module">
+              <script type="ace">
+                  // This runs in ESM (module) mode
+                  console.log("Hello from data-eval module!");
+                  // You can use import statements here
+                  const message = "ESM mode active!";
+                  alert(message);
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2215,12 +2249,12 @@ alert("data-eval executed!");
       <div id="demo1-2-container"></div>
 
       <script>
-        document.getElementById('demo1-2-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo1-2-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.setAttribute('lang', 'javascript');
-          editor.setAttribute('data-eval', 'module');
+        document.getElementById("demo1-2-btn").addEventListener("click", () => {
+          const container = document.getElementById("demo1-2-container");
+          container.innerHTML = "";
+          const editor = document.createElement("ace-editor");
+          editor.setAttribute("lang", "javascript");
+          editor.setAttribute("data-eval", "module");
           editor.innerHTML = `<script type="ace">
 // This runs in ESM (module) mode
 console.log("Hello from data-eval module!");
@@ -2245,17 +2279,17 @@ alert(message);
 
       <ace-editor lang="html" readonly min-height-lines="10">
         <script type="ace">
-<ace-editor id="self-modifying-editor" lang="javascript" data-eval="module">
-    <script type="ace">
-        // Access the editor instance that contains this code
-        const editor = document.getElementById('self-modifying-editor');
+          <ace-editor id="self-modifying-editor" lang="javascript" data-eval="module">
+              <script type="ace">
+                  // Access the editor instance that contains this code
+                  const editor = document.getElementById('self-modifying-editor');
 
-        setTimeout(() => {
-            editor.setAttribute('theme', 'monokai');
-            alert('Theme changed to monokai!');
-        }, 1000);
-    &lt;/script>
-</ace-editor>
+                  setTimeout(() => {
+                      editor.setAttribute('theme', 'monokai');
+                      alert('Theme changed to monokai!');
+                  }, 1000);
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2277,13 +2311,13 @@ alert(message);
       <div id="demo1-3-container"></div>
 
       <script>
-        document.getElementById('demo1-3-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo1-3-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.id = 'self-modifying-editor-instance';
-          editor.setAttribute('lang', 'javascript');
-          editor.setAttribute('data-eval', 'module');
+        document.getElementById("demo1-3-btn").addEventListener("click", () => {
+          const container = document.getElementById("demo1-3-container");
+          container.innerHTML = "";
+          const editor = document.createElement("ace-editor");
+          editor.id = "self-modifying-editor-instance";
+          editor.setAttribute("lang", "javascript");
+          editor.setAttribute("data-eval", "module");
           editor.innerHTML = `<script type="ace">
 // Access the editor instance that contains this code
 const editor = document.getElementById('self-modifying-editor-instance');
@@ -2307,7 +2341,9 @@ setTimeout(() => {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       "
     >
-      <h3 style="margin-top: 0">Approach 2: Using Executable &lt;script&gt; Tags</h3>
+      <h3 style="margin-top: 0">
+        Approach 2: Using Executable &lt;script&gt; Tags
+      </h3>
       <p>
         Instead of using <code>data-eval</code>, you can use
         <code>&lt;script&gt;</code> tags with executable type attributes. These
@@ -2322,13 +2358,13 @@ setTimeout(() => {
 
       <ace-editor lang="html" readonly min-height-lines="8">
         <script type="ace">
-<ace-editor lang="javascript">
-    <script type="text/javascript">
-        // Executes immediately in non-ESM mode
-        console.log("Executing via type='text/javascript'");
-        alert("Script with type='text/javascript' executed!");
-    &lt;/script>
-</ace-editor>
+          <ace-editor lang="javascript">
+              <script type="text/javascript">
+                  // Executes immediately in non-ESM mode
+                  console.log("Executing via type='text/javascript'");
+                  alert("Script with type='text/javascript' executed!");
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2350,11 +2386,11 @@ setTimeout(() => {
       <div id="demo2-1-container"></div>
 
       <script>
-        document.getElementById('demo2-1-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo2-1-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.setAttribute('lang', 'javascript');
+        document.getElementById("demo2-1-btn").addEventListener("click", () => {
+          const container = document.getElementById("demo2-1-container");
+          container.innerHTML = "";
+          const editor = document.createElement("ace-editor");
+          editor.setAttribute("lang", "javascript");
           editor.innerHTML = `<script type="text/javascript">
 // Executes immediately in non-ESM mode
 console.log("Executing via type='text/javascript'");
@@ -2373,13 +2409,13 @@ alert("Script with type='text/javascript' executed!");
 
       <ace-editor lang="html" readonly min-height-lines="8">
         <script type="ace">
-<ace-editor lang="javascript">
-    <script type="application/javascript">
-        // Executes immediately in non-ESM mode
-        console.log("Executing via type='application/javascript'");
-        alert("Script with type='application/javascript' executed!");
-    &lt;/script>
-</ace-editor>
+          <ace-editor lang="javascript">
+              <script type="application/javascript">
+                  // Executes immediately in non-ESM mode
+                  console.log("Executing via type='application/javascript'");
+                  alert("Script with type='application/javascript' executed!");
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2401,11 +2437,11 @@ alert("Script with type='text/javascript' executed!");
       <div id="demo2-2-container"></div>
 
       <script>
-        document.getElementById('demo2-2-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo2-2-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.setAttribute('lang', 'javascript');
+        document.getElementById("demo2-2-btn").addEventListener("click", () => {
+          const container = document.getElementById("demo2-2-container");
+          container.innerHTML = "";
+          const editor = document.createElement("ace-editor");
+          editor.setAttribute("lang", "javascript");
           editor.innerHTML = `<script type="application/javascript">
 // Executes immediately in non-ESM mode
 console.log("Executing via type='application/javascript'");
@@ -2422,14 +2458,14 @@ alert("Script with type='application/javascript' executed!");
 
       <ace-editor lang="html" readonly min-height-lines="9">
         <script type="ace">
-<ace-editor lang="javascript">
-    <script type="module">
-        // Executes immediately in ESM mode
-        console.log("Executing via type='module'");
-        const greeting = "Hello from ESM!";
-        alert(greeting);
-    &lt;/script>
-</ace-editor>
+          <ace-editor lang="javascript">
+              <script type="module">
+                  // Executes immediately in ESM mode
+                  console.log("Executing via type='module'");
+                  const greeting = "Hello from ESM!";
+                  alert(greeting);
+              &lt;/script>
+          </ace-editor>
         </script>
       </ace-editor>
 
@@ -2450,27 +2486,29 @@ alert("Script with type='application/javascript' executed!");
       </button>
 
       <alert-box type="warning">
-        <strong>⚠️ Warning:</strong> I guess you could use both data-eval and &lt;script type="text/javascript"&gt; then you would end up with having that code being executed twice but ... probably you don't need to do that :)
+        <strong>⚠️ Warning:</strong> I guess you could use both data-eval and
+        &lt;script type="text/javascript"&gt; then you would end up with having
+        that code being executed twice but ... probably you don't need to do
+        that :)
       </alert-box>
     </div>
-      <div id="demo2-3-container"></div>
+    <div id="demo2-3-container"></div>
 
-      <script>
-        document.getElementById('demo2-3-btn').addEventListener('click', () => {
-          const container = document.getElementById('demo2-3-container');
-          container.innerHTML = '';
-          const editor = document.createElement('ace-editor');
-          editor.setAttribute('lang', 'javascript');
-          editor.innerHTML = `<script type="module">
+    <script>
+      document.getElementById("demo2-3-btn").addEventListener("click", () => {
+        const container = document.getElementById("demo2-3-container");
+        container.innerHTML = "";
+        const editor = document.createElement("ace-editor");
+        editor.setAttribute("lang", "javascript");
+        editor.innerHTML = `<script type="module">
 // Executes immediately in ESM mode
 console.log("Executing via type='module'");
 const greeting = "Hello from ESM!";
 alert(greeting);
 <\/script>`;
-          container.appendChild(editor);
-        });
-      </script>
-    </div>
+        container.appendChild(editor);
+      });
+    </script>
 
     <div
       style="
@@ -2509,14 +2547,7 @@ alert(greeting);
         </thead>
         <tbody>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
-              data-eval
-            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">data-eval</td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
               ✅ <strong>After</strong> editor initialization (delayed)
             </td>
@@ -2528,12 +2559,7 @@ alert(greeting);
             </td>
           </tr>
           <tr>
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
+            <td style="padding: 10px; border: 1px solid #ddd">
               data-eval="module"
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #28a745">
@@ -2547,12 +2573,7 @@ alert(greeting);
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
+            <td style="padding: 10px; border: 1px solid #ddd">
               &lt;script type="text/javascript"&gt;
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
@@ -2566,12 +2587,7 @@ alert(greeting);
             </td>
           </tr>
           <tr>
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
+            <td style="padding: 10px; border: 1px solid #ddd">
               &lt;script type="application/javascript"&gt;
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
@@ -2585,12 +2601,7 @@ alert(greeting);
             </td>
           </tr>
           <tr style="background: #f9f9f9">
-            <td
-              style="
-                padding: 10px;
-                border: 1px solid #ddd;
-              "
-            >
+            <td style="padding: 10px; border: 1px solid #ddd">
               &lt;script type="module"&gt;
             </td>
             <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545">
@@ -2618,8 +2629,8 @@ alert(greeting);
           <li>
             <strong>Use executable &lt;script&gt; tags</strong> when you need
             immediate execution during HTML parsing. This is useful for simple
-            demonstrations, but the editor instance won't be accessible yet (which
-            may be too early for some use cases).
+            demonstrations, but the editor instance won't be accessible yet
+            (which may be too early for some use cases).
           </li>
         </ul>
       </alert-box>
@@ -2710,11 +2721,7 @@ alert(greeting);
         <h3>📝 Editable Textarea</h3>
         <textarea
           id="native-textarea"
-          style="
-            width: 100%;
-            min-height: 200px;
-            padding: 10px;
-          "
+          style="width: 100%; min-height: 200px; padding: 10px"
         >
 // Edit this text and watch it appear on the right!
 function greet(name) {
@@ -2776,14 +2783,16 @@ greet("World");</textarea
     <alert-box type="tip">
       <strong>💡 Alternative Approach - Global Event:</strong> You can also use
       the global <code>document.addEventListener("ace-onload", ...)</code> event
-      (see <a href="#logs" style="color: #1976d2; font-weight: bold">Event Log section</a>)
-      to tweak each newly created ace-editor instance. This is particularly useful
-      when you want to apply custom configurations to multiple editors.
+      (see
+      <a href="#logs" style="color: #1976d2; font-weight: bold"
+        >Event Log section</a
+      >) to tweak each newly created ace-editor instance. This is particularly
+      useful when you want to apply custom configurations to multiple editors.
       <br /><br />
       <strong>Tip:</strong> Add custom attributes or classes to individual
       <code>&lt;ace-editor&gt;</code> tags (e.g.,
-      <code>data-custom="special"</code> or <code>class="my-editor"</code>), then
-      in the <code>ace-onload</code> event handler, check
+      <code>data-custom="special"</code> or <code>class="my-editor"</code>),
+      then in the <code>ace-onload</code> event handler, check
       <code>event.detail.component</code> to distinguish between editors and
       apply specific tweaks to each one.
     </alert-box>
