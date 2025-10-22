@@ -88,14 +88,20 @@
         margin: 15px 0;
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/GitHub-Ribbon-Web-Component/dist/github-ribbon-wc.min.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/MarketingPipeline/GitHub-Ribbon-Web-Component/dist/github-ribbon-wc.min.js"
+      defer
+    ></script>
   </head>
   <body>
-    <github-ribbon href="https://github.com/anthropics/claude-code" target="_blank" type="right" color="black">Fork me on GitHub</github-ribbon>
+    <github-ribbon link="https://github.com/stopsopa/ace-editor-webcomponent" type="right" color="black"
+      >Fork me on GitHub</github-ribbon
+    >
     <h1>Lesson 008: Ace Editor Async Loader</h1>
 
     <p>
-      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a> |
+      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a>
+      |
       <a href="../009_ace_configuration/">Next: Ace Configuration →</a>
     </p>
 
@@ -121,8 +127,7 @@
     </ul>
 
     <div class="info-box">
-      <strong>📺 Open DevTools Network Tab:</strong> Watch how
-      <code>ace.js</code> loads only ONCE, no matter how many
+      <strong>📺 Open DevTools Network Tab:</strong> Watch how <code>ace.js</code> loads only ONCE, no matter how many
       <code>&lt;ace-editor&gt;</code> components you have!
     </div>
 
@@ -133,98 +138,46 @@
         <strong>Click buttons to dynamically load Ace and add editors:</strong>
       </p>
       <div>
-        <button onclick="loadAceEditorScript()" id="load-script-btn">
-          Load ace-web-component.js
-        </button>
+        <button onclick="loadAceEditorScript()" id="load-script-btn">Load ace-web-component.js</button>
         <button onclick="addNewEditor()">Add New Editor</button>
       </div>
-      <div
-        id="script-status"
-        style="
-          margin-top: 10px;
-          padding: 10px;
-          background: #fff3cd;
-          border-radius: 5px;
-        "
-      >
+      <div id="script-status" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px">
         Status: Ace Editor not loaded yet
       </div>
 
       <div class="component-wrapper" id="wrapper-editor-3">
         <h4>
           <span>JSON Editor #3 (readonly, static)</span>
-          <button
-            class="remove-btn"
-            onclick="removeEditor('wrapper-editor-3')"
-          >
-            Remove
-          </button>
+          <button class="remove-btn" onclick="removeEditor('wrapper-editor-3')">Remove</button>
         </h4>
         <ace-editor id="editor-3" lang="json" readonly>
-{
-  "name": "Ace Editor",
-  "version": "1.15.0",
-  "awesome": true
-}</ace-editor>
+          { "name": "Ace Editor", "version": "1.15.0", "awesome": true }</ace-editor
+        >
       </div>
 
       <!-- These editors are declared BEFORE the script loads! -->
       <div class="component-wrapper" id="wrapper-editor-1">
         <h4>
           <span>JavaScript Editor #1 (static)</span>
-          <button
-            class="remove-btn"
-            onclick="removeEditor('wrapper-editor-1')"
-          >
-            Remove
-          </button>
+          <button class="remove-btn" onclick="removeEditor('wrapper-editor-1')">Remove</button>
         </h4>
         <ace-editor id="editor-1" lang="javascript">
-// This is a JavaScript editor
-// This is a JavaScript editor
-function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}function hello() {
-  console.log("Hello from Ace Editor!");
-  return 42;
-}</ace-editor
+          // This is a JavaScript editor // This is a JavaScript editor function hello() { console.log("Hello from Ace
+          Editor!"); return 42; }function hello() { console.log("Hello from Ace Editor!"); return 42; }function hello()
+          { console.log("Hello from Ace Editor!"); return 42; }function hello() { console.log("Hello from Ace Editor!");
+          return 42; }function hello() { console.log("Hello from Ace Editor!"); return 42; }function hello() {
+          console.log("Hello from Ace Editor!"); return 42; }function hello() { console.log("Hello from Ace Editor!");
+          return 42; }function hello() { console.log("Hello from Ace Editor!"); return 42; }</ace-editor
         >
       </div>
 
       <div class="component-wrapper" id="wrapper-editor-2">
         <h4>
           <span>Python Editor #2 (static)</span>
-          <button
-            class="remove-btn"
-            onclick="removeEditor('wrapper-editor-2')"
-          >
-            Remove
-          </button>
+          <button class="remove-btn" onclick="removeEditor('wrapper-editor-2')">Remove</button>
         </h4>
         <ace-editor id="editor-2" lang="python">
-# This is a Python editor
-def hello():
-    print("Hello from Python!")
-    return 42</ace-editor
+          # This is a Python editor def hello(): print("Hello from Python!") return 42</ace-editor
         >
       </div>
 
@@ -234,30 +187,23 @@ def hello():
     <h2>How It Works</h2>
     <ol>
       <li>
-        <strong>Singleton Loading:</strong> <code>loadAceEditor()</code> loads
-        Ace library only once using cached promise
+        <strong>Singleton Loading:</strong> <code>loadAceEditor()</code> loads Ace library only once using cached
+        promise
       </li>
       <li>
-        <strong>Window Global Detection:</strong> Waits for
-        <code>window.ace.edit</code> to be available after script loads
+        <strong>Window Global Detection:</strong> Waits for <code>window.ace.edit</code> to be available after script
+        loads
       </li>
       <li>
-        <strong>Web Component:</strong> <code>&lt;ace-editor&gt;</code> creates
-        Shadow DOM and initializes Ace when ready
+        <strong>Web Component:</strong> <code>&lt;ace-editor&gt;</code> creates Shadow DOM and initializes Ace when
+        ready
       </li>
       <li>
-        <strong>Configuration:</strong> Uses attributes
-        (<code>lang</code>, <code>theme</code>, <code>readonly</code>) for
-        setup
+        <strong>Configuration:</strong> Uses attributes (<code>lang</code>, <code>theme</code>, <code>readonly</code>)
+        for setup
       </li>
-      <li>
-        <strong>Auto-sizing:</strong> Editors automatically resize to fit their
-        content
-      </li>
-      <li>
-        <strong>Cleanup:</strong> <code>disconnectedCallback()</code> properly
-        destroys editor instances
-      </li>
+      <li><strong>Auto-sizing:</strong> Editors automatically resize to fit their content</li>
+      <li><strong>Cleanup:</strong> <code>disconnectedCallback()</code> properly destroys editor instances</li>
     </ol>
 
     <h2>Usage Examples</h2>
@@ -283,28 +229,19 @@ print("Hello!")
 
     <h2>Supported Languages</h2>
     <p>
-      Ace Editor supports many languages including: javascript, python,
-      typescript, json, yaml, html, css, sql, markdown, java, php, ruby, go,
-      rust, and many more!
+      Ace Editor supports many languages including: javascript, python, typescript, json, yaml, html, css, sql,
+      markdown, java, php, ruby, go, rust, and many more!
     </p>
 
     <h2>Key Patterns from Lesson 007</h2>
     <ul>
+      <li><strong>Singleton Pattern:</strong> Same as lesson 007 - load once, cache promise</li>
       <li>
-        <strong>Singleton Pattern:</strong> Same as lesson 007 - load once,
-        cache promise
+        <strong>Script Load Events:</strong> Uses <code>script.onload</code> and
+        <code>script.onerror</code>
       </li>
-      <li>
-        <strong>Script Load Events:</strong> Uses
-        <code>script.onload</code> and <code>script.onerror</code>
-      </li>
-      <li>
-        <strong>Window Global Detection:</strong> Polls for
-        <code>window.ace.edit</code> after script loads
-      </li>
-      <li>
-        <strong>IIFE Pattern:</strong> Wraps code to avoid global pollution
-      </li>
+      <li><strong>Window Global Detection:</strong> Polls for <code>window.ace.edit</code> after script loads</li>
+      <li><strong>IIFE Pattern:</strong> Wraps code to avoid global pollution</li>
     </ul>
 
     <h2>Further Reading</h2>
@@ -313,30 +250,23 @@ print("Hello!")
         <a href="https://ace.c9.io/" target="_blank">Ace Editor Official Site</a>
       </li>
       <li>
-        <a
-          href="https://github.com/ajaxorg/ace"
-          target="_blank"
-          >Ace Editor GitHub</a
-        >
+        <a href="https://github.com/ajaxorg/ace" target="_blank">Ace Editor GitHub</a>
       </li>
       <li>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components"
-          target="_blank"
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components" target="_blank"
           >MDN: Web Components</a
         >
       </li>
       <li>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/disconnectedCallback"
-          target="_blank"
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/disconnectedCallback" target="_blank"
           >MDN: disconnectedCallback</a
         >
       </li>
     </ul>
 
     <p>
-      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a> |
+      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a>
+      |
       <a href="../009_ace_configuration/">Next: Ace Configuration →</a>
     </p>
 
@@ -357,7 +287,7 @@ print("Hello!")
 
           // Create script tag dynamically (regular script, not module)
           const script = document.createElement("script");
-          script.setAttribute('src', "../../ace-web-component.js");
+          script.setAttribute("src", "../../ace-web-component.js");
           // NOTE: Use "data-main-ace" - Ace reads data-ace-* but "aceUrl" is not a valid config key
           // Avoid "data-ace-editor-url" which would become "editorUrl" and conflict
           script.setAttribute("data-main-ace", "/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js");
@@ -369,8 +299,7 @@ print("Hello!")
             document.head.appendChild(script);
           });
 
-          statusEl.textContent =
-            "Status: ✅ ace-web-component.js loaded! Editors are now alive!";
+          statusEl.textContent = "Status: ✅ ace-web-component.js loaded! Editors are now alive!";
           statusEl.style.background = "#d4edda";
 
           // Replace button with success message
@@ -408,7 +337,7 @@ print("Hello!")
           json: `{\n  "editor": ${editorCounter},\n  "type": "json"\n}`,
           typescript: `// TypeScript Editor #${editorCounter}\nfunction example(): string {\n  return "Hello!";\n}`,
           html: `<!-- HTML Editor #${editorCounter} -->\n<div>\n  <h1>Hello!</h1>\n</div>`,
-          css: `/* CSS Editor #${editorCounter} */\n.example {\n  color: blue;\n}`
+          css: `/* CSS Editor #${editorCounter} */\n.example {\n  color: blue;\n}`,
         };
 
         const wrapper = document.createElement("div");
