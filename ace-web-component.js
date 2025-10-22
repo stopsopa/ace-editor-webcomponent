@@ -67,10 +67,7 @@
       // '&#x2F;': '/',
     };
 
-    return str.replace(
-      /&(?:lt|gt|amp|quot|#39|#x27|#x2F);/g,
-      (match) => htmlEntities[match] || match
-    );
+    return str.replace(/&(?:lt|gt|amp|quot|#39|#x27|#x2F);/g, (match) => htmlEntities[match] || match);
   }
 
   /**
@@ -165,15 +162,7 @@
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
     static get observedAttributes() {
-      return [
-        "value",
-        "lang",
-        "theme",
-        "readonly",
-        "min-height-px",
-        "min-height-lines",
-        "data-nolt",
-      ];
+      return ["value", "lang", "theme", "readonly", "min-height-px", "min-height-lines", "data-nolt"];
     }
 
     connectedCallback() {
@@ -279,10 +268,7 @@
           const ace = await loadAceEditor();
           this.initializeEditor(ace);
         } catch (error) {
-          console.error(
-            `❌ Failed to initialize Ace Editor ${componentId}:`,
-            error
-          );
+          console.error(`❌ Failed to initialize Ace Editor ${componentId}:`, error);
           const label = shadow.querySelector(".loading-message");
           if (label) {
             label.textContent = "❌ Failed to load Ace Editor";
@@ -317,27 +303,25 @@
       // We need to copy those styles into the shadow DOM
       const adoptStylesheets = () => {
         // Get all document stylesheets that Ace has created
-        const aceStyleSheets = Array.from(document.styleSheets).filter(
-          (sheet) => {
-            try {
-              // Check if it's an Ace-related stylesheet
-              const ownerNode = sheet.ownerNode;
+        const aceStyleSheets = Array.from(document.styleSheets).filter((sheet) => {
+          try {
+            // Check if it's an Ace-related stylesheet
+            const ownerNode = sheet.ownerNode;
 
-              // Ace creates style tags dynamically
-              if (ownerNode && ownerNode.tagName === "STYLE") {
-                const content = ownerNode.textContent || "";
-                // Check if it contains Ace-specific classes
-                if (content.includes(".ace_") || content.includes("ace-")) {
-                  return true;
-                }
+            // Ace creates style tags dynamically
+            if (ownerNode && ownerNode.tagName === "STYLE") {
+              const content = ownerNode.textContent || "";
+              // Check if it contains Ace-specific classes
+              if (content.includes(".ace_") || content.includes("ace-")) {
+                return true;
               }
-
-              return false;
-            } catch (e) {
-              return false;
             }
+
+            return false;
+          } catch (e) {
+            return false;
           }
-        );
+        });
 
         // For browsers that support adoptedStyleSheets
         if (shadow.adoptedStyleSheets === undefined) {
@@ -359,9 +343,7 @@
             try {
               const styleEl = document.createElement("style");
               const rules = Array.from(sheet.cssRules || sheet.rules || []);
-              styleEl.textContent = rules
-                .map((rule) => rule.cssText)
-                .join("\n");
+              styleEl.textContent = rules.map((rule) => rule.cssText).join("\n");
               shadow.appendChild(styleEl);
             } catch (e) {
               log("Could not copy stylesheet:", e);
@@ -409,13 +391,12 @@
       }
       // Check for <script> tag
       else {
-        const scriptTag = this.querySelector('script');
+        const scriptTag = this.querySelector("script");
         if (scriptTag) {
           initialContent = scriptTag.textContent || "";
         } else {
           // Fall back to textContent or content attribute
-          initialContent =
-            this.textContent || this.getAttribute("content") || "";
+          initialContent = this.textContent || this.getAttribute("content") || "";
         }
 
         // Decode HTML entities ONLY when reading from static content (not from value attribute)
@@ -478,8 +459,7 @@
       // Auto-resize to fit content
       const heightUpdateFunction = () => {
         // Calculate height based on content only (horizontal scrollbar is hidden)
-        const contentHeight =
-          session.getScreenLength() * editor.renderer.lineHeight;
+        const contentHeight = session.getScreenLength() * editor.renderer.lineHeight;
 
         // Check for min-height constraints
         const minHeightPx = this.getAttribute("min-height-px");
@@ -489,8 +469,7 @@
         if (minHeightPx) {
           minHeight = parseInt(minHeightPx, 10);
         } else if (minHeightLines) {
-          minHeight =
-            parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
+          minHeight = parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
         }
 
         const finalHeight = Math.max(contentHeight, minHeight) + 16; // correction
@@ -524,11 +503,7 @@
         mutations.forEach((mutation) => {
           if (mutation.addedNodes) {
             mutation.addedNodes.forEach((node) => {
-              if (
-                node.tagName === "STYLE" &&
-                node.textContent &&
-                node.textContent.includes(".ace_")
-              ) {
+              if (node.tagName === "STYLE" && node.textContent && node.textContent.includes(".ace_")) {
                 // New Ace style detected, adopt it
                 adoptStylesheets();
                 setTimeout(heightUpdateFunction, 50);
@@ -557,11 +532,7 @@
           // - data-eval or data-eval="" -> regular script (no type attribute)
           const scriptType = dataEvalValue === "module" ? "module" : null;
 
-          log(
-            `🔥 Executing data-eval code for: ${this.id || "unnamed"}${
-              scriptType ? ` (type: ${scriptType})` : ""
-            }`
-          );
+          log(`🔥 Executing data-eval code for: ${this.id || "unnamed"}${scriptType ? ` (type: ${scriptType})` : ""}`);
 
           const script = document.createElement("script");
 
