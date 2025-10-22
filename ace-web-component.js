@@ -378,6 +378,7 @@
       // Map short language names to full Ace mode names
       if (lang === "js") lang = "javascript";
       if (lang === "ts") lang = "typescript";
+      if (lang === "bash") lang = "sh";
 
       // Configure editor
       const session = editor.getSession();
@@ -492,7 +493,7 @@
             parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
         }
 
-        const finalHeight = Math.max(contentHeight, minHeight);
+        const finalHeight = Math.max(contentHeight, minHeight) + 16; // correction
         container.style.height = finalHeight + "px";
         editor.resize();
       };
