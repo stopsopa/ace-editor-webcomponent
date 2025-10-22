@@ -41,9 +41,22 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+    // Disable caching for all requests
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+});
+
 app.use(express.static(web, {
     index: false, // stop automatically serve index.html if present
-    maxAge: '1 day', // cache for development
+    setHeaders: (res) => {
+        // Ensure no-cache headers are set for static files
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+    }
 }), serveIndex(web, {
     icons: true,
     view: "details",
