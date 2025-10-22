@@ -15,7 +15,8 @@
       @supports (font-variation-settings: normal) {
         :root {
           font-family: "Inter var", sans-serif;
-          font-feature-settings: "liga" 1, "calt" 1, /* fix for Chrome */ "zero", "ss01"
+          font-feature-settings: "liga" 1, "calt" 1, /* fix for Chrome */ "zero",
+            "ss01";
         }
       }
       body {
@@ -370,8 +371,8 @@
 
     <h2>ace-onload Event</h2>
     <p>
-      Before we dive into dynamic controls, let me introduce a powerful
-      global event that's available for advanced configuration scenarios. The
+      Before we dive into dynamic controls, let me introduce a powerful global
+      event that's available for advanced configuration scenarios. The
       <code>'ace-onload'</code> event is not always needed for basic usage, but
       it becomes invaluable when you need to configure each editor instance
       beyond the standard attributes available on the main
@@ -1597,6 +1598,20 @@ func main() {
         <code>&lt;ace-editor&gt;</code> tags as plain text content:
       </p>
 
+      <alert-box type="warning">
+        While this method is simple, code formatting tools like
+        <strong>Prettier</strong> may reformat your code, potentially destroying
+        your carefully crafted indentation and layout.
+        <br />
+        <br />
+        ... and you can observer this on on the right side "Live Result".
+
+        <br />
+        <br />
+        but if you won't use formatting tools like Prettier then this is
+        fine/acceptable to use.
+      </alert-box>
+
       <div
         style="
           display: grid;
@@ -1607,6 +1622,7 @@ func main() {
       >
         <div>
           <h4 style="margin: 10px 0; color: #333">HTML Code:</h4>
+
           <ace-editor lang="html" readonly>
             <script type="ace">
               <ace-editor lang="javascript">
@@ -1627,12 +1643,6 @@ func main() {
           </ace-editor>
         </div>
       </div>
-
-      <alert-box type="warning">
-        While this method is simple, code formatting tools like
-        <strong>Prettier</strong> may reformat your code, potentially destroying
-        your carefully crafted indentation and layout.
-      </alert-box>
     </div>
 
     <div class="content-card">
@@ -1643,6 +1653,14 @@ func main() {
         Wrap your code in a <code>&lt;script type="ace"&gt;</code> tag to
         protect it from code formatters:
       </p>
+
+      <alert-box type="tip" alert="Recommended">
+        The
+        <code>&lt;script type="ace"&gt;</code> syntax prevents Prettier and
+        other formatting tools from modifying your code. The
+        <code>type="ace"</code> attribute tells these tools to ignore the
+        content, preserving your exact formatting and indentation.
+      </alert-box>
 
       <div
         style="
@@ -1681,14 +1699,6 @@ func main() {
           </ace-editor>
         </div>
       </div>
-
-      <alert-box type="tip" alert="Recommended">
-        The
-        <code>&lt;script type="ace"&gt;</code> syntax prevents Prettier and
-        other formatting tools from modifying your code. The
-        <code>type="ace"</code> attribute tells these tools to ignore the
-        content, preserving your exact formatting and indentation.
-      </alert-box>
     </div>
 
     <div class="content-card">
