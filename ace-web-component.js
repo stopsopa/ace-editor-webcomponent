@@ -142,22 +142,50 @@
 
   /**
    * Web Component for Ace Editor
-   * Usage: <ace-editor id="editor1" lang="javascript" value="code here"></ace-editor>
    *
-   * Supports multiple ways to provide initial content:
+   * @description
+   * A custom web component that wraps the Ace Editor with a flexible, declarative API.
+   *
+   * @example
+   * <!-- Basic usage -->
+   * <ace-editor
+   *   id="my-editor"
+   *   lang="javascript"
+   *   theme="monokai"
+   *   value="console.log('Hello World');"
+   * ></ace-editor>
+   *
+   * @example
+   * <!-- Alternative content sources -->
+   * <ace-editor>
+   *   <script type="ace">
+   *     function example() {
+   *       return "Preserves original formatting";
+   *     }
+   *   </script>
+   * </ace-editor>
+   *
+   * @typedef {Object} AceEditorOptions
+   * @property {string} [value] - Initial content of the editor
+   * @property {string} [lang='javascript'] - Programming language mode (e.g., 'javascript', 'python', 'typescript')
+   * @property {string} [theme='idle_fingers'] - Editor color theme
+   * @property {boolean} [readonly=false] - Make editor read-only
+   * @property {number} [min-height-px] - Minimum height in pixels
+   * @property {number} [min-height-lines] - Minimum height in lines
+   *
+   * Content Priority (from highest to lowest):
    * 1. value attribute - for React/dynamic updates (controlled component)
-   * 2. <script type="ace">code here</script> - preserves formatting, Prettier-friendly
+   * 2. <script type="ace"> - preserves formatting, Prettier-friendly
    * 3. textContent - direct text content (initial value only)
    * 4. content attribute - alternative to textContent
    *
-   * Priority: value > <script type="ace"> > textContent > content
-   *
    * HTML Entity Decoding:
    * By default, HTML entities like &lt; &gt; &amp; are decoded to < > & when reading
-   * from static content (methods 2-4). This allows you to write &lt;/script&gt; inside
+   * from static content (methods 2-4). This allows writing &lt;/script&gt; inside
    * <script type="ace"> without prematurely closing the tag.
-   * Use data-nolt attribute to disable this decoding if needed.
-   * Note: value attribute (method 1) never decodes entities.
+   *
+   * @see Use data-nolt attribute to disable HTML entity decoding
+   * @note value attribute never decodes entities
    */
   class AceEditorComponent extends HTMLElement {
     // Define observed attributes for React compatibility
@@ -640,22 +668,31 @@
       log(`🔌 Ace Editor component disconnected: ${this.id || "unnamed"}`);
     }
 
-    // Public API: Get editor value
+    /**
+     * Get the current content of the editor
+     *
+     * @returns {string} Current editor content
+     * @description Retrieves the current text content of the Ace Editor
+     */
     getValue() {
       return this.editor ? this.editor.getValue() : "";
     }
 
-    // Public API: Set editor value
-    // Note: This method bypasses readonly for programmatic updates
-    // Ace Editor's internal readonly mode still prevents user typing
-    // Does NOT fire 'input' event (matches native textarea behavior)
+    /**
+     * Set the content of the editor programmatically
+     *
+     * @param {string} value - Content to set in the editor
+     * @description
+     * - Bypasses readonly for programmatic updates
+     * - Does NOT fire 'input' event (matches native textarea behavior)
+     * - Allows readonly editors to display content via API
+     */
     setValue(value) {
       if (this.editor) {
         // Set flag to suppress 'input' event during programmatic change
         this._isProgrammaticChange = true;
 
         // For programmatic updates via setValue(), bypass readonly check
-        // This allows readonly editors to display content via API
         this.editor.setValue(value, -1);
         this.editor.clearSelection();
         this._pendingValue = null;
@@ -667,21 +704,43 @@
       }
     }
 
-    // Public API: Get native Ace Editor instance
-    // This allows access to advanced Ace Editor features not exposed by our component API
-    // Example: editor.getEditor().find('search term', { backwards: false })
+    /**
+     * Get the native Ace Editor instance
+     *
+     * @returns {Object} The underlying Ace Editor instance
+     * @description
+     * Provides access to advanced Ace Editor features not exposed by the component API
+     *
+     * @example
+     * // Find text in the editor
+     * editor.getEditor().find('search term', { backwards: false })
+     */
     getEditor() {
       return this.editor;
     }
 
-    // Property getter for .value (read current content)
+    /**
+     * Property getter for editor content
+     *
+     * @type {string}
+     * @description Reads the current editor content
+     */
     get value() {
       return this.getValue();
     }
 
-    // Property setter for .value (write content, does NOT fire 'input' event)
-    // Usage: acecomp.value = 'new code';
-    // This matches native textarea behavior where textarea.value = "..." does NOT fire 'input'
+    /**
+     * Property setter for editor content
+     *
+     * @param {string} newValue - New content for the editor
+     * @description
+     * Sets the editor content without firing an 'input' event
+     * Matches native textarea behavior
+     *
+     * @example
+     * // Set editor content
+     * acecomp.value = 'new code';
+     */
     set value(newValue) {
       this.setValue(newValue);
     }
