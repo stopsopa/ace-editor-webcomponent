@@ -36,7 +36,7 @@ This repository is a comprehensive learning path for **Web Components**, culmina
 │
 ├── /noprettier/                 # External libraries (not processed by prettier)
 │   └── /ace/
-│       └── /ace-builds-1.15.0/
+│       └── /ace-builds-[version]/
 │           └── /src-min-noconflict/
 │               └── ace.js       # Ace editor main file
 │
@@ -65,15 +65,14 @@ Only installs Express (no bundler, no React, no build tools)
 ## Ace Editor Setup
 
 ### Version Information
-- **Current Version**: 1.15.0
 - **Download Source**: https://github.com/ajaxorg/ace-builds/releases
 - **Installation**: Manual download as zip file (not npm)
 
 ### Installation Steps
-1. Download ace-builds-1.15.0.zip from GitHub releases
-2. Extract to `/noprettier/ace/ace-builds-1.15.0/`
-3. Main file: `/noprettier/ace/ace-builds-1.5.0/src-min-noconflict/ace.js`
-4. Extensions: `/noprettier/ace/ace-builds-1.5.0/src-min-noconflict/ext-linking.js`
+1. Download ace-builds-[version].zip from GitHub releases
+2. Extract to `/noprettier/ace/ace-builds-[version]/`
+3. Main file: `/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js`
+4. Extensions: `/noprettier/ace/ace-builds-[version]/src-min-noconflict/ext-linking.js`
 
 ### Why Manual Installation?
 The project follows a pure web standards approach without npm packages for frontend code. Ace is loaded dynamically at runtime using the async script loading pattern.
@@ -186,7 +185,7 @@ editor.on('blur', () => {
 ### Basic Usage
 ```html
 <ace-editor
-  src="/noprettier/ace/ace-builds-1.5.0/src-min-noconflict/ace.js"
+  src="/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js"
   value="console.log('Hello World');"
   lang="javascript"
   theme="idle_fingers"
@@ -334,3 +333,88 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 2. Verify `updateFlag` is set correctly
 3. Ensure `attributeChangedCallback` is implemented
 4. Check `observedAttributes` includes 'value'
+
+## React Integration Strategy for Ace Editor Web Component
+
+### Objectives
+- Seamlessly use the existing Web Component in React
+- Minimal wrapper required
+- Preserve all existing functionality
+- Support React's controlled component pattern
+
+### Integration Approaches
+
+#### 1. Direct Web Component Usage
+```jsx
+function AceEditorComponent() {
+  const [code, setCode] = useState('');
+
+  return (
+    <ace-editor
+      value={code}
+      onInput={(e) => setCode(e.target.value)}
+      lang="javascript"
+      theme="monokai"
+    />
+  );
+}
+```
+
+#### 2. Wrapper Component
+```jsx
+function ReactAceEditor({
+  value,
+  onChange,
+  lang = 'javascript',
+  theme = 'idle_fingers',
+  ...props
+}) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const current = ref.current;
+
+    const handleInput = (e) => {
+      onChange(e.target.value);
+    };
+
+    current?.addEventListener('input', handleInput);
+
+    return () => {
+      current?.removeEventListener('input', handleInput);
+    };
+  }, [onChange]);
+
+  return (
+    <ace-editor
+      ref={ref}
+      value={value}
+      lang={lang}
+      theme={theme}
+      {...props}
+    />
+  );
+}
+```
+
+### Key Considerations
+- Use `customElements.define()` before React rendering
+- Ensure Ace editor script is loaded before component usage
+- Handle async script loading
+- Preserve web component's native event system
+
+### Potential Challenges
+1. Script Loading: Ensure Ace.js is loaded before component registration
+2. Event Handling: Map React's synthetic events to web component events
+3. Prop Mapping: Translate React props to web component attributes
+
+### Recommended Setup
+1. Create a thin React wrapper
+2. Use `ref` to access web component methods
+3. Attach event listeners for state synchronization
+4. Defer to web component's native behavior where possible
+
+### Performance Optimizations
+- Lazy load Ace editor script
+- Memoize wrapper component
+- Use `shouldComponentUpdate` or `React.memo` for minimal re-renders
