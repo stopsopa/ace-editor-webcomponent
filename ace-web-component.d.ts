@@ -11,18 +11,42 @@ declare class AceEditorComponent extends HTMLElement {
     /**
      * Get the current content of the editor
      */
-    getValue(): string;
+    get value(): string;
 
     /**
-     * Set the content of the editor programmatically
-     * @param value Content to set in the editor
+     * Set the content of the editor
+     * @param content The new content to set in the editor
      */
-    setValue(value: string): void;
+    set value(content: string);
 
     /**
      * Get the native Ace Editor instance
      */
     getEditor(): any;
+
+    /**
+     * Tracks whether the editor has been fully loaded
+     * @private
+     */
+    #isLoaded: boolean;
+
+    /**
+     * Adds an event listener with special handling for 'onLoad' event
+     * @param type The event type to listen for
+     * @param listener The event listener function
+     * @param options Optional event listener options
+     */
+    addEventListener(
+        type: 'onLoad',
+        listener: () => void,
+        options?: boolean | AddEventListenerOptions
+    ): void;
+
+    /**
+     * Dispatches the load event and triggers pending load listeners
+     * @private
+     */
+    _triggerLoadEvent(): void;
 }
 
 // Global type declarations
@@ -59,12 +83,13 @@ declare global {
           ["data-nolt"]?: boolean;
           /** Evaluate code after load */
           ["data-eval"]?: boolean | "module";
+          /** Event fired when editor is fully loaded */
+          onLoad?: () => void;
         },
         AceEditorComponent
       >;
     }
   }
 }
-
 
 export default AceEditorComponent;

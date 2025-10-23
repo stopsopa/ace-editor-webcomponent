@@ -139,7 +139,7 @@ Based on `existing_examples/Ace.jsx:129-142`:
 // Skip updates when editor has focus to prevent conflicts
 if (!this.updateFlag) return;
 
-const editorContent = editor.getValue();
+const editorContent = editor.value;
 if (editorContent !== this.pendingContent) {
   editor.setValue(this.pendingContent, -1);
 }
@@ -206,8 +206,6 @@ editor.on('blur', () => {
 ### Properties
 - `.value`: Get/set editor content
 - `.editor`: Access underlying Ace editor instance
-- `.getValue()`: Get current content
-- `.setValue(content)`: Set content programmatically
 - `.focus()`: Focus the editor
 
 ### Events

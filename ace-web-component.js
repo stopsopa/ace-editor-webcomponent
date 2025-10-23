@@ -174,9 +174,52 @@ async function loadAceEditor(aceEditorUrl) {
  * @note value attribute never decodes entities
  */
 export default class AceEditorComponent extends HTMLElement {
+  #isLoaded = false;
+  #pendingLoadListeners = [];
   // Define observed attributes for React compatibility
   static get observedAttributes() {
     return ["value", "lang", "theme", "readonly", "min-height-px", "min-height-lines", "data-nolt"];
+  }
+
+  // Track loading state and listeners for onLoad event
+  constructor() {
+    super();
+    this._loadListeners = [];
+  }
+
+  _triggerLoadEvent() {
+    if (this.#isLoaded) return; // Prevent double firing
+
+    this.#isLoaded = true;
+
+    // 1. Dispatch the CustomEvent for regular listeners
+    const loadEvent = new CustomEvent("onLoad", {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(loadEvent);
+
+    // 2. Trigger all pending listeners added before the load event
+    this.#pendingLoadListeners.forEach((listener) => listener());
+
+    // Clear the pending listeners array
+    this.#pendingLoadListeners = [];
+  }
+
+  // Override addEventListener to implement custom 'onLoad' behavior
+  addEventListener(type, listener, options) {
+    if (type === "onLoad") {
+      if (this.#isLoaded) {
+        // If already loaded, trigger the listener immediately
+        listener();
+      } else {
+        // If not loaded, store the listener to be called when it loads
+        this.#pendingLoadListeners.push(listener);
+      }
+    }
+
+    // Always call the native addEventListener for standard behavior
+    super.addEventListener(type, listener, options);
   }
 
   connectedCallback() {
@@ -572,6 +615,23 @@ export default class AceEditorComponent extends HTMLElement {
     // Store pending value that was blocked by readonly
     this._pendingValue = null;
 
+    const triggerReady = () => {
+      // Dispatch custom 'aceOnLoad' event
+      this.dispatchEvent(
+        new CustomEvent("aceOnLoad", {
+          bubbles: true,
+          detail: {
+            component: this,
+            editor: this.editor,
+            id: this.id,
+          },
+        })
+      );
+      Promise.resolve().then(() => {
+        this._triggerLoadEvent();
+      });
+    };
+
     // Execute data-eval code AFTER everything is fully initialized
     // This ensures this.editor is set and getValue() works correctly
     if (shouldEval && codeToEval) {
@@ -596,21 +656,12 @@ export default class AceEditorComponent extends HTMLElement {
 
         // Mark that initial eval was done
         this._initialEvalDone = true;
-      }, 0);
-    }
 
-    // Dispatch custom 'ace-onload' event when editor is fully ready
-    // This allows external code to hook into the initialization lifecycle
-    this.dispatchEvent(
-      new CustomEvent("ace-onload", {
-        bubbles: true,
-        detail: {
-          component: this,
-          editor: this.editor,
-          id: this.id || "unnamed",
-        },
-      })
-    );
+        triggerReady();
+      }, 0);
+    } else {
+      triggerReady();
+    }
   }
 
   // Handle attribute changes (React compatibility)
@@ -687,47 +738,6 @@ export default class AceEditorComponent extends HTMLElement {
   }
 
   /**
-   * Get the current content of the editor
-   *
-   * @returns {string} Current editor content
-   * @description Retrieves the current text content of the Ace Editor
-   */
-  getValue() {
-    return this.editor ? this.editor.getValue() : "";
-  }
-
-  /**
-   * Set the content of the editor programmatically
-   *
-   * @param {string} value - Content to set in the editor
-   * @description
-   * - Bypasses readonly for programmatic updates
-   * - Does NOT fire 'input' event (matches native textarea behavior)
-   * - Allows readonly editors to display content via API
-   */
-  setValue(value) {
-    if (this.editor) {
-      // Set flag to suppress 'input' event during programmatic change
-      this._isProgrammaticChange = true;
-
-      const currentValue = this.editor.getValue();
-
-      if (value !== currentValue) {
-        this.editor.setValue(value, -1);
-      }
-      // For programmatic updates via setValue(), bypass readonly check
-      this._pendingValue = null;
-
-      // Reset flag after a tick to allow normal user input events
-      setTimeout(() => {
-        this._isProgrammaticChange = false;
-      }, 0);
-    } else {
-      this.initialContent = value;
-    }
-  }
-
-  /**
    * Get the native Ace Editor instance
    *
    * @returns {Object} The underlying Ace Editor instance
@@ -749,13 +759,13 @@ export default class AceEditorComponent extends HTMLElement {
    * @description Reads the current editor content
    */
   get value() {
-    return this.getValue();
+    return this.editor ? this.editor.getValue() : "";
   }
 
   /**
    * Property setter for editor content
    *
-   * @param {string} newValue - New content for the editor
+   * @param {string} value - New content for the editor
    * @description
    * Sets the editor content without firing an 'input' event
    * Matches native textarea behavior
@@ -764,8 +774,26 @@ export default class AceEditorComponent extends HTMLElement {
    * // Set editor content
    * acecomp.value = 'new code';
    */
-  set value(newValue) {
-    this.setValue(newValue);
+  set value(value) {
+    if (this.editor) {
+      // Set flag to suppress 'input' event during programmatic change
+      this._isProgrammaticChange = true;
+
+      const currentValue = this.editor.value;
+
+      if (value !== currentValue) {
+        this.editor.setValue(value, -1);
+      }
+      // For programmatic updates via setValue(), bypass readonly check
+      this._pendingValue = null;
+
+      // Reset flag after a tick to allow normal user input events
+      setTimeout(() => {
+        this._isProgrammaticChange = false;
+      }, 0);
+    } else {
+      this.initialContent = value;
+    }
   }
 }
 
