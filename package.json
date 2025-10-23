@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node --env-file=.env server.js",
-    "dev": "node --env-file=.env server.js"
+    "dev": "node --env-file=.env server.js",
+    "ln": "/bin/bash link.sh"
   },
   "keywords": [
     "web-components",
