@@ -192,6 +192,17 @@ export default class AceEditorComponent extends HTMLElement {
 
     this.#isLoaded = true;
 
+    // Dispatch custom 'onLoad' event
+    this.dispatchEvent(
+      new CustomEvent("onLoad", {
+        bubbles: true,
+        detail: {
+          component: this,
+          editor: this.editor,
+          id: this.id,
+        },
+      })
+    );
     // 2. Trigger all pending listeners added before the load event
     this.#pendingLoadListeners.forEach((listener) =>
       listener({
@@ -218,6 +229,7 @@ export default class AceEditorComponent extends HTMLElement {
         // If not loaded, store the listener to be called when it loads
         this.#pendingLoadListeners.push(listener);
       }
+      return;
     }
 
     // Always call the native addEventListener for standard behavior
