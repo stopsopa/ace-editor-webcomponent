@@ -2657,7 +2657,7 @@ greet("World");</textarea
                         editor.value =
                           editor.value +
                           `
-              console.log("Appending another log after onLoad");
+              console.log("Appending another log after web component became ready");
                 `;
                       });
                     }, 1000);
@@ -2697,7 +2697,7 @@ console.log("Let's try to append this console.log");
                     editor.value =
                       editor.value +
                       `
-console.log("Appending another log after onLoad");
+console.log("Appending another log after web component became ready");
       `;
                   });
                 }, 1000);
