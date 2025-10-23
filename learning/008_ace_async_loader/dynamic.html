@@ -1195,8 +1195,8 @@ func main() {
 
         // Update HTML view
         function updateHtmlView() {
-          if (htmlViewEditor && htmlViewEditor.setValue) {
-            htmlViewEditor.setValue(generateHtmlCode());
+          if (htmlViewEditor && htmlViewEditor.value) {
+            htmlViewEditor.value = generateHtmlCode();
           } else {
             // Editor not ready yet, try again after a delay
             setTimeout(updateHtmlView, 200);
@@ -1511,7 +1511,7 @@ func main() {
       <alert-box type="important">
         The <code>value</code> attribute takes precedence over plain text content or
         <code>&lt;script type="ace"&gt;</code>. You can initialize with Methods 1 or 2, then override programmatically
-        using <code>value</code> or the <code>.setValue()</code> method.
+        using <code>value</code> property.
       </alert-box>
 
       <h4 style="color: #667eea; margin-top: 20px">Interactive Example: Programmatic Control</h4>
@@ -1614,8 +1614,6 @@ func main() {
                 // Method 1: setAttribute (shown above)
                 // Method 2: Property assignment
                 // editor.value = "your code here";
-                // Method 3: setValue() method
-                // editor.setValue("your code here");
               });
 
               // Button 3: Change theme
@@ -2148,8 +2146,7 @@ alert(greeting);
     <h2>onChange - Ace Editor Web Component</h2>
     <p>
       <strong>✅ Behavior:</strong> Just like native textarea, programmatic value changes (via
-      <code>.value = "..."</code> or <code>.setValue(...)</code>) do NOT fire 'input' event. Only user typing/editing
-      triggers the 'input' event.
+      <code>.value = "..."</code>) do NOT fire 'input' event. Only user typing/editing triggers the 'input' event.
     </p>
 
     <style>
@@ -2195,10 +2192,6 @@ alert(greeting);
             replace_content.addEventListener('click', () => {
               // Replace editor content programmatically
               // Notice: 'input' event will NOT fire (matches native textarea behavior)
-
-              // You can use either syntax:
-              // acecomp.setValue('new code');  // Method call
-              // acecomp.value = 'new code';    // Property assignment (same as textarea.value = ...)
 
               acecomp.value = '// Content replaced programmatically!\nconsole.log("New content set.");\n\n// ❌ Notice: The right side did NOT update!\n// That\'s because acecomp.value = "..." does NOT trigger input event.\n// This matches native textarea behavior.';
 
