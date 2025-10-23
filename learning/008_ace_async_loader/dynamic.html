@@ -6,7 +6,10 @@
     <title>Ace Editor Web Component Wrapper</title>
 
     <!-- Project Overview -->
-    <meta name="description" content="Web Components Learning Path: A Comprehensive Journey from Basic Custom Elements to a Production-Ready Ace Editor Web Component">
+    <meta
+      name="description"
+      content="Web Components Learning Path: A Comprehensive Journey from Basic Custom Elements to a Production-Ready Ace Editor Web Component"
+    />
     <style>
       .project-overview {
         background: #f0f4f8;
@@ -26,13 +29,23 @@
 
     <div class="project-overview">
       <h2>🖥️ Ace Editor Web Component Wrapper</h2>
-      <p>This project creates a powerful, flexible web component that wraps the Ace Editor, transforming it into a native HTML element that can be used as easily as any standard input or textarea.</p>
+      <p>
+        This project creates a powerful, flexible web component that wraps the Ace Editor, transforming it into a native
+        HTML element that can be used as easily as any standard input or textarea.
+      </p>
 
       <strong>Key Component Features:</strong>
       <ul>
         <li>Native HTML syntax: <code>&lt;ace-editor&gt;</code> tag with simple attributes</li>
-        <li>Dynamic language mode support (JavaScript, Python, TypeScript, and <a href="https://github.com/ajaxorg/ace/blob/v1.43.4/src/ext/modelist.js#L72">more</a>)</li>
-        <li>Customizable themes and editor configurations - <a href="https://github.com/ajaxorg/ace/blob/v1.43.3/src/ext/themelist.js#L32">list</a> - check in <a href="https://ace.c9.io/build/kitchen-sink.html">kitchen-sink</a></a></li>
+        <li>
+          Dynamic language mode support (JavaScript, Python, TypeScript, and
+          <a href="https://github.com/ajaxorg/ace/blob/v1.43.4/src/ext/modelist.js#L72">more</a>)
+        </li>
+        <li>
+          Customizable themes and editor configurations -
+          <a href="https://github.com/ajaxorg/ace/blob/v1.43.3/src/ext/themelist.js#L32">list</a> - check in
+          <a href="https://ace.c9.io/build/kitchen-sink.html">kitchen-sink</a>
+        </li>
         <li>Async script loading for optimal performance</li>
         <li>Full programmatic control via JavaScript</li>
       </ul>
@@ -1777,6 +1790,7 @@ def bubble_sort(arr):
 
         <div style="padding: 15px; background: #fff3cd; border-radius: 4px">
           <h4 style="margin-top: 0; color: #856404">Approach 2: Executable &lt;script&gt; Tag</h4>
+          <br />
           <p style="margin: 0">
             Use <code>&lt;script&gt;</code> with executable type attribute inside the component. Code executes
             <strong>immediately</strong> when the browser parses it.
@@ -1961,6 +1975,24 @@ setTimeout(() => {
         Instead of using <code>data-eval</code>, you can use <code>&lt;script&gt;</code> tags with executable type
         attributes. These execute <strong>immediately</strong> when the browser's HTML parser encounters them.
       </p>
+      <alert-box type="caution">
+        Important to note is the fact that the code from dynamically created &lt;script&gt; will not be executed - this
+        part of
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML#:~:text=While%20the%20property%20does%20prevent"
+          >XSS attack prevention</a
+        >
+        mechanism.
+
+        <br />
+
+        This can be used though for &lt;ace-editor&gt;&lt;script&gt; created in initial html returned from first
+        response from the server.
+
+        <br />
+
+        When there is a need to create &lt;ace-editor&gt; and execute the code dynamically stick to `data-eval` mode
+      </alert-box>
 
       <h4 style="color: #667eea">Example 2.1: &lt;script type="text/javascript"&gt;</h4>
       <p>Standard JavaScript execution (non-ESM mode):</p>
