@@ -1,6 +1,6 @@
 // ace-web-component.js - Singleton loader for Ace Editor using window global pattern
 // This file loads the Ace Editor library only once, no matter how many components use it
-// use: <script src="./ace-web-component.js" data-main-ace="/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js"></script>
+// use: <script type="module" src="./ace-web-component.js" data-main-ace="/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js"></script>
 
 let dataMainAce;
 export function setDataMainAce(url) {
@@ -180,7 +180,10 @@ export default class AceEditorComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    const aceEditorUrl = currentScript?.getAttribute("data-main-ace") || dataMainAce;
+    const aceEditorUrl =
+      currentScript?.getAttribute("data-main-ace") ||
+      document.querySelector("[data-main-ace]")?.getAttribute("data-main-ace") ||
+      dataMainAce;
 
     if (!aceEditorUrl) {
       /**
@@ -708,17 +711,6 @@ export default class AceEditorComponent extends HTMLElement {
       this._isProgrammaticChange = true;
 
       const currentValue = this.editor.getValue();
-      console.log(
-        JSON.stringify(
-          {
-            value,
-            curre: currentValue,
-            eq: value === currentValue,
-          },
-          null,
-          4
-        )
-      );
 
       if (value !== currentValue) {
         this.editor.setValue(value, -1);
