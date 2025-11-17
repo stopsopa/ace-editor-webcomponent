@@ -30,8 +30,9 @@
     <div class="project-overview">
       <h2>🖥️ Ace Editor Web Component Wrapper</h2>
       <p>
-        This project creates a powerful, flexible web component that wraps the <a href="https://ace.c9.io/">Ace Editor</a>, transforming it into a native
-        HTML element that can be used as easily as any standard input or textarea.
+        This project creates a powerful, flexible web component that wraps the
+        <a href="https://ace.c9.io/">Ace Editor</a>, transforming it into a native HTML element that can be used as
+        easily as any standard input or textarea.
       </p>
 
       <strong>Key Component Features:</strong>
@@ -1186,7 +1187,7 @@ func main() {
         rightCol.className = "column";
         rightCol.innerHTML = `
           <h3>📝 HTML Usage Example</h3>
-          <ace-editor id="${editorId}-html-view" lang="html"></ace-editor>
+          <ace-editor id="${editorId}-html-view" lang="html" data-nolt></ace-editor>
         `;
 
         content.appendChild(leftCol);
@@ -1222,7 +1223,8 @@ func main() {
           const isReadonly = readonlyCheckbox.checked;
           const minHeightEnabled = enableMinHeightCheckbox.checked;
 
-          const escapedValue = currentValue.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          // const escapedValue = currentValue.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          const escapedValue = currentValue
 
           let htmlCode = `<ace-editor\n  id="${editorId}"\n  lang="${currentLang}"`;
 
@@ -1244,19 +1246,14 @@ func main() {
             }
           }
 
-          htmlCode += `\n>\n${escapedValue}\n</ace-editor>`;
+          htmlCode += `\n>\n  <script type="ace">\n${escapedValue}\n  <` + `/script>\n</ace-editor>`;
 
           return htmlCode;
         }
 
         // Update HTML view
         function updateHtmlView() {
-          if (htmlViewEditor && htmlViewEditor.value) {
-            htmlViewEditor.value = generateHtmlCode();
-          } else {
-            // Editor not ready yet, try again after a delay
-            setTimeout(updateHtmlView, 200);
-          }
+          htmlViewEditor.value = generateHtmlCode();
         }
 
         // Initial HTML view update (wait longer for ace-editor to initialize)
