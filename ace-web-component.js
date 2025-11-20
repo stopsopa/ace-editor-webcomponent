@@ -579,7 +579,7 @@ export default class AceEditorComponent extends HTMLElement {
         minHeight = parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
       }
 
-      const finalHeight = Math.max(contentHeight, minHeight) + 16; // correction
+      const finalHeight = Math.max(contentHeight, minHeight) //+ 16; // correction
       container.style.height = finalHeight + "px";
       editor.resize();
     };
