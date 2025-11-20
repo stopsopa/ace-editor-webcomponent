@@ -388,6 +388,8 @@ export default class AceEditorComponent extends HTMLElement {
 
     // Initialize Ace Editor
     const editor = ace.edit(container);
+    editor.renderer.setPadding(0);
+    editor.renderer.setScrollMargin(0, 0, 0, 0);
 
     // Flag to track if we're in a programmatic update (to suppress 'input' event)
     // Initialize early so we can use it during initial content setting
@@ -466,8 +468,8 @@ export default class AceEditorComponent extends HTMLElement {
     editor.setTheme(`ace/theme/${theme}`);
     session.setMode(`ace/mode/${lang}`);
 
-    // Hide horizontal scrollbar since we're using wrap mode
-    editor.setOption("hScrollBarAlwaysVisible", false);
+    // // Hide horizontal scrollbar since we're using wrap mode
+    // editor.setOption("hScrollBarAlwaysVisible", false);
 
     // Additional scrollbar configuration
     editor.renderer.setScrollMargin(0, 0, 0, 0);
@@ -579,7 +581,7 @@ export default class AceEditorComponent extends HTMLElement {
         minHeight = parseInt(minHeightLines, 10) * editor.renderer.lineHeight;
       }
 
-      const finalHeight = Math.max(contentHeight, minHeight) //+ 16; // correction
+      const finalHeight = Math.max(contentHeight, minHeight); //+ 16; // correction
       container.style.height = finalHeight + "px";
       editor.resize();
     };
