@@ -36,6 +36,40 @@ function generateUniqueId() {
   return id;
 }
 
+function visible(el) {
+  if (!(el instanceof Element)) return false;
+
+  // 1. Must have layout boxes
+  if (!el.getClientRects().length) return false;
+
+  const style = getComputedStyle(el);
+
+  // 2. Common CSS visibility checks
+  if (
+    style.display === "none" ||
+    style.visibility === "hidden" ||
+    style.visibility === "collapse" ||
+    style.opacity === "0"
+  ) {
+    return false;
+  }
+
+
+  // 4. Walk up the DOM tree to ensure no hidden parents (Shadow DOM friendly)
+  let parent = el.parentElement || (el.parentNode instanceof ShadowRoot ? el.parentNode.host : el.parentNode);
+  while (parent && parent !== document) {
+    if (parent instanceof Element) {
+      const parentStyle = getComputedStyle(parent);
+      if (parentStyle.display === "none" || parentStyle.visibility === "hidden" || parentStyle.opacity === "0") {
+        return false;
+      }
+    }
+    parent = parent.parentElement || (parent.parentNode instanceof ShadowRoot ? parent.parentNode.host : parent.parentNode);
+  }
+
+  return true;
+}
+
 /**
  * Decodes HTML entities in a string (similar to lodash _.unescape)
  * Converts &lt; to <, &gt; to >, &amp; to &, &quot; to ", &#39; to '
@@ -361,7 +395,7 @@ export default class AceEditorComponent extends HTMLElement {
     (async () => {
       try {
         const ace = await loadAceEditor(this.aceUrl);
-        this.initializeEditor(ace);
+        await this.initializeEditor(ace);
       } catch (error) {
         console.error(`❌ Failed to initialize Ace Editor ${componentId}:`, error);
         const label = shadow.querySelector(".loading-message");
@@ -373,11 +407,25 @@ export default class AceEditorComponent extends HTMLElement {
     })();
   }
 
-  initializeEditor(ace) {
+  async initializeEditor(ace) {
     const shadow = this.shadowRoot;
     const wrapper = shadow.querySelector(".ace-wrapper");
     const container = shadow.querySelector(".ace-container");
     const label = shadow.querySelector(".loading-message");
+
+    // Wait until the component becomes visible to avoid initialization issues with hidden elements
+    if (!visible(container)) {
+      log(`⏳ Ace Editor [${this.id}] is not visible yet, waiting for visibility before initialization...`);
+      await new Promise((resolve) => {
+        const observer = new ResizeObserver(() => {
+          if (visible(container)) {
+            observer.disconnect();
+            resolve();
+          }
+        });
+        observer.observe(container);
+      });
+    }
 
     // Update UI to show loaded state
     label.textContent = "Ace Editor Loaded!";
