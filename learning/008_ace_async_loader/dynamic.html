@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -72,7 +72,11 @@
       @supports (font-variation-settings: normal) {
         :root {
           font-family: "Inter var", sans-serif;
-          font-feature-settings: "liga" 1, "calt" 1, /* fix for Chrome */ "zero", "ss01";
+          font-feature-settings:
+            "liga" 1,
+            "calt" 1,
+            /* fix for Chrome */ "zero",
+            "ss01";
         }
       }
       body {
@@ -295,7 +299,9 @@
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         z-index: 10000;
-        animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+        animation:
+          slideIn 0.3s ease-out,
+          slideOut 0.3s ease-in 2.7s;
         pointer-events: none;
       }
       @keyframes slideIn {
@@ -668,8 +674,7 @@
           <pre style="margin-top: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px">
 &lt;ace-editor lang="javascript"&gt;
   console.log("Hello, World!");
-&lt;/ace-editor&gt;</pre
-          >
+&lt;/ace-editor&gt;</pre>
 
           <button id="render1">render</button>
           <script>
@@ -708,8 +713,7 @@
           <pre style="margin-top: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px">
 &lt;ace-editor id="my-editor-1" lang="javascript"&gt;
   console.log("Hello, World!");
-&lt;/ace-editor&gt;</pre
-          >
+&lt;/ace-editor&gt;</pre>
         </div>
 
         <div>
@@ -718,8 +722,7 @@
           <pre style="margin-top: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px">
 &lt;ace-editor id="my-editor-2" lang="python"&gt;
   print("Hello, World!")
-&lt;/ace-editor&gt;</pre
-          >
+&lt;/ace-editor&gt;</pre>
         </div>
       </div>
 
@@ -740,8 +743,7 @@
           <pre style="margin-top: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px">
 &lt;ace-editor id="duplicate-test" lang="javascript"&gt;
   console.log("First editor");
-&lt;/ace-editor&gt;</pre
-          >
+&lt;/ace-editor&gt;</pre>
           <ace-editor id="duplicate-test" lang="javascript"> console.log("First editor"); </ace-editor>
         </div>
         <div>
@@ -749,8 +751,7 @@
           <pre style="margin-top: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px">
 &lt;ace-editor id="duplicate-test" lang="javascript"&gt;
   console.log("This should fail");
-&lt;/ace-editor&gt;</pre
-          >
+&lt;/ace-editor&gt;</pre>
           <ace-editor id="duplicate-test" lang="javascript"> console.log("This should fail"); </ace-editor>
         </div>
       </div>
@@ -1069,7 +1070,7 @@ func main() {
           <div class="select-with-buttons">
             <select id="${editorId}-lang">
               ${LANGUAGES.map(
-                (lang) => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)}</option>`
+                (lang) => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)}</option>`,
               ).join("")}
             </select>
             <div class="select-buttons">
@@ -1090,7 +1091,7 @@ func main() {
                 (theme) =>
                   `<option value="${theme}">${theme
                     .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}</option>`
+                    .replace(/\b\w/g, (l) => l.toUpperCase())}</option>`,
               ).join("")}
             </select>
             <div class="select-buttons">
@@ -1109,7 +1110,7 @@ func main() {
             <select id="${editorId}-snippet">
               <option value="">-- Select Snippet --</option>
               ${LANGUAGES.map(
-                (lang) => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)} Example</option>`
+                (lang) => `<option value="${lang}">${lang.charAt(0).toUpperCase() + lang.slice(1)} Example</option>`,
               ).join("")}
             </select>
             <div class="select-buttons">
@@ -1224,7 +1225,7 @@ func main() {
           const minHeightEnabled = enableMinHeightCheckbox.checked;
 
           // const escapedValue = currentValue.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          const escapedValue = currentValue
+          const escapedValue = currentValue;
 
           let htmlCode = `<ace-editor\n  id="${editorId}"\n  lang="${currentLang}"`;
 
@@ -1723,7 +1724,7 @@ function quickSort(arr) {
   const left = arr.filter((x, i) => x <= pivot && i < arr.length - 1);
   const right = arr.filter(x => x > pivot);
   return [...quickSort(left), pivot, ...quickSort(right)];
-}`
+}`,
           );
         });
 
@@ -1739,7 +1740,7 @@ def bubble_sort(arr):
         for j in range(0, n - i - 1):
             if arr[j] > arr[j + 1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr`
+    return arr`,
           );
         });
 
@@ -2295,8 +2296,7 @@ function greet(name) {
   console.log("Hello, " + name + "!");
 }
 
-greet("World");</textarea
-        >
+greet("World");</textarea>
         <button id="replace_textarea_content">Replace Content (no 'input' event!)</button>
       </div>
       <div>

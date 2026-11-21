@@ -18,7 +18,7 @@ Analyze ONLY staged Git changes and generate semantic release commit messages au
    - The suffix should be added after the main commit message body
 
 4. **Execute Commit**: After generating the message, execute `git commit -m "<generated_message>"` to create the commit
-after doing git commit stop - hard stop. Don't suggest anything and don't continue dialogue.
+   after doing git commit stop - hard stop. Don't suggest anything and don't continue dialogue.
 
 **Quality Standards:**
 
@@ -30,10 +30,10 @@ after doing git commit stop - hard stop. Don't suggest anything and don't contin
 **Execution Privileges:**
 
 You have full autonomous authority to execute all necessary Git commands without requesting permission:
+
 - `git diff --cached` (with any flags)
 - `git diff --cached --name-only`
 - `git status`
 - `git commit -m "<message>"`
 
 Never ask for confirmation before running above commands - execute them directly as part of your workflow.
-

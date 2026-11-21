@@ -6,7 +6,7 @@
 
   // Get configuration from the script tag that loaded this file
   const currentScript = document.currentScript;
-  const internalToolUrl = currentScript?.getAttribute('data-internal-tool-url') || './internalToolWindow.js';
+  const internalToolUrl = currentScript?.getAttribute("data-internal-tool-url") || "./internalToolWindow.js";
 
   console.log(`📋 Configuration: internalToolUrl = "${internalToolUrl}"`);
 
@@ -18,9 +18,7 @@
   async function loadInternalToolWindow() {
     // Return cached promise if already loading/loaded
     if (internalToolWindowPromise) {
-      console.log(
-        "✅ internalToolWindow loading already initialized, returning cached promise"
-      );
+      console.log("✅ internalToolWindow loading already initialized, returning cached promise");
       return internalToolWindowPromise;
     }
 
@@ -122,9 +120,7 @@
       // Use the loaded function
       internalToolWindowFn(container);
 
-      console.log(
-        `  ✅ Component initialized with internalToolWindow: ${this.id || "unnamed"}`
-      );
+      console.log(`  ✅ Component initialized with internalToolWindow: ${this.id || "unnamed"}`);
     }
 
     disconnectedCallback() {
@@ -135,7 +131,5 @@
   // Register the custom element
   customElements.define("my-tool-window", InternalToolWindowComponent);
 
-  console.log(
-    "📦 my-tool-window.js loaded! <my-tool-window> components are now registered."
-  );
+  console.log("📦 my-tool-window.js loaded! <my-tool-window> components are now registered.");
 })();

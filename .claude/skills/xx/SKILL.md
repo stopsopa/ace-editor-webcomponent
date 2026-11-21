@@ -59,7 +59,8 @@ Commands can be destructive or outward-facing (deploy, publish, delete). `confir
 
 ```ts
 // xx.ts - "export default". In xx.cjs: "module.exports = (setup, ctx) => { ... }"
-export default (setup, ctx) => {          // may be async. ctx = { args, cwd, configPath }
+export default (setup, ctx) => {
+  // may be async. ctx = { args, cwd, configPath }
   return {
     "docker up": {
       command: `
@@ -68,9 +69,9 @@ docker compose --env-file "${process.env.ENVFILE || ".env"}" up -d
 echo "first argument: \${1}"
 `,
       description: `start all containers`, // optional, shown under the menu
-      confirm: false,                      // optional, default true: ask before running
-      source: false,                       // optional, default false. true: run in the user's current shell
-      order: 10,                           // optional, lower goes first, missing = 0
+      confirm: false, // optional, default true: ask before running
+      source: false, // optional, default false. true: run in the user's current shell
+      order: 10, // optional, lower goes first, missing = 0
     },
     ...setup,
   };

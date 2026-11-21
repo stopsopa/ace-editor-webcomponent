@@ -8,58 +8,54 @@ export function setDataMainAce(url: string): void;
  * Web Component for wrapping Ace Editor
  */
 declare class AceEditorComponent extends HTMLElement {
-    /**
-     * Get the current content of the editor
-     */
-    get value(): string;
+  /**
+   * Get the current content of the editor
+   */
+  get value(): string;
 
-    /**
-     * Set the content of the editor
-     * @param content The new content to set in the editor
-     */
-    set value(content: string);
+  /**
+   * Set the content of the editor
+   * @param content The new content to set in the editor
+   */
+  set value(content: string);
 
-    /**
-     * Get the native Ace Editor instance
-     */
-    getEditor(): any;
+  /**
+   * Get the native Ace Editor instance
+   */
+  getEditor(): any;
 
-    /**
-     * Tracks whether the editor has been fully loaded
-     * @private
-     */
-    #isLoaded: boolean;
+  /**
+   * Tracks whether the editor has been fully loaded
+   * @private
+   */
+  #isLoaded: boolean;
 
-    /**
-     * Adds an event listener with special handling for 'onLoad' event
-     * @param type The event type to listen for
-     * @param listener The event listener function
-     * @param options Optional event listener options
-     */
-    addEventListener(
-        type: 'onLoad',
-        listener: () => void,
-        options?: boolean | AddEventListenerOptions
-    ): void;
+  /**
+   * Adds an event listener with special handling for 'onLoad' event
+   * @param type The event type to listen for
+   * @param listener The event listener function
+   * @param options Optional event listener options
+   */
+  addEventListener(type: "onLoad", listener: () => void, options?: boolean | AddEventListenerOptions): void;
 
-    /**
-     * Dispatches the load event and triggers pending load listeners
-     * @private
-     */
-    _triggerLoadEvent(): void;
+  /**
+   * Dispatches the load event and triggers pending load listeners
+   * @private
+   */
+  _triggerLoadEvent(): void;
 }
 
 // Global type declarations
 declare global {
-    interface HTMLElementTagNameMap {
-        'ace-editor': AceEditorComponent;
-    }
+  interface HTMLElementTagNameMap {
+    "ace-editor": AceEditorComponent;
+  }
 
-    interface Window {
-        ace?: {
-            edit: (container: HTMLElement) => any;
-        };
-    }
+  interface Window {
+    ace?: {
+      edit: (container: HTMLElement) => any;
+    };
+  }
 }
 
 declare global {

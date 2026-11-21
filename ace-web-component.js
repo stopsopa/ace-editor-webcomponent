@@ -54,7 +54,6 @@ function visible(el) {
     return false;
   }
 
-
   // 4. Walk up the DOM tree to ensure no hidden parents (Shadow DOM friendly)
   let parent = el.parentElement || (el.parentNode instanceof ShadowRoot ? el.parentNode.host : el.parentNode);
   while (parent && parent !== document) {
@@ -64,7 +63,8 @@ function visible(el) {
         return false;
       }
     }
-    parent = parent.parentElement || (parent.parentNode instanceof ShadowRoot ? parent.parentNode.host : parent.parentNode);
+    parent =
+      parent.parentElement || (parent.parentNode instanceof ShadowRoot ? parent.parentNode.host : parent.parentNode);
   }
 
   return true;
@@ -100,7 +100,7 @@ function registerEditorId(id) {
     throw new Error(
       `❌ Duplicate ace-editor ID detected: "${id}". ` +
         `Each ace-editor must have a unique ID. ` +
-        `Either remove the duplicate ID or let the component auto-generate unique IDs.`
+        `Either remove the duplicate ID or let the component auto-generate unique IDs.`,
     );
   }
   registeredIds.add(id);
@@ -235,7 +235,7 @@ export default class AceEditorComponent extends HTMLElement {
           editor: this.editor,
           id: this.id,
         },
-      })
+      }),
     );
     // 2. Trigger all pending listeners added before the load event
     this.#pendingLoadListeners.forEach((listener) =>
@@ -243,7 +243,7 @@ export default class AceEditorComponent extends HTMLElement {
         component: this,
         editor: this.editor,
         id: this.id,
-      })
+      }),
     );
 
     // Clear the pending listeners array
@@ -288,7 +288,7 @@ export default class AceEditorComponent extends HTMLElement {
        */
       console.error(
         "❌ ace-web-component.js: Missing required data-main-ace attribute on script tag that loads this file. You can also use method setDataMainAce(url) to provide the URL programmatically." +
-          "Please provide the URL to the Ace Editor main script."
+          "Please provide the URL to the Ace Editor main script.",
       );
       return;
     }
@@ -689,7 +689,7 @@ export default class AceEditorComponent extends HTMLElement {
             editor: this.editor,
             id: this.id,
           },
-        })
+        }),
       );
       Promise.resolve().then(() => {
         this._triggerLoadEvent();

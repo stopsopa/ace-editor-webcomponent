@@ -8,8 +8,8 @@
     "start": "node --env-file=.env server.js",
     "dev": "node --env-file=.env server.js",
     "ln": "/bin/bash link.sh",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "prettier --config prettier.config.cjs --write .",
+    "format:check": "prettier --config prettier.config.cjs --check ."
   },
   "keywords": [
     "web-components",

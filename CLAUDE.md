@@ -49,38 +49,47 @@ This repository is a comprehensive learning path for **Web Components**, culmina
 ## Development Commands
 
 ### Start Development Server
+
 ```bash
 node server.js
 ```
+
 - Serves all files from the project root on http://localhost:3000
 - Serves static files including `/node_modules` and `/noprettier`
 - No build process required - pure web standards
 
 ### Install Dependencies
+
 ```bash
 npm install
 ```
+
 Only installs Express (no bundler, no React, no build tools)
 
 ## Ace Editor Setup
 
 ### Version Information
+
 - **Download Source**: https://github.com/ajaxorg/ace-builds/releases
 - **Installation**: Manual download as zip file (not npm)
 
 ### Installation Steps
+
 1. Download ace-builds-[version].zip from GitHub releases
 2. Extract to `/noprettier/ace/ace-builds-[version]/`
 3. Main file: `/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js`
 4. Extensions: `/noprettier/ace/ace-builds-[version]/src-min-noconflict/ext-linking.js`
 
 ### Why Manual Installation?
+
 The project follows a pure web standards approach without npm packages for frontend code. Ace is loaded dynamically at runtime using the async script loading pattern.
 
 ## Learning Path Architecture
 
 ### Lessons 001-008: Web Components Fundamentals
+
 Progressive introduction to web components APIs:
+
 1. Basic custom elements and lifecycle
 2. Shadow DOM and style encapsulation
 3. Attributes, properties, and reactivity
@@ -91,17 +100,11 @@ Progressive introduction to web components APIs:
 8. Async script loading patterns
 
 ### Lessons 009-016: Ace Editor Web Component
-Phased build of production-ready component:
-9. Async loader for Ace editor
-10. Basic component shell and structure
-11. Editor initialization after async load
-12. Configuration (mode, theme, options)
-13. Content management and update patterns
-14. Auto-sizing based on content
-15. Advanced features (linking, clipboard)
-16. Final production component
+
+Phased build of production-ready component: 9. Async loader for Ace editor 10. Basic component shell and structure 11. Editor initialization after async load 12. Configuration (mode, theme, options) 13. Content management and update patterns 14. Auto-sizing based on content 15. Advanced features (linking, clipboard) 16. Final production component
 
 ### Design Principles
+
 - **Zero dependencies**: Each lesson uses pure HTML/JS/CSS
 - **Progressive**: Each lesson builds on previous concepts
 - **Minimal UI**: Raw HTML elements, no fancy styling
@@ -112,12 +115,13 @@ Phased build of production-ready component:
 ## Key Technical Patterns
 
 ### 1. Async Script Loading Pattern
+
 Based on `existing_examples/github.js:347-375`:
 
 ```javascript
 async function loadScript(src) {
   return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     let handler = setInterval(() => {
       if (window.ace && window.ace.edit) {
         clearInterval(handler);
@@ -133,6 +137,7 @@ async function loadScript(src) {
 When presenting prototypes of web component wrapping ace editor always present (render) at least two components at the same time to inspect if ace editor is loaded twice or not. Should be loaded once (Loaded - I mean loading main ace editor script ace.js once per page loaded. I don't want to have ace.js loaded twice because we are rendering web component more than one).
 
 ### 2. Editor Update Management
+
 Based on `existing_examples/Ace.jsx:129-142`:
 
 ```javascript
@@ -148,41 +153,41 @@ if (editorContent !== this.pendingContent) {
 Pattern prevents update loops between component state and editor state.
 
 ### 3. Auto-sizing Based on Content
+
 Based on `existing_examples/doace.js:372-396`:
 
 ```javascript
 function updateHeight() {
   const session = editor.getSession();
-  const newHeight =
-    session.getScreenLength() *
-    editor.renderer.lineHeight +
-    editor.renderer.scrollBar.getWidth();
+  const newHeight = session.getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
 
-  container.style.height = newHeight + 'px';
+  container.style.height = newHeight + "px";
   editor.resize();
 }
 
-editor.getSession().on('change', updateHeight);
+editor.getSession().on("change", updateHeight);
 ```
 
 ### 4. Focus State Management
+
 Based on `existing_examples/Ace.jsx:316-327`:
 
 ```javascript
-editor.on('focus', () => {
+editor.on("focus", () => {
   this.hasFocus = true;
-  this.updateFlag = false;  // Prevent external updates
+  this.updateFlag = false; // Prevent external updates
 });
 
-editor.on('blur', () => {
+editor.on("blur", () => {
   this.hasFocus = false;
-  this.updateFlag = true;   // Allow external updates
+  this.updateFlag = true; // Allow external updates
 });
 ```
 
 ## Final Ace Editor Web Component API
 
 ### Basic Usage
+
 ```html
 <ace-editor
   src="/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js"
@@ -190,11 +195,13 @@ editor.on('blur', () => {
   lang="javascript"
   theme="idle_fingers"
   wrap
-  readonly>
+  readonly
+>
 </ace-editor>
 ```
 
 ### Attributes
+
 - `src` (required): Path to ace.js file
 - `value`: Initial editor content
 - `lang`: Language mode (javascript, python, json, etc.)
@@ -204,11 +211,13 @@ editor.on('blur', () => {
 - `tab-size`: Tab size in spaces (default: 4)
 
 ### Properties
+
 - `.value`: Get/set editor content
 - `.editor`: Access underlying Ace editor instance
 - `.focus()`: Focus the editor
 
 ### Events
+
 - `change`: Fired when content changes
   - `event.detail.value`: New content
 - `ready`: Fired when Ace editor is loaded and initialized
@@ -224,6 +233,7 @@ The `existing_examples/` directory contains the original React implementation:
 - **003next.entry.jsx**: Complex usage example with multiple editors
 
 These files demonstrate:
+
 - Async loading pattern for Ace editor
 - Update management between React state and editor
 - Auto-sizing calculations
@@ -234,6 +244,7 @@ These files demonstrate:
 ## GitHub Pages Deployment
 
 The repository is configured to serve via GitHub Pages from the root directory:
+
 - `.nojekyll` file prevents Jekyll processing
 - All files served statically
 - `/noprettier/` directory included for Ace editor
@@ -242,6 +253,7 @@ The repository is configured to serve via GitHub Pages from the root directory:
 ## Common Tasks
 
 ### Adding a New Lesson
+
 1. Create directory: `/learning/0XX_lesson_name/`
 2. Create `index.html` with minimal HTML structure
 3. Implement web component inline in `<script>` tag
@@ -250,14 +262,17 @@ The repository is configured to serve via GitHub Pages from the root directory:
 6. Keep it minimal - raw HTML elements only
 
 ### MDN Documentation Links
+
 Each lesson should include relevant MDN links in a "Further Reading" section. Common MDN resources:
 
 **Web Components:**
+
 - Using custom elements: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements
 - Using shadow DOM: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM
 - Using templates and slots: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots
 
 **APIs:**
+
 - customElements.define(): https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define
 - attachShadow(): https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
 - observedAttributes: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes
@@ -265,11 +280,13 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 - slot element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot
 
 **Lifecycle Callbacks:**
+
 - connectedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
 - disconnectedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
 - adoptedCallback: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks
 
 ### Updating Ace Editor Version
+
 1. Download new version from https://github.com/ajaxorg/ace-builds/releases
 2. Extract to `/noprettier/ace/ace-builds-X.Y.Z/`
 3. Update `src` paths in lessons 009-016
@@ -277,6 +294,7 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 5. Update version number in this file
 
 ### Testing the Web Component
+
 1. Start server: `node server.js`
 2. Open: http://localhost:3000/learning/016_final_ace_component/
 3. Test all attributes and properties
@@ -286,6 +304,7 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 ## Architecture Decisions
 
 ### Why No Build Process?
+
 - Pure web standards approach
 - Maximum compatibility and longevity
 - Easy to understand and debug
@@ -293,6 +312,7 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 - Directly maps to what browsers run
 
 ### Why Manual Ace Download?
+
 - Following existing project pattern
 - Full control over version
 - No npm dependency conflicts
@@ -300,6 +320,7 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 - Simpler for learning purposes
 
 ### Why Progressive Lessons?
+
 - Each concept builds on previous
 - Easy to debug and understand
 - Can reference specific lesson for each feature
@@ -309,24 +330,28 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 ## Troubleshooting
 
 ### Ace Editor Not Loading
+
 1. Check path in `src` attribute matches actual file location
 2. Verify `/noprettier/ace/` directory exists and contains ace.js
 3. Check browser console for 404 errors
 4. Ensure server is running and serving static files
 
 ### Component Not Registering
+
 1. Verify component name has hyphen (required for custom elements)
 2. Check `customElements.define()` is called
 3. Ensure script runs after DOM is ready
 4. Check for JavaScript errors in console
 
 ### Editor Not Auto-sizing
+
 1. Verify 'change' event listener is attached to session
 2. Check height calculation includes scrollbar width
 3. Ensure `editor.resize()` is called after height change
 4. Test with different content lengths
 
 ### Updates Not Working
+
 1. Check focus/blur state management
 2. Verify `updateFlag` is set correctly
 3. Ensure `attributeChangedCallback` is implemented
@@ -335,6 +360,7 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 ## React Integration Strategy for Ace Editor Web Component
 
 ### Objectives
+
 - Seamlessly use the existing Web Component in React
 - Minimal wrapper required
 - Preserve all existing functionality
@@ -343,30 +369,19 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 ### Integration Approaches
 
 #### 1. Direct Web Component Usage
+
 ```jsx
 function AceEditorComponent() {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
 
-  return (
-    <ace-editor
-      value={code}
-      onInput={(e) => setCode(e.target.value)}
-      lang="javascript"
-      theme="monokai"
-    />
-  );
+  return <ace-editor value={code} onInput={(e) => setCode(e.target.value)} lang="javascript" theme="monokai" />;
 }
 ```
 
 #### 2. Wrapper Component
+
 ```jsx
-function ReactAceEditor({
-  value,
-  onChange,
-  lang = 'javascript',
-  theme = 'idle_fingers',
-  ...props
-}) {
+function ReactAceEditor({ value, onChange, lang = "javascript", theme = "idle_fingers", ...props }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -376,43 +391,39 @@ function ReactAceEditor({
       onChange(e.target.value);
     };
 
-    current?.addEventListener('input', handleInput);
+    current?.addEventListener("input", handleInput);
 
     return () => {
-      current?.removeEventListener('input', handleInput);
+      current?.removeEventListener("input", handleInput);
     };
   }, [onChange]);
 
-  return (
-    <ace-editor
-      ref={ref}
-      value={value}
-      lang={lang}
-      theme={theme}
-      {...props}
-    />
-  );
+  return <ace-editor ref={ref} value={value} lang={lang} theme={theme} {...props} />;
 }
 ```
 
 ### Key Considerations
+
 - Use `customElements.define()` before React rendering
 - Ensure Ace editor script is loaded before component usage
 - Handle async script loading
 - Preserve web component's native event system
 
 ### Potential Challenges
+
 1. Script Loading: Ensure Ace.js is loaded before component registration
 2. Event Handling: Map React's synthetic events to web component events
 3. Prop Mapping: Translate React props to web component attributes
 
 ### Recommended Setup
+
 1. Create a thin React wrapper
 2. Use `ref` to access web component methods
 3. Attach event listeners for state synchronization
 4. Defer to web component's native behavior where possible
 
 ### Performance Optimizations
+
 - Lazy load Ace editor script
 - Memoize wrapper component
 - Use `shouldComponentUpdate` or `React.memo` for minimal re-renders

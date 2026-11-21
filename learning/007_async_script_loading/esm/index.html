@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>007 - Async Script Loading with Web Components</title>
 
-    
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -121,43 +120,28 @@
     <p>Web components often depend on external libraries. The challenge is:</p>
     <ul>
       <li>✅ Load the external library only <strong>once</strong></li>
-      <li>
-        ✅ Support components declared in initial HTML (before library loads)
-      </li>
+      <li>✅ Support components declared in initial HTML (before library loads)</li>
       <li>✅ Support dynamically added components (after library loads)</li>
       <li>✅ Initialize all waiting components once library is ready</li>
       <li>✅ Don't block page rendering</li>
     </ul>
 
     <div class="info-box">
-      <strong>📺 Open DevTools Network Tab:</strong> Watch how
-      <code>internalToolESM.js</code> loads only ONCE, no matter how many
-      <code>&lt;my-tool&gt;</code> components you have!
+      <strong>📺 Open DevTools Network Tab:</strong> Watch how <code>internalToolESM.js</code> loads only ONCE, no
+      matter how many <code>&lt;my-tool&gt;</code> components you have!
     </div>
 
     <h2>Live Example</h2>
     <div class="example">
       <h3>Step 1: Load the Component Module</h3>
       <p>
-        <strong
-          >Click buttons to dynamically load script and add components:</strong
-        >
+        <strong>Click buttons to dynamically load script and add components:</strong>
       </p>
       <div>
-        <button onclick="loadComponentScript()" id="load-script-btn">
-          Load my-tool-esm.js
-        </button>
+        <button onclick="loadComponentScript()" id="load-script-btn">Load my-tool-esm.js</button>
         <button onclick="addNewComponent()">Add New Component</button>
       </div>
-      <div
-        id="script-status"
-        style="
-          margin-top: 10px;
-          padding: 10px;
-          background: #fff3cd;
-          border-radius: 5px;
-        "
-      >
+      <div id="script-status" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px">
         Status: Component script not loaded yet
       </div>
 
@@ -184,72 +168,38 @@
     <h2>How It Works</h2>
     <ol>
       <li>
-        <strong>Dynamic Script Loading:</strong> Button creates and injects
-        <code>&lt;script&gt;</code> tag on demand
+        <strong>Dynamic Script Loading:</strong> Button creates and injects <code>&lt;script&gt;</code> tag on demand
       </li>
+      <li><strong>Auto Registration:</strong> The module registers the <code>&lt;my-tool&gt;</code> custom element</li>
       <li>
-        <strong>Auto Registration:</strong> The module registers the
-        <code>&lt;my-tool&gt;</code> custom element
+        <strong>Lazy Loading:</strong> External dependency (internalToolESM.js) loads only when first component connects
       </li>
-      <li>
-        <strong>Lazy Loading:</strong> External dependency (internalToolESM.js) loads
-        only when first component connects
-      </li>
-      <li>
-        <strong>Singleton Pattern:</strong> Even with multiple components,
-        dependency loads only once
-      </li>
-      <li>
-        <strong>Works Everywhere:</strong> Components declared in HTML or added
-        dynamically both work!
-      </li>
+      <li><strong>Singleton Pattern:</strong> Even with multiple components, dependency loads only once</li>
+      <li><strong>Works Everywhere:</strong> Components declared in HTML or added dynamically both work!</li>
     </ol>
 
     <h2>Key Concepts</h2>
     <ul>
-      <li>
-        <strong>On-Demand Loading:</strong> Script loads only when needed
-        (button click)
-      </li>
-      <li>
-        <strong>Singleton Loading:</strong> External dependency loads only once
-      </li>
-      <li>
-        <strong>Declarative HTML:</strong> Components can be declared before
-        script loads
-      </li>
-      <li>
-        <strong>No Manual Init:</strong> Components automatically initialize
-        when script registers them
-      </li>
+      <li><strong>On-Demand Loading:</strong> Script loads only when needed (button click)</li>
+      <li><strong>Singleton Loading:</strong> External dependency loads only once</li>
+      <li><strong>Declarative HTML:</strong> Components can be declared before script loads</li>
+      <li><strong>No Manual Init:</strong> Components automatically initialize when script registers them</li>
       <li><strong>Shadow DOM:</strong> Each component has isolated styles</li>
     </ul>
 
     <h2>Why This Pattern?</h2>
     <ul>
       <li>✅ <strong>Simple:</strong> One script, use anywhere</li>
-      <li>
-        ✅ <strong>Performance:</strong> Load script only when needed, external
-        module loads once
-      </li>
-      <li>
-        ✅ <strong>Flexible:</strong> Works with static and dynamic components
-      </li>
-      <li>
-        ✅ <strong>Clean:</strong> No global variables or manual coordination
-      </li>
-      <li>
-        ✅ <strong>Real-world:</strong> This is how you'll build the Ace Editor
-        component!
-      </li>
+      <li>✅ <strong>Performance:</strong> Load script only when needed, external module loads once</li>
+      <li>✅ <strong>Flexible:</strong> Works with static and dynamic components</li>
+      <li>✅ <strong>Clean:</strong> No global variables or manual coordination</li>
+      <li>✅ <strong>Real-world:</strong> This is how you'll build the Ace Editor component!</li>
     </ul>
 
     <h2>Further Reading</h2>
     <ul>
       <li>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import"
-          target="_blank"
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" target="_blank"
           >MDN: Dynamic import()</a
         >
       </li>
@@ -261,9 +211,7 @@
         >
       </li>
       <li>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define"
-          target="_blank"
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define" target="_blank"
           >MDN: customElements.define()</a
         >
       </li>
@@ -287,9 +235,7 @@
           statusEl.textContent = "Status: Loading my-tool-esm.js...";
           statusEl.style.background = "#fff3cd";
 
-          console.log(
-            "📦 Dynamically creating <script> tag for my-tool-esm.js..."
-          );
+          console.log("📦 Dynamically creating <script> tag for my-tool-esm.js...");
 
           // Create script tag dynamically
           const script = document.createElement("script");
@@ -303,8 +249,7 @@
             document.head.appendChild(script);
           });
 
-          statusEl.textContent =
-            "Status: ✅ my-tool-esm.js loaded! Components are now alive!";
+          statusEl.textContent = "Status: ✅ my-tool-esm.js loaded! Components are now alive!";
           statusEl.style.background = "#d4edda";
 
           // Replace button with success message
@@ -312,9 +257,7 @@
             '<div style="padding: 10px 20px; background: #d4edda; color: #155724; border-radius: 5px; font-weight: bold; text-align: center;">✅ Script Loaded Successfully</div>';
 
           console.log("✅ my-tool-esm.js loaded successfully!");
-          console.log(
-            "✅ All <my-tool> components in the DOM are now initializing!"
-          );
+          console.log("✅ All <my-tool> components in the DOM are now initializing!");
         } catch (error) {
           console.error("❌ Failed to load script:", error);
           statusEl.textContent = "Status: ❌ Failed to load script!";

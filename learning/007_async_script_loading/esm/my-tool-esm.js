@@ -9,9 +9,7 @@ let internalToolESMPromise = null; // Loading promise
 async function loadinternalToolESM() {
   // Return cached promise if already loading/loaded
   if (internalToolESMPromise) {
-    console.log(
-      " internalToolESM loading already initialized, returning cached module promise"
-    );
+    console.log(" internalToolESM loading already initialized, returning cached module promise");
     return internalToolESMPromise;
   }
 
@@ -78,9 +76,7 @@ class internalToolESMComponent extends HTMLElement {
     // Use the loaded module
     internalToolESMModule.internalToolESM(container);
 
-    console.log(
-      `  Component initialized with internalToolESM: ${this.id || "unnamed"}`
-    );
+    console.log(`  Component initialized with internalToolESM: ${this.id || "unnamed"}`);
   }
 
   disconnectedCallback() {
