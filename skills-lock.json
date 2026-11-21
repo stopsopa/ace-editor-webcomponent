@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "skills": {
+    "xx": {
+      "source": "stopsopa/xx",
+      "commit": "d7eac5f530fefcb3a436eba6681a614c6b71b6b5",
+      "sourceType": "github",
+      "skillPath": "xx/SKILL.md",
+      "computedHash": "4725b6456ac970746ef4b4445c78762b745360dc0da0df557c188077d2cdb6c7"
+    }
+  }
+}
