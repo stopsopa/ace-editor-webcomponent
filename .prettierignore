@@ -3,5 +3,4 @@ node_modules/
 existing_examples/
 yarn.lock
 **/package-lock.json
-ace-editor/src/ace-web-component.js
-ace-editor/src/ace-web-component.d.ts
+dist/

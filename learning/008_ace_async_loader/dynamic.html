@@ -10,6 +10,9 @@
       name="description"
       content="Web Components Learning Path: A Comprehensive Journey from Basic Custom Elements to a Production-Ready Ace Editor Web Component"
     />
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
     <style>
       .project-overview {
         background: #f0f4f8;
@@ -25,47 +28,6 @@
         border-bottom: 1px solid #a0aec0;
         padding-bottom: 10px;
       }
-    </style>
-
-    <div class="project-overview">
-      <h2>🖥️ Ace Editor Web Component Wrapper</h2>
-      <p>
-        This project creates a powerful, flexible web component that wraps the
-        <a href="https://ace.c9.io/">Ace Editor</a>, transforming it into a native HTML element that can be used as
-        easily as any standard input or textarea.
-      </p>
-
-      <strong>Key Component Features:</strong>
-      <ul>
-        <li>Native HTML syntax: <code>&lt;ace-editor&gt;</code> tag with simple attributes</li>
-        <li>
-          Dynamic language mode support (JavaScript, Python, TypeScript, and
-          <a href="https://github.com/ajaxorg/ace/blob/v1.43.4/src/ext/modelist.js#L72">more</a>)
-        </li>
-        <li>
-          Customizable themes and editor configurations -
-          <a href="https://github.com/ajaxorg/ace/blob/v1.43.3/src/ext/themelist.js#L32">list</a> - check in
-          <a href="https://ace.c9.io/build/kitchen-sink.html">kitchen-sink</a>
-        </li>
-        <li>Async script loading for optimal performance</li>
-        <li>Full programmatic control via JavaScript</li>
-      </ul>
-
-      <p><strong>Core Objectives:</strong></p>
-      <ul>
-        <li>Simplify Ace Editor integration into web projects</li>
-        <li>Provide a native, standards-compliant interface</li>
-        <li>Maintain all the powerful features of Ace Editor</li>
-        <li>Enable easy configuration and dynamic content management</li>
-      </ul>
-
-      <p>... also it was just generally excuse to learn how to work with web components</p>
-    </div>
-
-    <link rel="preconnect" href="https://rsms.me/" />
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <style>
       :root {
         font-family: "Inter", sans-serif;
       }
@@ -432,18 +394,53 @@
     >
     <h1>Documentation and demo for &lt;ace-editor&gt; web component</h1>
 
+    <div class="project-overview">
+      <h2>🖥️ Ace Editor Web Component Wrapper</h2>
+      <p>
+        This project creates a powerful, flexible web component that wraps the
+        <a href="https://ace.c9.io/">Ace Editor</a>, transforming it into a native HTML element that can be used as
+        easily as any standard input or textarea.
+      </p>
+
+      <strong>Key Component Features:</strong>
+      <ul>
+        <li>Native HTML syntax: <code>&lt;ace-editor&gt;</code> tag with simple attributes</li>
+        <li>
+          Dynamic language mode support (JavaScript, Python, TypeScript, and
+          <a href="https://github.com/ajaxorg/ace/blob/v1.43.4/src/ext/modelist.js#L72">more</a>)
+        </li>
+        <li>
+          Customizable themes and editor configurations -
+          <a href="https://github.com/ajaxorg/ace/blob/v1.43.4/src/ext/themelist.js#L32">list</a> - check in
+          <a href="https://ace.c9.io/build/kitchen-sink.html">kitchen-sink</a>
+        </li>
+        <li>Async script loading for optimal performance</li>
+        <li>Full programmatic control via JavaScript</li>
+      </ul>
+
+      <p><strong>Core Objectives:</strong></p>
+      <ul>
+        <li>Simplify Ace Editor integration into web projects</li>
+        <li>Provide a native, standards-compliant interface</li>
+        <li>Maintain all the powerful features of Ace Editor</li>
+        <li>Enable easy configuration and dynamic content management</li>
+      </ul>
+
+      <p>... also it was just generally excuse to learn how to work with web components</p>
+    </div>
+
     <alert-box type="note">
       <strong>🎮 Interactive Demo:</strong> This page demonstrates real-time attribute updates to the
       <code>&lt;ace-editor&gt;</code> web component. Change any control and see the editor update instantly!
     </alert-box>
 
-    <h2>aceOnLoad Event</h2>
+    <h2>ready Event (aceOnLoad)</h2>
     <p>
       Before we dive into dynamic controls, let me introduce a powerful global event that's available for advanced
       configuration scenarios. The
-      <code>'aceOnLoad'</code> event is not always needed for basic usage, but it becomes invaluable when you need to
-      configure each editor instance beyond the standard attributes available on the main
-      <code>&lt;ace-editor&gt;</code> tag.
+      <code>'ready'</code> event (older name <code>'aceOnLoad'</code> works the same and is used in the example below)
+      is not always needed for basic usage, but it becomes invaluable when you need to configure each editor instance
+      beyond the standard attributes available on the main <code>&lt;ace-editor&gt;</code> tag.
     </p>
     <p>
       <strong>📡 Lifecycle Hook:</strong> This event fires once per editor when it's fully initialized, providing access
@@ -529,7 +526,7 @@
       <ace-editor lang="html" readonly>
         <script type="ace">
           <!-- https://cdnjs.com/libraries/ace -->
-          <!-- 1.43.4 not published yet as of 2025-10-23 -->
+          <!-- cdnjs publishes new versions with a delay, check which version is the latest there -->
           <script
             type="module"
             src="https://stopsopa.github.io/ace-editor-webcomponent/ace-web-component.js"
@@ -554,7 +551,7 @@
       <alert-box type="note" alert="Explanation">
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8">
           <li>
-            <code>src="../../ace-web-component.js"</code> - Loads the web component definition that registers the custom
+            <code>src=".../ace-web-component.js"</code> - Loads the web component definition that registers the custom
             <code>&lt;ace-editor&gt;</code> element
           </li>
           <li>
@@ -734,7 +731,8 @@
       <h3>Example 3: Duplicate ID Error</h3>
       <p style="color: #dc3545; font-weight: bold">
         ❌ The second editor below intentionally uses a DUPLICATE
-        <code>id="duplicate-test"</code> to demonstrate the error handling:
+        <code>id="duplicate-test"</code> to demonstrate the error handling. This example logs an error to the browser
+        console on purpose:
       </p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
@@ -766,7 +764,7 @@
             <strong>Unique ID provided</strong> → Component validates it's unique across all ace-editors and uses it
           </li>
           <li>
-            <strong>Duplicate ID detected</strong> → Component throws error and shows red error box instead of loading
+            <strong>Duplicate ID detected</strong> → Component throws error and shows an error box instead of loading
           </li>
           <li><strong>Component removed</strong> → ID is unregistered and can be reused on a new editor</li>
         </ul>
@@ -872,8 +870,9 @@
               <small style="color: #666">(empty)</small>
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
-              Initial content of the editor. Default is empty string. Can also be provided as text content between the
-              opening and closing tags. Supports both attribute and inner content approaches.
+              Content of the editor. Default is empty string. Can also be provided as text content between the opening
+              and closing tags. Changing the attribute later updates the editor, also when it is
+              <code>readonly</code>. The value is used exactly as given (no indentation clean-up).
             </td>
           </tr>
           <tr style="background: #f9f9f9">
@@ -908,16 +907,35 @@
             </td>
             <td style="padding: 10px; border: 1px solid #ddd">
               Minimum height of the editor measured in pixels. No minimum by default (auto-sizes to content). Example:
-              <code>min-height-px="300"</code> ensures at least 300px height. Cannot be used with
-              <code>min-height-lines</code> simultaneously.
+              <code>min-height-px="300"</code> ensures at least 300px height. Wins over
+              <code>min-height-lines</code> when both are set.
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd">tab-size</td>
+            <td style="padding: 10px; border: 1px solid #ddd">Number</td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">4</code>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">Tab size in spaces.</td>
+          </tr>
+          <tr style="background: #f9f9f9">
+            <td style="padding: 10px; border: 1px solid #ddd">name</td>
+            <td style="padding: 10px; border: 1px solid #ddd">String</td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              <code style="background: #e8f4f8; padding: 2px 6px; border-radius: 3px">none</code>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd">
+              Name under which the content is submitted when the editor is inside a <code>&lt;form&gt;</code>. See
+              <a href="#forms">Forms</a>.
             </td>
           </tr>
         </tbody>
       </table>
 
       <alert-box type="warning">
-        The <code>min-height-lines</code> and <code>min-height-px</code> attributes are mutually exclusive. If both are
-        provided, <code>min-height-px</code>
+        Use one of <code>min-height-lines</code> and <code>min-height-px</code>. If both are provided,
+        <code>min-height-px</code>
         takes precedence.
       </alert-box>
     </div>
@@ -1023,6 +1041,9 @@ func main() {
       ];
 
       const LANGUAGES = ["javascript", "python", "typescript", "go"];
+
+      // theme used by <ace-editor> when there is no theme attribute
+      const DEFAULT_THEME = "idle_fingers";
 
       let editorCounter = 0;
 
@@ -1172,16 +1193,19 @@ func main() {
         leftCol.className = "column";
         leftCol.innerHTML = `
           <h3>✏️ Edit Code (Textarea)</h3>
-          <textarea id="${editorId}-textarea">${CODE_SNIPPETS.javascript}</textarea>
+          <textarea id="${editorId}-textarea"></textarea>
         `;
+        // text goes in through properties/attributes, never through innerHTML: it is data, not markup
+        leftCol.querySelector("textarea").value = CODE_SNIPPETS.javascript;
 
         // Middle column - Live Ace Editor
         const middleCol = document.createElement("div");
         middleCol.className = "column";
         middleCol.innerHTML = `
           <h3>🔥 Live Preview (Ace Editor)</h3>
-          <ace-editor id="${editorId}" lang="javascript" value="${CODE_SNIPPETS.javascript}"></ace-editor>
+          <ace-editor id="${editorId}" lang="javascript"></ace-editor>
         `;
+        middleCol.querySelector("ace-editor").setAttribute("value", CODE_SNIPPETS.javascript);
 
         // Right column - HTML Usage Example
         const rightCol = document.createElement("div");
@@ -1216,6 +1240,9 @@ func main() {
         const minHeightValue = document.getElementById(`${editorId}-min-height-value`);
         const heightUnitRadios = document.getElementsByName(`${editorId}-height-unit`);
 
+        // show the theme which the editor really uses (default of the component)
+        themeSelect.value = DEFAULT_THEME;
+
         // Function to generate HTML code representation
         function generateHtmlCode() {
           const currentLang = langSelect.value;
@@ -1224,12 +1251,12 @@ func main() {
           const isReadonly = readonlyCheckbox.checked;
           const minHeightEnabled = enableMinHeightCheckbox.checked;
 
-          // const escapedValue = currentValue.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          const escapedValue = currentValue;
+          // closing script tag inside of the code would end <script type="ace"> too early
+          const escapedValue = currentValue.replace(/<\/script/gi, "&lt;/script");
 
           let htmlCode = `<ace-editor\n  id="${editorId}"\n  lang="${currentLang}"`;
 
-          if (currentTheme !== "ambiance") {
+          if (currentTheme !== DEFAULT_THEME) {
             htmlCode += `\n  theme="${currentTheme}"`;
           }
 
@@ -1257,8 +1284,8 @@ func main() {
           htmlViewEditor.value = generateHtmlCode();
         }
 
-        // Initial HTML view update (wait longer for ace-editor to initialize)
-        setTimeout(updateHtmlView, 1500);
+        // Initial HTML view update - .value can be assigned before the editor is initialized
+        updateHtmlView();
 
         // Setup event listeners
 
@@ -1547,9 +1574,10 @@ func main() {
       </table>
 
       <alert-box type="tip">
-        Both methods produce identical results at runtime. The
-        <code>&lt;script type="ace"&gt;</code> method is purely for better development experience when working with code
-        formatting tools.
+        Both methods produce identical results at runtime as long as no tool has reformatted the plain text version. The
+        <code>&lt;script type="ace"&gt;</code> method is for better development experience when working with code
+        formatting tools. One more difference: inside <code>&lt;script type="ace"&gt;</code> the html parser leaves the
+        text alone, so <code>&lt;</code> and <code>&amp;</code> can be written as they are.
       </alert-box>
     </div>
 
@@ -1664,9 +1692,7 @@ func main() {
                               arr[j], arr[j + 1] = arr[j + 1], arr[j]
                   return arr`);
 
-                // Alternative methods to set content (all work the same):
-                // Method 1: setAttribute (shown above)
-                // Method 2: Property assignment
+                // Alternative way to set content (same result):
                 // editor.value = "your code here";
               });
 
@@ -2216,10 +2242,96 @@ alert(greeting);
       </alert-box>
     </div>
 
-    <h2>onChange - Ace Editor Web Component</h2>
+    <h2 id="forms">Forms</h2>
+    <p>
+      <strong>📮 Form participation:</strong> Inside a <code>&lt;form&gt;</code> the editor behaves like a native
+      textarea. Give it a <code>name</code> and its content is submitted with the form and is part of
+      <code>FormData</code>. <code>form.reset()</code> restores the initial content, a disabled
+      <code>&lt;fieldset&gt;</code> makes it read-only and excludes it from the submission, and a
+      <code>&lt;label for="..."&gt;</code> focuses it.
+    </p>
+
+    <div class="content-card">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+        <div>
+          <h4 style="margin: 10px 0; color: #333">HTML Code:</h4>
+          <ace-editor lang="html" readonly>
+            <script type="ace">
+              <form id="form-demo">
+                <label for="form-demo-title">Title</label>
+                <input id="form-demo-title" name="title" value="My snippet" />
+
+                <label for="form-demo-code">Code</label>
+                <ace-editor id="form-demo-code" name="code" lang="javascript">
+                  <script type="ace">
+                    console.log("submitted with the form");
+                  &lt;/script>
+                </ace-editor>
+
+                <button type="submit">Submit</button>
+                <button type="reset">Reset</button>
+              </form>
+
+              &lt;script>
+                const form = document.getElementById("form-demo");
+
+                form.addEventListener("submit", (e) => {
+                  e.preventDefault();
+
+                  const data = Object.fromEntries(new FormData(form));
+
+                  console.log(data); // { title: "...", code: "..." }
+                });
+              &lt;/script>
+            </script>
+          </ace-editor>
+        </div>
+        <div>
+          <h4 style="margin: 10px 0; color: #333">Live Result:</h4>
+          <form id="form-demo" style="display: flex; flex-direction: column; gap: 8px">
+            <label for="form-demo-title">Title</label>
+            <input id="form-demo-title" name="title" value="My snippet" />
+
+            <label for="form-demo-code">Code (click this label to focus the editor)</label>
+            <ace-editor id="form-demo-code" name="code" lang="javascript">
+              <script type="ace">
+                console.log("submitted with the form");
+              </script>
+            </ace-editor>
+
+            <div>
+              <button type="submit">Submit</button>
+              <button type="reset">Reset</button>
+            </div>
+          </form>
+          <h4 style="margin: 10px 0; color: #333">FormData on submit:</h4>
+          <pre
+            id="form-demo-output"
+            style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 12px; min-height: 60px"
+          ></pre>
+          <script>
+            {
+              const form = document.getElementById("form-demo");
+
+              form.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                const data = Object.fromEntries(new FormData(form));
+
+                document.getElementById("form-demo-output").textContent = JSON.stringify(data, null, 2);
+              });
+            }
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <h2>input and change Events</h2>
     <p>
       <strong>✅ Behavior:</strong> Just like native textarea, programmatic value changes (via
-      <code>.value = "..."</code>) do NOT fire 'input' event. Only user typing/editing triggers the 'input' event.
+      <code>.value = "..."</code> or <code>setAttribute("value", "...")</code>) do NOT fire 'input' event. Only user
+      typing/editing triggers the 'input' event, exactly once per edit. The 'change' event fires when the editor loses
+      focus and its content is different than it was when it got focus.
     </p>
 
     <style>
@@ -2337,7 +2449,7 @@ greet("World");</textarea>
 
     <alert-box type="tip" alert="Alternative Approach - Global Event">
       You can also use the global
-      <code>document.addEventListener("aceOnLoad", ...)</code> event (see
+      <code>document.addEventListener("ready", ...)</code> event (see
       <a href="#logs" style="color: #1976d2; font-weight: bold">Event Log section</a>) to tweak each newly created
       ace-editor instance. This is particularly useful when you want to apply custom configurations to multiple editors.
     </alert-box>
@@ -2345,7 +2457,7 @@ greet("World");</textarea>
     <alert-box type="tip">
       Add custom attributes or classes to individual
       <code>&lt;ace-editor&gt;</code> tags (e.g., <code>data-custom="special"</code> or <code>class="my-editor"</code>),
-      then in the <code>aceOnLoad</code> event handler, check <code>event.detail.component</code> to distinguish between
+      then in the <code>ready</code> event handler, check <code>event.detail.component</code> to distinguish between
       editors and apply specific tweaks to each one.
     </alert-box>
 
@@ -2436,13 +2548,13 @@ greet("World");</textarea>
               onclick="gotoLine()"
               style="padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer"
             >
-              Go to Line 11 (findNext)
+              Go to Line 15 (findNext)
             </button>
             <button
               onclick="addMarker()"
               style="padding: 8px; background: #ff6b6b; color: white; border: none; border-radius: 4px; cursor: pointer"
             >
-              Highlight Lines 5-8 (getEditor)
+              Highlight Lines 11-12 (getEditor)
             </button>
           </div>
         </div>
@@ -2559,15 +2671,15 @@ greet("World");</textarea>
             resultsDiv.textContent = `✅ Font size set to ${currentFontSize}px`;
           };
 
-          // Go to line 30 in THIS editor (where the find/replace functions start)
+          // Go to line 15 in THIS editor (where the find/replace functions start)
           window.gotoLine = () => {
-            editor.gotoLine(11, 0, true);
+            editor.gotoLine(15, 0, true);
             editor.focus();
             const resultsDiv = document.getElementById('search-results');
-            resultsDiv.textContent = `✅ Jumped to line 30 (find function)`;
+            resultsDiv.textContent = `✅ Jumped to line 15 (find function)`;
           };
 
-          // Add marker to highlight lines 12-15 (the getEditor() call!)
+          // Add marker to highlight lines 11-12 (the getEditor() call!)
           window.addMarker = () => {
             const Range = editor.getSelectionRange().constructor;
             const resultsDiv = document.getElementById('search-results');
@@ -2580,10 +2692,10 @@ greet("World");</textarea>
               return;
             }
 
-            // Highlight the getEditor() call (lines 12-14)
-            const range = new Range(4, 0, 7, 0); // 0-indexed
+            // Highlight the getEditor() call (lines 11-12)
+            const range = new Range(10, 0, 11, 0); // 0-indexed
             highlightMarker = editor.session.addMarker(range, "ace_selection", "fullLine");
-            resultsDiv.textContent = `✅ Lines 5-7 highlighted (the getEditor() magic!)`;
+            resultsDiv.textContent = `✅ Lines 11-12 highlighted (the getEditor() magic!)`;
           };
 
             console.log('✅ Advanced editor features initialized using getEditor()!');
@@ -2606,36 +2718,36 @@ greet("World");</textarea>
         Ready to search...
       </div>
     </div>
-    <h2>Async Initialization Pitfall</h2>
+    <h2>Before the Editor Is Ready: .value, onLoad and ready</h2>
 
     <div class="content-card">
-      <h3 style="margin-top: 0">🚫 The Problem: Premature Content Modification</h3>
+      <h3 style="margin-top: 0">✅ Assigning .value works at any time</h3>
 
-      <p>Let's explore what happens when you try to modify a web component's content before it's fully initialized:</p>
+      <p>
+        Ace Editor is loaded asynchronously, so for a moment after the page is parsed the editor inside
+        <code>&lt;ace-editor&gt;</code> does not exist yet. Assigning <code>.value</code> is safe anyway: the value is
+        kept and shown as soon as the editor is ready. It wins over the content from the markup.
+      </p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px">
         <div>
           <h4>Example code</h4>
           <ace-editor lang="html" readonly>
             <script type="ace">
-              &lt;ace-editor id="problematic-editor1">
+              &lt;ace-editor id="early-value-editor">
                 <script type="ace">
-                  // Initial function
-                  function greet(name) {
-                    console.log("Hello, " + name);
-                  }
+                  // content from the markup
                 &lt;/script>
               &lt;/ace-editor>
 
-              <!-- and then in javascript -->
+              <!-- and then in javascript, right away -->
 
               &lt;script>
                 {
-                  const editor = document.getElementById('problematic-editor1');
+                  const element = document.getElementById("early-value-editor");
 
-                  editor.value = editor.value + `
-                  console.log("Let's try to append this console.log");
-                  `;
+                  element.value = `// assigned before the editor was initialized
+              console.log("this replaced the content from the markup");`;
                 }
               &lt;/script>
             </script>
@@ -2644,58 +2756,48 @@ greet("World");</textarea>
 
         <div>
           <h4>Live demo</h4>
-          <ace-editor id="problematic-editor1">
+          <ace-editor id="early-value-editor">
             <script type="ace">
-              // Initial function
-              function greet(name) {
-                console.log("Hello, " + name);
-              }
+              // content from the markup
             </script>
           </ace-editor>
 
-          <!-- and then in javascript -->
+          <!-- and then in javascript, right away -->
 
           <script>
             {
-              const editor = document.getElementById("problematic-editor1");
+              const element = document.getElementById("early-value-editor");
 
-              editor.value =
-                editor.value +
-                `
-    console.log("Let's try to append this console.log");
-    `;
+              element.value = `// assigned before the editor was initialized
+console.log("this replaced the content from the markup");`;
             }
           </script>
         </div>
       </div>
 
-      <br />
-      <alert-box type="warning" alert="What Really Happens">
-        <ul style="margin: 10px 0; padding-left: 20px">
-          <li>raw web component element is rendered in the html</li>
-          <li>
-            automatic async sequence of initialization steps occurs to dress this component with ace editor -> loading
-            libraries and plugins and so on happens
-          </li>
-          <li>before async initialization is complete, any attempts to interact with it have no chance to succeed</li>
-          <li>
-            once initialization is complete, the editor content is set based on the original innerHTML, overwriting any
-            prior modifications
-          </li>
-        </ul>
+      <alert-box type="warning" alert="Reading is different">
+        <code>.value</code> can be <strong>read</strong> only after the component script
+        (<code>ace-web-component.js</code>) has run. That script is a module, and modules run after the whole page is
+        parsed. A regular inline <code>&lt;script&gt;</code> placed in the page runs earlier - for it
+        <code>&lt;ace-editor&gt;</code> is still an unknown element and <code>element.value</code> is
+        <code>undefined</code>. The same goes for <code>getEditor()</code>, which returns the native Ace instance only
+        after initialization. To read the content or to use the native editor, wait with <code>onLoad</code>.
       </alert-box>
-      <br />
 
-      <h3 style="margin-top: 0">✅ Introducing 'onLoad' event</h3>
+      <h3>⏳ Reading the content and using the native editor: onLoad</h3>
 
-      <p>Let's use 'onLoad' event to wait to interact after initialization:</p>
+      <p>
+        A listener of <code>'onLoad'</code> registered on the element is called when the editor is initialized - or
+        immediately when it already is. It works no matter when it is registered, so it can be used as "run this when
+        the editor is ready".
+      </p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px">
         <div>
           <h4>Example code</h4>
-          <ace-editor lang="html">
+          <ace-editor lang="html" readonly>
             <script type="ace">
-              &lt;ace-editor id="problematic-editor2">
+              &lt;ace-editor id="onload-editor">
                 <script type="ace">
                   // Initial function
                   function greet(name) {
@@ -2704,28 +2806,19 @@ greet("World");</textarea>
                 &lt;/script>
               &lt;/ace-editor>
 
-              <!-- and then in javascript -->
-
               &lt;script>
                 {
-                  const editor = document.getElementById("problematic-editor2");
+                  const element = document.getElementById("onload-editor");
 
-                  editor.addEventListener("onLoad", () => {
-                    editor.value =
-                      editor.value +
-                      `
-              console.log("Let's try to append this console.log");
-                `;
+                  element.addEventListener("onLoad", ({ component, editor, id }) => {
+                    // component: this <ace-editor> element
+                    // editor: native Ace instance, the same as component.getEditor()
 
-                    setTimeout(() => {
-                      editor.addEventListener("onLoad", () => {
-                        editor.value =
-                          editor.value +
-                          `
-              console.log("Appending another log after web component became ready");
-                `;
-                      });
-                    }, 1000);
+                    component.value = component.value + `
+              console.log("Appended after reading the content");`;
+
+                    editor.gotoLine(5);
+                    editor.selection.selectLine();
                   });
                 }
               &lt;/script>
@@ -2735,7 +2828,7 @@ greet("World");</textarea>
 
         <div>
           <h4>Live demo</h4>
-          <ace-editor id="problematic-editor2">
+          <ace-editor id="onload-editor">
             <script type="ace">
               // Initial function
               function greet(name) {
@@ -2744,45 +2837,42 @@ greet("World");</textarea>
             </script>
           </ace-editor>
 
-          <!-- and then in javascript -->
-
           <script>
             {
-              const editor = document.getElementById("problematic-editor2");
+              const element = document.getElementById("onload-editor");
 
-              editor.addEventListener("onLoad", () => {
-                editor.value =
-                  editor.value +
+              element.addEventListener("onLoad", ({ component, editor, id }) => {
+                component.value =
+                  component.value +
                   `
-console.log("Let's try to append this console.log");
-    `;
+console.log("Appended after reading the content");`;
 
-                setTimeout(() => {
-                  editor.addEventListener("onLoad", () => {
-                    editor.value =
-                      editor.value +
-                      `
-console.log("Appending another log after web component became ready");
-      `;
-                  });
-                }, 1000);
+                editor.gotoLine(5);
+                editor.selection.selectLine();
               });
             }
           </script>
         </div>
       </div>
 
-      <br />
-      <alert-box type="warning" alert="What Really Happens">
-        <ul style="margin: 10px 0; padding-left: 20px">
-          <li>raw web component element is rendered in the html</li>
+      <alert-box type="note" alert="Three ways to wait for the editor">
+        <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8">
           <li>
-            automatic async sequence of initialization steps occurs to dress this component with ace editor -> loading
-            libraries and plugins and so on happens
+            <code>element.addEventListener("onLoad", ({ component, editor, id }) => { ... })</code> - works from
+            anywhere, also from an inline script which runs before the component is loaded, and also when the editor is
+            already initialized.
           </li>
-          <li>we are registering 'onLoad' event on that element</li>
-          <li>initialization finishes and triggers all registered onLoad</li>
-          <li>our event is triggered and our action in it is happening after initialization</li>
+          <li>
+            <code>const { component, editor, id } = await element.ready</code> - promise, convenient in module scripts
+            and frameworks. It exists once the component script has run (see
+            <code>customElements.whenDefined("ace-editor")</code>).
+          </li>
+          <li>
+            <code>document.addEventListener("ready", (event) => { ... })</code> - regular bubbling event fired once per
+            editor, data in <code>event.detail</code>. Good for configuring all editors in one place. It is not
+            replayed, so register it before the editors initialize. <code>aceOnLoad</code> is the older name of this
+            event and still works.
+          </li>
         </ul>
       </alert-box>
       <br />

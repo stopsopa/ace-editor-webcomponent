@@ -7,6 +7,11 @@
     "module": "ESNext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    /* ../ace-web-component.d.ts lives outside of this package and augments "react" (JSX.IntrinsicElements),
+       so "react" has to be resolvable also from there */
+    "paths": {
+      "react": ["./node_modules/@types/react"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",

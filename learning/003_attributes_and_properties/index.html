@@ -98,7 +98,9 @@
 
     attributeChangedCallback(name, oldValue, newValue) {
         console.log(`Attribute "${name}" changed from "${oldValue}" to "${newValue}"`);
-        this.render();
+        if (this.shadowRoot) {
+            this.render();
+        }
     }
 
     // Property getters and setters
@@ -119,16 +121,22 @@
     }
 
     render() {
+        // attachShadow() can be called only once per element, and render() runs many times
         const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' });
+
+        // Attribute values are data, not markup: escape them before putting into innerHTML
+        const esc = (value) => (value || 'N/A').replace(/[&amp;&lt;&gt;"']/g, (c) =&gt;
+            ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;', "'": '&amp;#39;' })[c]);
+
         shadow.innerHTML = `
             &lt;style&gt;
                 .card { padding: 15px; border: 2px solid #333; border-radius: 8px; }
                 .label { font-weight: bold; color: #555; }
             &lt;/style&gt;
             &lt;div class="card"&gt;
-                &lt;div&gt;&lt;span class="label"&gt;Name:&lt;/span&gt; ${this.getAttribute('name') || 'N/A'}&lt;/div&gt;
-                &lt;div&gt;&lt;span class="label"&gt;Email:&lt;/span&gt; ${this.getAttribute('email') || 'N/A'}&lt;/div&gt;
-                &lt;div&gt;&lt;span class="label"&gt;Age:&lt;/span&gt; ${this.getAttribute('age') || 'N/A'}&lt;/div&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Name:&lt;/span&gt; ${esc(this.getAttribute('name'))}&lt;/div&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Email:&lt;/span&gt; ${esc(this.getAttribute('email'))}&lt;/div&gt;
+                &lt;div&gt;&lt;span class="label"&gt;Age:&lt;/span&gt; ${esc(this.getAttribute('age'))}&lt;/div&gt;
             &lt;/div&gt;
         `;
     }
@@ -215,7 +223,16 @@ card.setAttribute('email', 'jane@example.com');  // Direct attribute</code></pre
         }
 
         render() {
+          // attachShadow() can be called only once per element, and render() runs many times
           const shadow = this.shadowRoot || this.attachShadow({ mode: "open" });
+
+          // Attribute values are data, not markup: escape them before putting into innerHTML
+          const esc = (value) =>
+            (value || "N/A").replace(
+              /[&<>"']/g,
+              (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+            );
+
           shadow.innerHTML = `
                     <style>
                         .card {
@@ -233,9 +250,9 @@ card.setAttribute('email', 'jane@example.com');  // Direct attribute</code></pre
                         div { margin: 5px 0; }
                     </style>
                     <div class="card">
-                        <div><span class="label">Name:</span> ${this.getAttribute("name") || "N/A"}</div>
-                        <div><span class="label">Email:</span> ${this.getAttribute("email") || "N/A"}</div>
-                        <div><span class="label">Age:</span> ${this.getAttribute("age") || "N/A"}</div>
+                        <div><span class="label">Name:</span> ${esc(this.getAttribute("name"))}</div>
+                        <div><span class="label">Email:</span> ${esc(this.getAttribute("email"))}</div>
+                        <div><span class="label">Age:</span> ${esc(this.getAttribute("age"))}</div>
                     </div>
                 `;
         }

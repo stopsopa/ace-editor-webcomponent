@@ -138,7 +138,9 @@
     connectedCallback() {
         this.log('connectedCallback() - Element added to DOM');
 
-        const shadow = this.attachShadow({ mode: 'open' });
+        // connectedCallback() can run many times for the same element (see below),
+        // but an element can have only one shadow root
+        const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' });
         shadow.innerHTML = `
             &lt;style&gt;
                 .box { padding: 15px; background: #4caf50; color: white; border-radius: 5px; }
@@ -197,9 +199,23 @@ customElements.define('lifecycle-demo', LifecycleDemo);</code></pre>
       <li>Prevent memory leaks!</li>
     </ul>
 
+    <h2>connectedCallback() Can Run More Than Once</h2>
+    <p>
+      Moving an element to another place in the document (<code>otherParent.appendChild(element)</code>) is "disconnect,
+      then connect": <code>disconnectedCallback()</code> runs, and right after it <code>connectedCallback()</code> runs
+      again on the same object. The same happens when an element is removed and inserted back later.
+    </p>
+    <ul>
+      <li>
+        One-time setup has to be guarded. <code>attachShadow()</code> throws when it is called a second time on the same
+        element, so use <code>this.shadowRoot || this.attachShadow({ mode: "open" })</code>
+      </li>
+      <li>Everything released in <code>disconnectedCallback()</code> has to be created again on the next connect</li>
+    </ul>
+
     <h2>Key Takeaways</h2>
     <ul>
-      <li><code>connectedCallback</code> is for setup and initialization</li>
+      <li><code>connectedCallback</code> is for setup and initialization, and it can run more than once</li>
       <li><code>disconnectedCallback</code> is CRITICAL for cleanup</li>
       <li><code>adoptedCallback</code> is rare (only for iframe scenarios)</li>
       <li>Always pair resource creation with cleanup</li>
@@ -258,7 +274,9 @@ customElements.define('lifecycle-demo', LifecycleDemo);</code></pre>
         connectedCallback() {
           this.log("connectedCallback() - Element added to DOM");
 
-          const shadow = this.attachShadow({ mode: "open" });
+          // connectedCallback() can run many times for the same element (moved in the DOM,
+          // removed and added again), but an element can have only one shadow root
+          const shadow = this.shadowRoot || this.attachShadow({ mode: "open" });
           shadow.innerHTML = `
                     <style>
                         .box {
@@ -303,7 +321,8 @@ customElements.define('lifecycle-demo', LifecycleDemo);</code></pre>
           if (this.shadowRoot) {
             const box = this.shadowRoot.querySelector(".box p");
             if (box) {
-              box.innerHTML = `I'm alive! Status: ${newValue}`;
+              // textContent, not innerHTML: attribute value is data, not markup
+              box.textContent = `I'm alive! Status: ${newValue}`;
             }
           }
         }

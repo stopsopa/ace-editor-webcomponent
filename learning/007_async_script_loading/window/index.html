@@ -90,8 +90,9 @@
     <h1>Lesson 007: Async Script Loading (Window Global Pattern)</h1>
 
     <p>
-      <a href="../../006_event_handling/">← Previous: Event Handling</a> |
-      <a href="../../008_ace_async_loader/">Next: Ace Async Loader →</a>
+      <a href="../../006_event_handling/index.html">← Previous: Event Handling</a> |
+      <a href="../index.html">Lesson 007 overview</a> | <a href="../esm/index.html">Other variant: ES module</a> |
+      <a href="../../008_ace_async_loader/index.html">Next: Ace Async Loader →</a>
     </p>
 
     <h2>What You'll Learn</h2>
@@ -165,7 +166,11 @@
         <strong>Lazy Loading:</strong> External dependency (internalToolWindow.js) loads only when first component
         connects
       </li>
-      <li><strong>Singleton Pattern:</strong> Even with multiple components, dependency loads only once</li>
+      <li>
+        <strong>Singleton Pattern:</strong> Even with multiple components, dependency loads only once. The loading
+        promise is stored <strong>before</strong> anything is awaited - checking the cache and filling it must happen in
+        the same synchronous step, otherwise components connected at the same moment all inject the script.
+      </li>
     </ol>
 
     <h2>Key Differences from ESM Version</h2>
@@ -198,8 +203,9 @@
     </ul>
 
     <p>
-      <a href="../../006_event_handling/">← Previous: Event Handling</a> |
-      <a href="../../008_ace_async_loader/">Next: Ace Async Loader →</a>
+      <a href="../../006_event_handling/index.html">← Previous: Event Handling</a> |
+      <a href="../index.html">Lesson 007 overview</a> | <a href="../esm/index.html">Other variant: ES module</a> |
+      <a href="../../008_ace_async_loader/index.html">Next: Ace Async Loader →</a>
     </p>
 
     <!-- Simple script for dynamic component addition and script loading -->

@@ -103,8 +103,10 @@
     <h1>Lesson 007: Async Script Loading with Web Components</h1>
 
     <p>
-      <a href="../006_event_handling/">← Previous: Event Handling</a> |
-      <a href="../008_ace_async_loader/">Next: Ace Async Loader →</a>
+      <a href="../../006_event_handling/index.html">← Previous: Event Handling</a> |
+      <a href="../index.html">Lesson 007 overview</a> |
+      <a href="../window/index.html">Other variant: window global</a> |
+      <a href="../../008_ace_async_loader/index.html">Next: Ace Async Loader →</a>
     </p>
 
     <h2>What You'll Learn</h2>
@@ -174,7 +176,11 @@
       <li>
         <strong>Lazy Loading:</strong> External dependency (internalToolESM.js) loads only when first component connects
       </li>
-      <li><strong>Singleton Pattern:</strong> Even with multiple components, dependency loads only once</li>
+      <li>
+        <strong>Singleton Pattern:</strong> Even with multiple components, dependency loads only once. The loading
+        promise is stored <strong>before</strong> anything is awaited - checking the cache and filling it must happen in
+        the same synchronous step, otherwise components connected at the same moment all start loading.
+      </li>
       <li><strong>Works Everywhere:</strong> Components declared in HTML or added dynamically both work!</li>
     </ol>
 
@@ -218,13 +224,15 @@
     </ul>
 
     <p>
-      <a href="../006_event_handling/">← Previous: Event Handling</a> |
-      <a href="../008_ace_async_loader/">Next: Ace Async Loader →</a>
+      <a href="../../006_event_handling/index.html">← Previous: Event Handling</a> |
+      <a href="../index.html">Lesson 007 overview</a> |
+      <a href="../window/index.html">Other variant: window global</a> |
+      <a href="../../008_ace_async_loader/index.html">Next: Ace Async Loader →</a>
     </p>
 
     <!-- Simple script for dynamic component addition and script loading -->
     <script type="module">
-      let componentCounter = 3; // We already have 3 static components
+      let componentCounter = 2; // We already have 2 static components
 
       // Function to dynamically load the component script
       window.loadComponentScript = async function () {
@@ -310,7 +318,7 @@
       console.log("2. Click 'Load my-tool-esm.js' button");
       console.log("3. Watch my-tool-esm.js load");
       console.log("4. Watch internalToolESM.js (dependency) load only ONCE");
-      console.log("5. All 3 static <my-tool> components spring to life!");
+      console.log("5. Both static <my-tool> components spring to life!");
       console.log("6. Click 'Add New Component' - components work instantly!");
     </script>
   </body>

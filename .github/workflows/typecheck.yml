@@ -1,0 +1,30 @@
+name: typecheck
+
+# Builds the React demo. "npm run build" runs "tsc -b" first, which type-checks ace-web-component.d.ts
+# against real usage (JSX element, events, ref), so the typings can't drift away from the component unnoticed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  react-demo:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ace-editor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: ace-editor/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run build

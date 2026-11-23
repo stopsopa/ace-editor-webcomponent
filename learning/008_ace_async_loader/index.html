@@ -100,9 +100,9 @@
     <h1>Lesson 008: Ace Editor Async Loader</h1>
 
     <p>
-      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a>
+      <a href="../007_async_script_loading/index.html">← Previous: Async Script Loading</a>
       |
-      <a href="../009_ace_configuration/">Next: Ace Configuration →</a>
+      <a href="./dynamic.html">Next: Documentation and demo of the final component →</a>
     </p>
 
     <h2>What You'll Learn</h2>
@@ -151,7 +151,7 @@
           <button class="remove-btn" onclick="removeEditor('wrapper-editor-3')">Remove</button>
         </h4>
         <ace-editor id="editor-3" lang="json" readonly>
-          { "name": "Ace Editor", "version": "1.15.0", "awesome": true }</ace-editor
+          { "name": "Ace Editor", "version": "1.43.4", "awesome": true }</ace-editor
         >
       </div>
 
@@ -265,9 +265,9 @@ print("Hello!")
     </ul>
 
     <p>
-      <a href="../007_async_script_loading/window/">← Previous: Async Script Loading</a>
+      <a href="../007_async_script_loading/index.html">← Previous: Async Script Loading</a>
       |
-      <a href="../009_ace_configuration/">Next: Ace Configuration →</a>
+      <a href="./dynamic.html">Next: Documentation and demo of the final component →</a>
     </p>
 
     <!-- Script for dynamic editor addition and loader loading -->
@@ -285,12 +285,15 @@ print("Hello!")
 
           console.log("📦 Dynamically creating <script> tag for ace-web-component.js...");
 
-          // Create script tag dynamically (regular script, not module)
+          // Create script tag dynamically
+          // type="module" is required: ace-web-component.js uses "export"
           const script = document.createElement("script");
+          script.type = "module";
           script.setAttribute("src", "../../ace-web-component.js");
-          // NOTE: Use "data-main-ace" - Ace reads data-ace-* but "aceUrl" is not a valid config key
-          // Avoid "data-ace-editor-url" which would become "editorUrl" and conflict
-          script.setAttribute("data-main-ace", "/noprettier/ace/ace-builds-1.15.0/src-min-noconflict/ace.js");
+          // NOTE: Use "data-main-ace" - Ace reads data-ace-* attributes of script tags as its own config,
+          // so names starting with "data-ace-" are avoided
+          // Relative path, so it works also when the site is served from a subdirectory (GitHub Pages)
+          script.setAttribute("data-main-ace", "../../noprettier/ace/ace-builds-1.43.4/src-min-noconflict/ace.js");
 
           // Wait for script to load
           await new Promise((resolve, reject) => {
@@ -298,6 +301,15 @@ print("Hello!")
             script.onerror = reject;
             document.head.appendChild(script);
           });
+
+          // "load" event fires also for a script which failed with a syntax error,
+          // so check that the custom element is really registered
+          await Promise.race([
+            customElements.whenDefined("ace-editor"),
+            new Promise((resolve, reject) =>
+              setTimeout(() => reject(new Error("<ace-editor> was not registered within 5 seconds")), 5000),
+            ),
+          ]);
 
           statusEl.textContent = "Status: ✅ ace-web-component.js loaded! Editors are now alive!";
           statusEl.style.background = "#d4edda";

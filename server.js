@@ -1,19 +1,12 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
-import cookieParser from "cookie-parser";
 import serveIndex from "serve-index";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const log = (function () {
-  try {
-    return console.log;
-  } catch (e) {
-    return function () {};
-  }
-})();
+const log = console.log;
 
 const host = process.env.HOST || "localhost";
 const port = process.env.PORT || 3000;
@@ -21,12 +14,6 @@ const port = process.env.PORT || 3000;
 const web = path.resolve(__dirname);
 
 const app = express();
-
-app.use(cookieParser());
-
-app.use(express.urlencoded({ extended: false }));
-
-app.use(express.json());
 
 // Simple health check endpoint (from existing implementation)
 app.get("/ping", (req, res) => {
@@ -56,15 +43,9 @@ app.use((req, res, next) => {
 });
 
 app.use(
-  express.static(web, {
-    index: false, // stop automatically serve index.html if present
-    setHeaders: (res) => {
-      // Ensure no-cache headers are set for static files
-      res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-      res.set("Pragma", "no-cache");
-      res.set("Expires", "0");
-    },
-  }),
+  // index.html of a directory is served for the directory url, the same way GitHub Pages does it,
+  // directories without index.html get a listing from serveIndex below
+  express.static(web),
   serveIndex(web, {
     icons: true,
     view: "details",

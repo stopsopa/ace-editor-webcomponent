@@ -4,16 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository is a comprehensive learning path for **Web Components**, culminating in a production-ready **Ace Editor Web Component**. The project teaches web component concepts progressively through 16 hands-on lessons, from basic custom elements to advanced component patterns.
+This repository contains the **`<ace-editor>` web component** (a wrapper of [Ace Editor](https://ace.c9.io/)) and the learning path of **Web Components** lessons which led to it.
+
+- The component is a single file: `ace-web-component.js` (typings: `ace-web-component.d.ts`).
+- Its documentation with live demos is `learning/008_ace_async_loader/dynamic.html`.
+- The description of its public API for AI agents is `ace-editor-web-component/SKILL.md`. **That file is the source of truth for the API** - keep it in sync with the component when behavior changes.
 
 ## Repository Structure
 
 ```
 /
+├── ace-web-component.js         # THE component: <ace-editor> (ES module, no dependencies, no build)
+├── ace-web-component.d.ts       # TypeScript typings (element, events, JSX for React)
+├── ace-editor-web-component/
+│   └── SKILL.md                 # agent skill: how to use <ace-editor> (source of truth for the API)
+│
 ├── server.js                    # Simple Express server for development
-├── package.json                 # Node.js dependencies (Express only)
+├── package.json                 # express, serve-index, prettier (yarn)
 ├── index.html                   # Landing page with navigation to all lessons
 ├── .nojekyll                    # GitHub Pages configuration
+├── xx.ts                        # menu of project commands for the xx tool
 │
 ├── /learning/                   # Progressive web components lessons
 │   ├── 001_basic_custom_element/
@@ -22,21 +32,17 @@ This repository is a comprehensive learning path for **Web Components**, culmina
 │   ├── 004_slots_and_content_projection/
 │   ├── 005_lifecycle_hooks/
 │   ├── 006_event_handling/
-│   ├── 007_templates_and_fragments/
-│   ├── 008_async_script_loading/
-│   ├── 009_ace_async_loader/
-│   ├── 010_basic_ace_component/
-│   ├── 011_ace_initialization/
-│   ├── 012_ace_configuration/
-│   ├── 013_ace_content_management/
-│   ├── 014_ace_auto_sizing/
-│   ├── 015_ace_advanced_features/
-│   └── 016_final_ace_component/
-│   Each directory contains an index.html file
+│   ├── 007_async_script_loading/        # index.html (overview) + esm/ and window/ variants
+│   ├── 008_ace_async_loader/
+│   │   ├── index.html                   # lesson: loading the component on demand
+│   │   └── dynamic.html                 # documentation and demo of the final component
+│   └── bonus_templates_for_dynamic_content/
+│
+├── /ace-editor/                 # React 19 + TypeScript + Vite demo using the component (npm)
 │
 ├── /noprettier/                 # External libraries (not processed by prettier)
 │   └── /ace/
-│       └── /ace-builds-[version]/
+│       └── /ace-builds-1.43.4/
 │           └── /src-min-noconflict/
 │               └── ace.js       # Ace editor main file
 │
@@ -51,25 +57,43 @@ This repository is a comprehensive learning path for **Web Components**, culmina
 ### Start Development Server
 
 ```bash
-node server.js
+node server.js        # or: yarn start (reads HOST and PORT from .env)
 ```
 
 - Serves all files from the project root on http://localhost:3000
-- Serves static files including `/node_modules` and `/noprettier`
+- A directory url serves its `index.html` (same as GitHub Pages), directories without one show a listing
+- `?delay=1000` added to any url delays the response (used by lesson 007)
 - No build process required - pure web standards
 
 ### Install Dependencies
 
 ```bash
-npm install
+yarn install
 ```
 
-Only installs Express (no bundler, no React, no build tools)
+Installs the dev server (express, serve-index) and prettier. No bundler and no build tools for the component.
+
+### Formatting
+
+```bash
+yarn format          # prettier --write .
+yarn format:check    # what CI runs
+```
+
+### React demo
+
+```bash
+cd ace-editor
+npm install
+npm run dev
+npm run build        # tsc -b && vite build - this also type-checks ../ace-web-component.d.ts
+```
 
 ## Ace Editor Setup
 
 ### Version Information
 
+- **Version in the repository**: 1.43.4 (`/noprettier/ace/ace-builds-1.43.4/`, history in `/noprettier/ace/log.md`)
 - **Download Source**: https://github.com/ajaxorg/ace-builds/releases
 - **Installation**: Manual download as zip file (not npm)
 
@@ -86,9 +110,7 @@ The project follows a pure web standards approach without npm packages for front
 
 ## Learning Path Architecture
 
-### Lessons 001-008: Web Components Fundamentals
-
-Progressive introduction to web components APIs:
+### Lessons 001-007 + bonus: Web Components Fundamentals
 
 1. Basic custom elements and lifecycle
 2. Shadow DOM and style encapsulation
@@ -96,12 +118,16 @@ Progressive introduction to web components APIs:
 4. Content projection with slots
 5. Complete lifecycle management
 6. Event handling and custom events
-7. Template elements and performance
-8. Async script loading patterns
+7. Async script loading patterns (two variants: ES module, window global)
 
-### Lessons 009-016: Ace Editor Web Component
+Bonus: template elements.
 
-Phased build of production-ready component: 9. Async loader for Ace editor 10. Basic component shell and structure 11. Editor initialization after async load 12. Configuration (mode, theme, options) 13. Content management and update patterns 14. Auto-sizing based on content 15. Advanced features (linking, clipboard) 16. Final production component
+### Lesson 008 and the final component
+
+- `learning/008_ace_async_loader/index.html` - loading `ace-web-component.js` on demand, Ace loaded once for many editors
+- `learning/008_ace_async_loader/dynamic.html` - documentation and demo of everything the final component does
+
+The originally planned lessons 009-016 were not written as separate lessons: their content went directly into `ace-web-component.js` and `dynamic.html`.
 
 ### Design Principles
 
@@ -114,114 +140,140 @@ Phased build of production-ready component: 9. Async loader for Ace editor 10. B
 
 ## Key Technical Patterns
 
-### 1. Async Script Loading Pattern
+All of these are implemented in `ace-web-component.js`.
 
-Based on `existing_examples/github.js:347-375`:
+### 1. Async Script Loading Pattern (load once)
 
 ```javascript
-async function loadScript(src) {
-  return new Promise((resolve, reject) => {
+let promise = null;
+
+// NOT async: the promise is stored in the same synchronous step in which it was found missing,
+// otherwise every component connected in the meantime starts its own loading
+function loadAceEditor(url) {
+  if (promise) return promise;
+
+  if (typeof window.ace?.edit === "function") return (promise = Promise.resolve(window.ace));
+
+  promise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    let handler = setInterval(() => {
-      if (window.ace && window.ace.edit) {
-        clearInterval(handler);
-        resolve();
-      }
-    }, 100);
-    script.src = src;
+    script.src = url;
+    script.onload = () => {
+      /* poll for window.ace.edit, reject after a timeout */
+    };
+    script.onerror = () => reject(new Error(`Failed to load ${url}`));
     document.head.appendChild(script);
   });
+
+  return promise;
 }
 ```
 
 When presenting prototypes of web component wrapping ace editor always present (render) at least two components at the same time to inspect if ace editor is loaded twice or not. Should be loaded once (Loaded - I mean loading main ace editor script ace.js once per page loaded. I don't want to have ace.js loaded twice because we are rendering web component more than one).
 
-### 2. Editor Update Management
+### 2. One place which writes content into the editor
 
-Based on `existing_examples/Ace.jsx:129-142`:
+Both the `value` attribute and the `.value` property go through one method, so they can't behave differently:
 
 ```javascript
-// Skip updates when editor has focus to prevent conflicts
-if (!this.updateFlag) return;
+#applyValue(text) {
+  if (this.editor.getValue() === text) return; // nothing to do, cursor stays where it is
 
-const editorContent = editor.value;
-if (editorContent !== this.pendingContent) {
-  editor.setValue(this.pendingContent, -1);
+  // Ace implements setValue as "remove all" + "insert" = two change events.
+  // The flag stops them from being reported as user edits ('input' event).
+  this.#programmaticChange = true;
+  try {
+    this.editor.setValue(text, -1);
+  } finally {
+    this.#programmaticChange = false;
+  }
 }
 ```
 
-Pattern prevents update loops between component state and editor state.
+NOTE: an Ace editor has no `.value` property, its content is read with `editor.getValue()`.
+
+In a controlled React setup this equality check is what prevents update loops: the value echoed back from the state equals the editor content and is skipped.
 
 ### 3. Auto-sizing Based on Content
 
-Based on `existing_examples/doace.js:372-396`:
-
 ```javascript
-function updateHeight() {
-  const session = editor.getSession();
-  const newHeight = session.getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
-
-  container.style.height = newHeight + "px";
-  editor.resize();
-}
-
-editor.getSession().on("change", updateHeight);
+const height = session.getScreenLength() * editor.renderer.lineHeight; // + min-height attributes
+container.style.height = height + "px";
+editor.resize();
 ```
 
-### 4. Focus State Management
+Recalculated on content change, on `changeWrapLimit` (wrap mode is always on, so the number of rows depends on the width), on `changeCharacterSize`, and when a `ResizeObserver` reports a new width of the container (Ace itself notices only window resizes).
 
-Based on `existing_examples/Ace.jsx:316-327`:
+### 4. Initial content and its source
 
-```javascript
-editor.on("focus", () => {
-  this.hasFocus = true;
-  this.updateFlag = false; // Prevent external updates
-});
+Initial content is resolved in one function together with its source, and clean-up depends on the source:
 
-editor.on("blur", () => {
-  this.hasFocus = false;
-  this.updateFlag = true; // Allow external updates
-});
-```
+| Source              | Decode `&lt;` | Remove indentation and outer empty lines |
+| ------------------- | ------------- | ---------------------------------------- |
+| `.value` property   | no            | no                                       |
+| `value` attribute   | no            | no                                       |
+| `<script>` child    | yes           | yes                                      |
+| text content        | no            | yes                                      |
+| `content` attribute | no            | no                                       |
 
-## Final Ace Editor Web Component API
+Values coming from JavaScript or from an attribute are data and must never be modified.
+
+### 5. Lifecycle
+
+- `connectedCallback` can run many times: the shadow root is created once (`this.shadowRoot || this.attachShadow(...)`), a moved element keeps its editor.
+- `disconnectedCallback` waits a microtask and tears down only when the element is really gone (a move is "disconnect, then connect").
+- Teardown keeps the content, so an element inserted again comes back with it.
+- Ace's base css lives in `document.head`; it is shared with every shadow root through `adoptedStyleSheets` (one `CSSStyleSheet` per source `<style>`, cached), never copied per editor.
+
+## Ace Editor Web Component API
+
+The full description is in [ace-editor-web-component/SKILL.md](ace-editor-web-component/SKILL.md). Short version:
 
 ### Basic Usage
 
 ```html
-<ace-editor
-  src="/noprettier/ace/ace-builds-[version]/src-min-noconflict/ace.js"
-  value="console.log('Hello World');"
-  lang="javascript"
-  theme="idle_fingers"
-  wrap
-  readonly
->
+<script
+  type="module"
+  src="/ace-web-component.js"
+  data-main-ace="/noprettier/ace/ace-builds-1.43.4/src-min-noconflict/ace.js"
+></script>
+
+<ace-editor lang="javascript" name="code">
+  <script type="ace">
+    console.log('Hello World');
+  </script>
 </ace-editor>
 ```
 
+The URL of `ace.js` is given once per page: `data-main-ace` attribute of the script tag, or `setDataMainAce(url)` exported by the module. There is no `src` attribute on `<ace-editor>`.
+
 ### Attributes
 
-- `src` (required): Path to ace.js file
-- `value`: Initial editor content
-- `lang`: Language mode (javascript, python, json, etc.)
-- `theme`: Editor theme (default: idle_fingers)
-- `wrap`: Enable line wrapping (boolean attribute)
-- `readonly`: Make editor read-only (boolean attribute)
-- `tab-size`: Tab size in spaces (default: 4)
+- `value`: editor content (can be changed at any time, also on a readonly editor)
+- `lang`: language mode (default: javascript; `js`, `ts`, `bash` are accepted aliases)
+- `theme`: editor theme (default: idle_fingers)
+- `readonly`: user can't edit (boolean attribute)
+- `tab-size`: tab size in spaces (default: 4)
+- `min-height-lines`, `min-height-px`: minimum height
+- `name`: name for form submission
+- `id`: unique among editors, auto-generated when missing
+- `data-notrim`, `data-nolt`, `data-eval`, `content`: read once at initialization
 
-### Properties
+Line wrapping is always on.
 
-- `.value`: Get/set editor content
-- `.editor`: Access underlying Ace editor instance
-- `.focus()`: Focus the editor
+### Properties and methods
+
+- `.value`: get/set editor content (set works at any time, never fires `input`)
+- `.editor` / `.getEditor()`: underlying Ace editor instance (null until initialized)
+- `.ready`: promise resolved with `{ component, editor, id }` when initialized
+- `.focus()`, `.blur()`
+- `.form`, `.name`: form participation (the element is form-associated)
 
 ### Events
 
-- `change`: Fired when content changes
-  - `event.detail.value`: New content
-- `ready`: Fired when Ace editor is loaded and initialized
-  - `event.detail.editor`: Ace editor instance
+- `input`: user edited the content (once per edit; not fired for programmatic changes). Read `event.target.value`
+- `change`: editor lost focus with changed content
+- `ready`: editor is initialized, `event.detail` is `{ component, editor, id }` (`aceOnLoad` is the older name)
+- `onLoad`: `element.addEventListener("onLoad", ({ component, editor, id }) => {})` - called when initialized, or immediately when it already is
 
 ## Reference Implementation Notes
 
@@ -231,6 +283,8 @@ The `existing_examples/` directory contains the original React implementation:
 - **github.js**: Script loading and initialization logic
 - **doace.js**: Vanilla JS implementation for syntax highlighting
 - **003next.entry.jsx**: Complex usage example with multiple editors
+
+These files are history: they are not used by the component and some of their patterns were replaced (see "Key Technical Patterns" above).
 
 These files demonstrate:
 
@@ -288,18 +342,24 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 ### Updating Ace Editor Version
 
 1. Download new version from https://github.com/ajaxorg/ace-builds/releases
-2. Extract to `/noprettier/ace/ace-builds-X.Y.Z/`
-3. Update `src` paths in lessons 009-016
-4. Test all Ace-related lessons
-5. Update version number in this file
+2. Extract to `/noprettier/ace/ace-builds-X.Y.Z/` and add a line to `/noprettier/ace/log.md`
+3. Update the paths in `learning/008_ace_async_loader/index.html` and `dynamic.html`
+4. Update the version in `ace-editor-web-component/SKILL.md`, `ace-editor/src/App.tsx` and in this file
+5. Test both pages of lesson 008
 
 ### Testing the Web Component
 
 1. Start server: `node server.js`
-2. Open: http://localhost:3000/learning/016_final_ace_component/
-3. Test all attributes and properties
-4. Check browser console for errors
-5. Verify cleanup on disconnect (no memory leaks)
+2. Open: http://localhost:3000/learning/008_ace_async_loader/dynamic.html
+3. Check browser console for errors (one "Duplicate ace-editor ID" error is expected: it is a demo on that page)
+4. In the Network tab `ace.js` must be requested exactly once
+5. Things which are easy to break and are not visible by just looking at the page:
+   - `<form>` with a named editor: `new FormData(form)` contains its content
+   - typing one character fires exactly one `input` event; setting `.value` or the `value` attribute fires none
+   - moving an editor in the DOM (`parent.appendChild(editor)`) keeps it working
+   - an editor inside `display: none` initializes when it is shown
+   - narrowing the container makes the editor taller (lines wrap)
+6. `cd ace-editor && npm run build` type-checks the typings
 
 ## Architecture Decisions
 
@@ -352,10 +412,9 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 
 ### Updates Not Working
 
-1. Check focus/blur state management
-2. Verify `updateFlag` is set correctly
-3. Ensure `attributeChangedCallback` is implemented
-4. Check `observedAttributes` includes 'value'
+1. Check that `observedAttributes` includes the attribute
+2. `value` is skipped when it equals the current content - that is intended
+3. From an inline script which runs before the component script, `.value` can be assigned but not read (see SKILL.md, section 5)
 
 ## React Integration Strategy for Ace Editor Web Component
 
@@ -370,11 +429,24 @@ Each lesson should include relevant MDN links in a "Further Reading" section. Co
 
 #### 1. Direct Web Component Usage
 
-```jsx
-function AceEditorComponent() {
+This is what `ace-editor/src/App.tsx` does:
+
+```tsx
+import type AceEditorComponent from "../../ace-web-component.js";
+import { setDataMainAce } from "../../ace-web-component.js";
+
+setDataMainAce("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.min.js");
+
+function AceEditorComponentDemo() {
   const [code, setCode] = useState("");
 
-  return <ace-editor value={code} onInput={(e) => setCode(e.target.value)} lang="javascript" theme="monokai" />;
+  return (
+    <ace-editor
+      value={code}
+      onInput={(e: React.FormEvent<AceEditorComponent>) => setCode(e.currentTarget.value)}
+      lang="javascript"
+    />
+  );
 }
 ```
 
@@ -404,23 +476,11 @@ function ReactAceEditor({ value, onChange, lang = "javascript", theme = "idle_fi
 
 ### Key Considerations
 
-- Use `customElements.define()` before React rendering
-- Ensure Ace editor script is loaded before component usage
-- Handle async script loading
-- Preserve web component's native event system
-
-### Potential Challenges
-
-1. Script Loading: Ensure Ace.js is loaded before component registration
-2. Event Handling: Map React's synthetic events to web component events
-3. Prop Mapping: Translate React props to web component attributes
-
-### Recommended Setup
-
-1. Create a thin React wrapper
-2. Use `ref` to access web component methods
-3. Attach event listeners for state synchronization
-4. Defer to web component's native behavior where possible
+- Importing `ace-web-component.js` registers the element (`customElements.define()`), do it before rendering
+- Call `setDataMainAce(url)` before the first `<ace-editor>` is rendered; Ace itself is loaded lazily by the component
+- React 19 sets `value` as a property when the element is defined, React 18 as an attribute - both go through the same code in the component
+- React's `onInput` works. React's `onLoad` prop is the native `load` event and does NOT receive the component's `onLoad`: use `ref.current.ready` or `ref.current.addEventListener("onLoad", ...)` in an effect
+- Typings: `ace-web-component.d.ts` augments `JSX.IntrinsicElements`. When the file is imported from outside of the package (like the demo does), "react" has to be resolvable from its location - see `paths` in `ace-editor/tsconfig.app.json`
 
 ### Performance Optimizations
 

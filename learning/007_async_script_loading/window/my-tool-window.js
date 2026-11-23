@@ -12,51 +12,53 @@
 
   // Singleton loader for external script (internalToolWindow.js)
   let internalToolWindowPromise = null; // Loading promise
-  let scriptLoadResolve = null;
-  let scriptLoadReject = null;
 
-  async function loadInternalToolWindow() {
+  // IMPORTANT: this function is NOT async and the promise is stored BEFORE anything is awaited.
+  // The check "is it cached?" and the assignment have to happen in the same synchronous step,
+  // otherwise every component connected in the meantime passes the check and loads the script again.
+  function loadInternalToolWindow() {
     // Return cached promise if already loading/loaded
     if (internalToolWindowPromise) {
       console.log("✅ internalToolWindow loading already initialized, returning cached promise");
       return internalToolWindowPromise;
     }
 
-    await delay(1000); // testing delay
+    internalToolWindowPromise = (async () => {
+      await delay(1000); // testing delay
 
-    // Start loading
-    console.log(`🔄 Loading ${internalToolUrl} for the first time...`);
+      // Start loading
+      console.log(`🔄 Loading ${internalToolUrl} for the first time...`);
 
-    internalToolWindowPromise = new Promise((resolve, reject) => {
-      scriptLoadResolve = resolve;
-      scriptLoadReject = reject;
-
-      // Create script element
-      const script = document.createElement("script");
-      script.src = internalToolUrl;
-
-      // Handle load success
-      script.onload = () => {
-        console.log("✅ internalToolWindow.js script loaded successfully!");
-        // Resolve with the window function
-        if (typeof window.internalToolWindowMounted === "function") {
-          resolve(window.internalToolWindowMounted);
-        } else {
-          reject(new Error("internalToolWindowMounted function not found"));
-        }
-      };
-
-      // Handle load error
-      script.onerror = () => {
-        console.error("❌ Failed to load internalToolWindow.js");
-        reject(new Error("Failed to load internalToolWindow.js"));
-      };
-
-      // Append to head to trigger loading
-      document.head.appendChild(script);
-    });
+      return new Promise(injectScript);
+    })();
 
     return internalToolWindowPromise;
+  }
+
+  function injectScript(resolve, reject) {
+    // Create script element
+    const script = document.createElement("script");
+    script.src = internalToolUrl;
+
+    // Handle load success
+    script.onload = () => {
+      console.log("✅ internalToolWindow.js script loaded successfully!");
+      // Resolve with the window function
+      if (typeof window.internalToolWindowMounted === "function") {
+        resolve(window.internalToolWindowMounted);
+      } else {
+        reject(new Error("internalToolWindowMounted function not found"));
+      }
+    };
+
+    // Handle load error
+    script.onerror = () => {
+      console.error("❌ Failed to load internalToolWindow.js");
+      reject(new Error("Failed to load internalToolWindow.js"));
+    };
+
+    // Append to head to trigger loading
+    document.head.appendChild(script);
   }
 
   class InternalToolWindowComponent extends HTMLElement {

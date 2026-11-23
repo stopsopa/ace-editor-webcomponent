@@ -6,19 +6,24 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 // Singleton loader for external module (internalToolESM.js)
 let internalToolESMPromise = null; // Loading promise
 
-async function loadinternalToolESM() {
+// IMPORTANT: this function is NOT async and the promise is stored BEFORE anything is awaited.
+// The check "is it cached?" and the assignment have to happen in the same synchronous step,
+// otherwise every component connected in the meantime passes the check and starts loading again.
+function loadinternalToolESM() {
   // Return cached promise if already loading/loaded
   if (internalToolESMPromise) {
     console.log(" internalToolESM loading already initialized, returning cached module promise");
     return internalToolESMPromise;
   }
 
-  await delay(1000); // testing delay
+  internalToolESMPromise = (async () => {
+    await delay(1000); // testing delay
 
-  // Start loading
-  console.log("= Loading internalToolESM.js for the first time...");
+    // Start loading
+    console.log("= Loading internalToolESM.js for the first time...");
 
-  internalToolESMPromise = import("./internalToolESM.js");
+    return import("./internalToolESM.js");
+  })();
 
   return internalToolESMPromise;
 }

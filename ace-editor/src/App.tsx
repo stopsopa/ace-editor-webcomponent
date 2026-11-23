@@ -1,7 +1,8 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
-import { setDataMainAce } from "./ace-web-component.js";
+import type AceEditorComponent from "../../ace-web-component.js";
+import { setDataMainAce } from "../../ace-web-component.js";
 import "./App.css";
 
 setDataMainAce("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.min.js");
@@ -23,19 +24,10 @@ console.log(generateFibonacci(10));`;
 function App() {
   const [editorContent, setEditorContent] = useState<string>(initial);
 
-  const handleEditorChange = (event: Event) => {
-    const target = event.target as HTMLElementWithValue;
-    setEditorContent(target.value);
+  const handleEditorChange = (event: React.FormEvent<AceEditorComponent>) => {
+    setEditorContent(event.currentTarget.value);
   };
 
-  // Type interface to handle the value property
-  interface HTMLElementWithValue extends HTMLElement {
-    value: string;
-  }
-
-  // Type interface to handle the value property
-
-  // console.log("editorContent", editorContent);
   return (
     <>
       <div>
